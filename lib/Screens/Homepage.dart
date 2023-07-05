@@ -109,7 +109,7 @@ class Homepage extends HookConsumerWidget {
       case 1:
         return ScrimmagesPage();
       case 2:
-        return leaderBoards();
+        return Leaderboards();
       // case 3:
       //   return SettingsPage();
       default:

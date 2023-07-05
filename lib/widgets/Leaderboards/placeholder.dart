@@ -4,7 +4,7 @@ Widget buildPlaceholderContent(String mainCategory, String subCategory) {
   return Container(
     margin: EdgeInsets.all(10),
     padding: EdgeInsets.all(10),
-    color: Colors.blue[50],
+    color: Colors.white,
     child: ListView.builder(
       itemCount: 10,
       itemBuilder: (context, index) {

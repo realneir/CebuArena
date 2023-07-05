@@ -1,13 +1,12 @@
 import 'package:captsone_ui/widgets/Leaderboards/subcategory.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class leaderBoards extends StatefulWidget {
+class Leaderboards extends StatefulWidget {
   @override
-  _leaderBoardsState createState() => _leaderBoardsState();
+  _LeaderboardsState createState() => _LeaderboardsState();
 }
 
-class _leaderBoardsState extends State<leaderBoards>
+class _LeaderboardsState extends State<Leaderboards>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
@@ -19,63 +18,36 @@ class _leaderBoardsState extends State<leaderBoards>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'CebuArena',
-            style: GoogleFonts.metalMania(
-              fontSize: 30,
-              color: Colors.blue[900],
+        body: Column(
+          children: [
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              labelColor: Colors.blue[900],
+              indicatorColor: Colors.blue[900],
+              indicatorWeight: 5,
+              tabs: [
+                Tab(text: 'MLBB'),
+                Tab(text: 'VALORANT'),
+                Tab(text: 'DOTA2'),
+                Tab(text: 'CODM'),
+                Tab(text: 'LOL'),
+                Tab(text: 'WILDRIFT'),
+              ],
             ),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            color: Colors.blue,
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {},
-          ),
-          actions: [
-            IconButton(
-              color: Colors.blue,
-              icon: Icon(Icons.person),
-              onPressed: () {},
-            ),
-          ],
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.white, Colors.white],
-                begin: Alignment.bottomRight,
-                end: Alignment.topLeft,
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  SubCategoryPage(mainCategory: 'MLBB'),
+                  SubCategoryPage(mainCategory: 'VALORANT'),
+                  SubCategoryPage(mainCategory: 'DOTA2'),
+                  SubCategoryPage(mainCategory: 'CODM'),
+                  SubCategoryPage(mainCategory: 'LOL'),
+                  SubCategoryPage(mainCategory: 'WILDRIFT'),
+                ],
               ),
             ),
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            labelColor: Colors.blue[900],
-            indicatorColor: Colors.blue[900],
-            indicatorWeight: 5,
-            tabs: [
-              Tab(text: 'MLBB'),
-              Tab(text: 'VALORANT'),
-              Tab(text: 'DOTA2'),
-              Tab(text: 'CODM'),
-              Tab(text: 'LOL'),
-              Tab(text: 'WILDRIFT'),
-            ],
-          ),
-          elevation: 20,
-          titleSpacing: 20,
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            SubCategoryPage(mainCategory: 'MLBB'),
-            SubCategoryPage(mainCategory: 'VALORANT'),
-            SubCategoryPage(mainCategory: 'DOTA2'),
-            SubCategoryPage(mainCategory: 'CODM'),
-            SubCategoryPage(mainCategory: 'LOL'),
-            SubCategoryPage(mainCategory: 'WILDRIFT'),
           ],
         ),
       );
