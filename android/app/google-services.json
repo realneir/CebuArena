@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1011622029564",
+    "project_id": "cebuarena-e378a",
+    "storage_bucket": "cebuarena-e378a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011622029564:android:fdd88cd2996957c1f90f79",
+        "android_client_info": {
+          "package_name": "com.example.captsone_ui"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011622029564-na9r8kuhsb1ekt7uckhid9r8a8harr96.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc4szylUuZRakcQQYspHphSFSIy9M4L88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011622029564-na9r8kuhsb1ekt7uckhid9r8a8harr96.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

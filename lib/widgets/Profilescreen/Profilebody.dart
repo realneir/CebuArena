@@ -46,13 +46,13 @@ class _ProfileBodyState extends State<ProfileBody> {
             ),
             Positioned(
               left: profileWidth * 1.2,
-              bottom: widget.coverHeight * 0.4,
+              bottom: widget.coverHeight * 0.3,
               child: Row(
                 children: [
                   Column(
                     children: [
                       buildTagWithIcon(context, 'Player', Icons.verified_user),
-                      SizedBox(height: 10),
+                      SizedBox(height: 5),
                       buildTagWithIcon(
                           context, 'Organizer', Icons.verified_user),
                     ],
