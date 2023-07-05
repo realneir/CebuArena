@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/widgets/tab_data.dart';
+import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ScrimmagesPage extends StatefulWidget {

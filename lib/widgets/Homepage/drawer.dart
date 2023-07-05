@@ -1,3 +1,4 @@
+import 'package:captsone_ui/Screens/Profilescreen.dart';
 import 'package:flutter/material.dart';
 
 class SidebarMenu extends StatelessWidget {
@@ -39,7 +40,10 @@ class SidebarMenu extends StatelessWidget {
             leading: Icon(Icons.account_circle, color: Colors.blue),
             title: Text('Profile', style: TextStyle(color: Colors.blue)),
             onTap: () {
-              // Add your Profile page navigation logic here
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
+              );
             },
           ),
           Divider(),

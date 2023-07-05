@@ -1,8 +1,9 @@
+import 'package:captsone_ui/Screens/Leaderboards.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/Screens/Scrimmagespage.dart';
-import 'package:captsone_ui/widgets/drawer.dart';
-import 'package:captsone_ui/widgets/events_leaderboards_page.dart';
+import 'package:captsone_ui/widgets/Homepage/drawer.dart';
+import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final currentIndexProvider = StateNotifierProvider<CurrentIndexNotifier, int>(
@@ -85,12 +86,12 @@ class Homepage extends HookConsumerWidget {
             label: 'Scrimmages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.leaderboard),
+            label: 'Leaderboards',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.event),
+            label: 'Events',
           ),
         ],
         selectedItemColor: Colors.black,
@@ -107,8 +108,8 @@ class Homepage extends HookConsumerWidget {
         return EventsLeaderboardsPage();
       case 1:
         return ScrimmagesPage();
-      // case 2:
-      //   return ProfilePage();
+      case 2:
+        return leaderBoards();
       // case 3:
       //   return SettingsPage();
       default:
