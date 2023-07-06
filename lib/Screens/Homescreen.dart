@@ -1,7 +1,6 @@
 import 'package:captsone_ui/Screens/Phonescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:captsone_ui/Screens/LoginScreen.dart';
-import 'package:captsone_ui/Screens/Profilescreen.dart';
 import 'package:captsone_ui/Screens/SignupEmail.dart';
 
 class HomeScreen extends StatelessWidget {

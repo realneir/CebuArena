@@ -1,7 +1,8 @@
-import 'package:captsone_ui/services/firebase_auth_methods.dart';
+import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EmailPasswordSignup extends StatefulWidget {
   static String routeName = '/signup-email-password';
@@ -15,16 +16,62 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void signUpUser() async {
-    FirebaseAuthMethods(FirebaseAuth.instance).signUpWithEmail(
+  Future<String?> signUpUser() async {
+    String? result = await signUpWithEmail(
       email: emailController.text,
       password: passwordController.text,
-      context: context,
     );
+
+    if (result == null) {
+      // Registration successful
+      // Add your desired navigation logic here
+    } else {
+      // Registration failed
+      // Handle the failure, e.g., display an error message
+      print('Registration failed: $result');
+    }
+  }
+
+  Future<String?> signUpWithEmail(
+      {required String email, required String password}) async {
+    String url =
+        'http://127.0.0.1:8000/register/'; // Replace with your API endpoint URL
+
+    // Create a JSON object with the signup data
+    Map<String, String> data = {
+      'username': email,
+      'password': password,
+      'confirm_password': password,
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      // Handle the response
+      if (response.statusCode == 200) {
+        // Registration successful
+        return null;
+      } else {
+        // Registration failed
+        var responseBody = json.decode(response.body);
+        var errorMessage = responseBody['error_message'];
+        return errorMessage;
+      }
+    } catch (error) {
+      // Handle the error
+      print('Error occurred while registering: $error');
+      return 'An error occurred. Please try again.';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController confirmController = TextEditingController();
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -49,9 +96,23 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
               hintText: 'Enter your password',
             ),
           ),
+          const SizedBox(height: 20),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomTextField(
+              controller: confirmController,
+              hintText: 'Confirm your password',
+            ),
+          ),
           const SizedBox(height: 40),
           ElevatedButton(
-            onPressed: signUpUser,
+            onPressed: () {
+              if (passwordController.text == confirmController.text) {
+                signUpUser();
+              } else {
+                showSnackBar(context, "Passwords do not match.");
+              }
+            },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.blue),
               textStyle: MaterialStateProperty.all(

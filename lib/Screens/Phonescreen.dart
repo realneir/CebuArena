@@ -3,6 +3,7 @@ import 'package:captsone_ui/widgets/SignupEmail/custom_button.dart';
 import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:provider/provider.dart';
 
 class PhoneScreen extends StatefulWidget {
@@ -22,10 +23,10 @@ class _PhoneScreenState extends State<PhoneScreen> {
     phoneController.dispose();
   }
 
-  void phoneSignIn() {
-    FirebaseAuthMethods(FirebaseAuth.instance)
-        .phoneSignIn(context, phoneController.text);
-  }
+  // void phoneSignIn() {
+  //   FirebaseAuthMethods(FirebaseAuth.instance)
+  //       .phoneSignIn(context, phoneController.text);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +38,10 @@ class _PhoneScreenState extends State<PhoneScreen> {
             controller: phoneController,
             hintText: 'Enter phone number',
           ),
-          CustomButton(
-            onTap: phoneSignIn,
-            text: 'SEND OTP',
-          ),
+          // CustomButton(
+          //   onTap: phoneSignIn,
+          //   text: 'SEND OTP',
+          // ),
         ],
       ),
     );

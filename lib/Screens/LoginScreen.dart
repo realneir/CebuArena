@@ -1,8 +1,10 @@
-import 'package:captsone_ui/services/firebase_auth_methods.dart';
+import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:captsone_ui/screens/Homepage.dart';
 
 class EmailPasswordLogin extends StatefulWidget {
   static String routeName = '/login-email-password';
@@ -16,12 +18,26 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void loginUser() {
-    FirebaseAuthMethods(FirebaseAuth.instance).loginWithEmail(
+  void handleLogin() async {
+    String? errorMessage = await loginWithEmailAPI(
       email: emailController.text,
       password: passwordController.text,
-      context: context,
     );
+
+    if (errorMessage == null) {
+      // Login successful
+      // Perform any additional actions after successful login
+      // For example, navigate to the home screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                Homepage()), // Replace HomePage() with your actual home screen widget
+      );
+    } else {
+      // Login failed
+      showSnackBar(context, errorMessage);
+    }
   }
 
   @override
@@ -52,7 +68,7 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
           ),
           const SizedBox(height: 40),
           ElevatedButton(
-            onPressed: loginUser,
+            onPressed: handleLogin,
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.blue),
               textStyle: MaterialStateProperty.all(

@@ -1,6 +1,4 @@
 import 'package:captsone_ui/Screens/LoginScreen.dart';
-import 'package:captsone_ui/Screens/Profilescreen.dart';
-import 'package:captsone_ui/Screens/SignupEmail.dart';
 import 'package:flutter/material.dart';
 
 class SidebarMenu extends StatelessWidget {
