@@ -15,11 +15,14 @@ class EmailPasswordSignup extends StatefulWidget {
 class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController usernameController =
+      TextEditingController(); // New Username Controller
 
   Future<String?> signUpUser() async {
     String? result = await signUpWithEmail(
       email: emailController.text,
       password: passwordController.text,
+      username: usernameController.text, // Passing the username to the function
     );
 
     if (result == null) {
@@ -29,17 +32,22 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
       // Registration failed
       // Handle the failure, e.g., display an error message
       print('Registration failed: $result');
+      showSnackBar(context, 'Registration failed: $result');
     }
   }
 
   Future<String?> signUpWithEmail(
-      {required String email, required String password}) async {
+      {required String email,
+      required String password,
+      required String username}) async {
+    // Receiving the username parameter
     String url =
         'http://127.0.0.1:8000/register/'; // Replace with your API endpoint URL
 
     // Create a JSON object with the signup data
     Map<String, String> data = {
-      'username': email,
+      'username': username, // Using the username parameter in the data map
+      'email': email,
       'password': password,
       'confirm_password': password,
     };
@@ -80,7 +88,15 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
             "Sign Up",
             style: TextStyle(fontSize: 30),
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+          const SizedBox(height: 20),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomTextField(
+              controller: usernameController, // New TextField for username
+              hintText: 'Enter your username',
+            ),
+          ),
+          const SizedBox(height: 20),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             child: CustomTextField(

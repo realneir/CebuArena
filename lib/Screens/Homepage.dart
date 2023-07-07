@@ -69,7 +69,7 @@ class Homepage extends HookConsumerWidget {
         elevation: 20,
         titleSpacing: 20,
       ),
-      drawer: SidebarMenu(username: 'Your username'),
+      drawer: SidebarMenu(username: 'user'),
       body: _buildPage(currentIndex),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,

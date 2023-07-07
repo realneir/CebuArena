@@ -3,10 +3,16 @@ import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class FirebaseAuthMethods {
   final FirebaseAuth _auth;
   FirebaseAuthMethods(this._auth);
+
+  User get user => _auth.currentUser!;
+
+  // STATE PERSISTENCE STREAM
+  Stream<User?> get authState => FirebaseAuth.instance.authStateChanges();
   //email
   Future<void> signUpWithEmail({
     required String email,
@@ -110,4 +116,31 @@ class FirebaseAuthMethods {
       );
     }
   }
+
+  // SIGN OUT
+  Future<void> signOut(BuildContext context) async {
+    try {
+      // Send a POST request to the logout endpoint
+      await http.post(Uri.parse('http://127.0.0.1:8000/logout/'));
+      // Perform any additional logout logic in your frontend
+    } catch (e) {
+      showSnackBar(context, 'Logout failed'); // Display an error message
+    }
+  }
+
+  // DELETE ACCOUNT
+  // Future<void> deleteAccount(BuildContext context) async {
+  //   try {
+  //     // Send a POST request to the delete account endpoint
+  //     await http
+  //         .post(Uri.parse('http://127.0.0.1:8000/delete_account/'), headers: {
+  //       'Authorization':
+  //           'Bearer your_token', // Replace 'your_token' with the user's token
+  //     });
+  //     // Perform any additional logic in your frontend, such as navigating to a different screen
+  //   } catch (e) {
+  //     showSnackBar(
+  //         context, 'Account deletion failed'); // Display an error message
+  //   }
+  // }
 }

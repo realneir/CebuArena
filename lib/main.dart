@@ -1,5 +1,9 @@
 import 'package:captsone_ui/Screens/Homescreen.dart';
+import 'package:captsone_ui/Screens/LoginScreen.dart';
+import 'package:captsone_ui/Screens/Phonescreen.dart';
+import 'package:captsone_ui/Screens/SignupEmail.dart';
 import 'package:captsone_ui/firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:captsone_ui/Screens/Homepage.dart';
@@ -26,6 +30,11 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: HomeScreen(),
+      routes: {
+        EmailPasswordSignup.routeName: (context) => const EmailPasswordSignup(),
+        EmailPasswordLogin.routeName: (context) => const EmailPasswordLogin(),
+        PhoneScreen.routeName: (context) => const PhoneScreen(),
+      },
     );
   }
 }

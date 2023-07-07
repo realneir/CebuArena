@@ -15,19 +15,49 @@ class EmailPasswordLogin extends StatefulWidget {
 }
 
 class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  Future<String?> loginWithEmailAPI(
+      {required String username, required String password}) async {
+    String url =
+        'http://127.0.0.1:8000/login/'; // Replace with your API endpoint URL
+
+    Map<String, String> data = {
+      'username': username,
+      'password': password,
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200) {
+        // Login successful
+        return null;
+      } else {
+        // Login failed
+        var responseBody = json.decode(response.body);
+        var errorMessage = responseBody['error_message'];
+        return errorMessage;
+      }
+    } catch (error) {
+      // Handle the error
+      print('Error occurred while logging in: $error');
+      return 'An error occurred. Please try again.';
+    }
+  }
 
   void handleLogin() async {
     String? errorMessage = await loginWithEmailAPI(
-      email: emailController.text,
+      username: usernameController.text,
       password: passwordController.text,
     );
 
     if (errorMessage == null) {
-      // Login successful
-      // Perform any additional actions after successful login
-      // For example, navigate to the home screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -54,8 +84,8 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             child: CustomTextField(
-              controller: emailController,
-              hintText: 'Enter your email',
+              controller: usernameController,
+              hintText: 'Enter your username',
             ),
           ),
           const SizedBox(height: 20),
@@ -68,7 +98,9 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
           ),
           const SizedBox(height: 40),
           ElevatedButton(
-            onPressed: handleLogin,
+            onPressed: () {
+              handleLogin();
+            },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.blue),
               textStyle: MaterialStateProperty.all(
