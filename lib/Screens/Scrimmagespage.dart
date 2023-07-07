@@ -1,3 +1,4 @@
+import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
 import 'package:flutter/material.dart';
 import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +9,8 @@ class ScrimmagesPage extends StatefulWidget {
 }
 
 class _ScrimmagesPageState extends State<ScrimmagesPage> {
+  Map<String, Map<String, dynamic>> scrimmagesResults = {};
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -26,6 +29,7 @@ class _ScrimmagesPageState extends State<ScrimmagesPage> {
           ),
           centerTitle: true,
           bottom: TabBar(
+            isScrollable: true,
             indicatorColor: Colors.black,
             labelColor: Colors.black,
             unselectedLabelColor: Colors.black,
@@ -39,22 +43,51 @@ class _ScrimmagesPageState extends State<ScrimmagesPage> {
           titleSpacing: 20,
         ),
         body: TabBarView(
-          children: [
-            buildPage('Scrimmages'),
-            buildPage('Scrimmages'),
-            buildPage('Profile Page'),
-            buildPage('Settings Page'),
-          ],
-        ),
-      ),
-    );
-  }
+          children: tabs.map((tab) {
+            return ListView(
+              children: scrimmagesResults.entries.map((entry) {
+                if (entry.key == tab.label) {
+                  return Dismissible(
+                    key: Key(entry.key),
+                    onDismissed: (direction) {
+                      setState(() {
+                        scrimmagesResults.remove(entry.key);
+                      });
 
-  Widget buildPage(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 28),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("${entry.key} Scrim cancelled")),
+                      );
+                    },
+                    child: ListTile(
+                      title: Text(entry.key),
+                      subtitle: Text(entry.value.toString()),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }).toList(),
+            );
+          }).toList(),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final result = await Navigator.push<Map<String, dynamic>>(
+              context,
+              MaterialPageRoute(builder: (context) => ScrimmageDetails()),
+            );
+
+            if (result != null) {
+              setState(() {
+                scrimmagesResults[result['game']] = result;
+              });
+            }
+
+            print(scrimmagesResults);
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.blue,
+        ),
       ),
     );
   }

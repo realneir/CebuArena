@@ -1,13 +1,12 @@
 import 'package:captsone_ui/Screens/Leaderboards.dart';
+import 'package:captsone_ui/services/user_provider.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/Screens/Scrimmagespage.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
 import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-final currentIndexProvider = StateNotifierProvider<CurrentIndexNotifier, int>(
-    (ref) => CurrentIndexNotifier());
 
 class CurrentIndexNotifier extends StateNotifier<int> {
   CurrentIndexNotifier() : super(0);
@@ -17,11 +16,7 @@ class CurrentIndexNotifier extends StateNotifier<int> {
   }
 }
 
-final scaffoldKeyProvider = Provider<GlobalKey<ScaffoldState>>((ref) {
-  return GlobalKey<ScaffoldState>();
-});
-
-class Homepage extends HookConsumerWidget {
+class Homepage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentIndexProvider);

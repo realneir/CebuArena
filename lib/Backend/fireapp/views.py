@@ -20,17 +20,68 @@ database=firebase.database()
 
 @api_view(['GET'])
 @csrf_exempt
-def get_username(request, username):
+def get_current_user(request):
     if request.method == 'GET':
-        # Fetch the user with the provided username from the database
-        users = database.child('users').get()
-        for user in users.each():
-            if user.val()['username'] == username:
-                return Response({'username': user.val()['username']})
+        # Get the user's token from the request headers
+        token = request.headers.get('Authorization')
 
-        return Response({'error_message': 'Username not found'}, status=404)
+        if not token:
+            # Return an error response if the token is missing
+            return Response({'error_message': 'Authorization header missing'}, status=401)
+
+        try:
+            # Verify the token and get user information
+            user_info = authe.get_account_info(token)
+
+            # Get user ID
+            user_id = user_info['users'][0]['localId']
+
+            # Fetch the user's data from the database
+            user_data = database.child('users').child(user_id).get().val()
+
+            # If the user data is None, it means the user doesn't exist in the database
+            if not user_data:
+                return Response({'error_message': 'User not found in the database'}, status=404)
+
+            # Get the username
+            username = user_data['username']
+
+            # Return the username
+            return Response({'username': username})
+        except Exception as e:
+            # Handle errors and return an appropriate response
+            error_message = str(e)
+            return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_all_users(request):
+    if request.method == 'GET':
+        try:
+            # Fetch all users from the database
+            users = database.child('users').get()
+
+            # Prepare the users data
+            users_data = []
+            for user in users.each():
+                user_data = user.val()
+                user_data['id'] = user.key()
+                users_data.append(user_data)
+
+            # Return the users data
+            return Response(users_data)
+
+        except Exception as e:
+            # Handle errors and return an appropriate response
+            error_message = str(e)
+            return Response({'error_message': error_message}, status=500)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
 
 @api_view(['POST'])
 @csrf_exempt

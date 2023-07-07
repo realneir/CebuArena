@@ -72,3 +72,17 @@ Future<String?> loginWithEmailAPI({
     return 'An error occurred. Please try again.';
   }
 }
+
+// Future<String> fetchUsername(String userId) async {
+//   final response =
+//       await http.get(Uri.parse('http://127.0.0.1:8000/api/users/$userId'));
+
+//   if (response.statusCode == 200) {
+//     // If the server returns a 200 OK response, parse the JSON.
+//     Map<String, dynamic> userData = jsonDecode(response.body);
+//     return userData['username'] as String;
+//   } else {
+//     // If the server did not return a 200 OK response, throw an exception.
+//     throw Exception('Failed to load username');
+//   }
+// }

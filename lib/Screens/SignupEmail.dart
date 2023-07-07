@@ -1,3 +1,4 @@
+import 'package:captsone_ui/Screens/LoginScreen.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +63,10 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
       // Handle the response
       if (response.statusCode == 200) {
         // Registration successful
-        return null;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => EmailPasswordLogin()),
+        );
       } else {
         // Registration failed
         var responseBody = json.decode(response.body);

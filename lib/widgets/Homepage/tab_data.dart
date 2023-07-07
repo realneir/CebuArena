@@ -12,7 +12,7 @@ class TabData {
 
 List<TabData> tabs = [
   TabData(
-    label: 'Mobile Legends',
+    label: 'MLBB',
     icon: CircleAvatar(
       radius: 20,
       backgroundImage: AssetImage('Ml.png'),
@@ -20,7 +20,7 @@ List<TabData> tabs = [
     ),
   ),
   TabData(
-    label: 'Mobile Legends',
+    label: 'VALORANT',
     icon: CircleAvatar(
       radius: 20,
       backgroundImage: AssetImage('Ml.png'),
@@ -28,7 +28,7 @@ List<TabData> tabs = [
     ),
   ),
   TabData(
-    label: 'Mobile Legends',
+    label: 'DOTA 2',
     icon: CircleAvatar(
       radius: 20,
       backgroundImage: AssetImage('Ml.png'),
@@ -36,7 +36,23 @@ List<TabData> tabs = [
     ),
   ),
   TabData(
-    label: 'Mobile Legends',
+    label: 'LOL',
+    icon: CircleAvatar(
+      radius: 20,
+      backgroundImage: AssetImage('Ml.png'),
+      backgroundColor: Colors.white,
+    ),
+  ),
+  TabData(
+    label: 'CODM',
+    icon: CircleAvatar(
+      radius: 20,
+      backgroundImage: AssetImage('Ml.png'),
+      backgroundColor: Colors.white,
+    ),
+  ),
+  TabData(
+    label: 'WILDRIFT',
     icon: CircleAvatar(
       radius: 20,
       backgroundImage: AssetImage('Ml.png'),

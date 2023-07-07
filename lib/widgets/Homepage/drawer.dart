@@ -64,7 +64,7 @@ class SidebarMenu extends StatelessWidget {
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                username[0].toUpperCase(),
+                username.isNotEmpty ? username[0].toUpperCase() : '?',
                 style: TextStyle(fontSize: 40.0),
               ),
             ),
