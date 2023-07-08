@@ -1,3 +1,5 @@
+import 'package:captsone_ui/Screens/Eventscreen.dart';
+import 'package:captsone_ui/Screens/Eventsdetail.dart';
 import 'package:captsone_ui/Screens/Leaderboards.dart';
 import 'package:captsone_ui/services/user_provider.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -40,7 +42,7 @@ class Homepage extends ConsumerWidget {
             ),
             SizedBox(width: 10),
             Text(
-              'CebuArena',
+              'CebuArena', //change username to the current user logged in
               style: GoogleFonts.metalMania(fontSize: 30),
             ),
           ],
@@ -100,13 +102,13 @@ class Homepage extends ConsumerWidget {
   Widget _buildPage(int index) {
     switch (index) {
       case 0:
-        return EventsLeaderboardsPage();
+        return HomeView();
       case 1:
         return ScrimmagesPage();
       case 2:
         return Leaderboards();
-      // case 3:
-      //   return SettingsPage();
+      case 3:
+        return EventCreationPage();
       default:
         return Container();
     }

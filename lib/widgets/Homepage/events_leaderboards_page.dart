@@ -2,12 +2,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class EventsLeaderboardsPage extends StatefulWidget {
+class HomeView extends StatefulWidget {
   @override
-  _EventsLeaderboardsPageState createState() => _EventsLeaderboardsPageState();
+  _HomeViewState createState() => _HomeViewState();
 }
 
-class _EventsLeaderboardsPageState extends State<EventsLeaderboardsPage> {
+class _HomeViewState extends State<HomeView> {
   int _currentIndex = 0;
   int _sliderIndex = 0;
   final List<String> _sliderItems = [

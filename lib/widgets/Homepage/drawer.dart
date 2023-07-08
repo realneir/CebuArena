@@ -1,4 +1,5 @@
 import 'package:captsone_ui/Screens/LoginScreen.dart';
+import 'package:captsone_ui/Screens/Profilescreen.dart';
 import 'package:captsone_ui/services/firebase_auth_methods.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -75,7 +76,7 @@ class SidebarMenu extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EmailPasswordLogin()),
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
               );
             },
           ),
