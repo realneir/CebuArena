@@ -1,5 +1,6 @@
 import 'package:captsone_ui/Screens/Homescreen.dart';
 import 'package:captsone_ui/Screens/LoginScreen.dart';
+import 'package:captsone_ui/Screens/Lottie.dart';
 import 'package:captsone_ui/Screens/SignupEmail.dart';
 import 'package:captsone_ui/services/firebase_auth_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'My App',
-      home: HomeScreen(),
+      home: CoverPage(),
     );
   }
 }
