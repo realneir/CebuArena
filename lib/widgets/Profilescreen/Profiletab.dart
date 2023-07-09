@@ -11,7 +11,7 @@ class ProfileTab extends StatelessWidget {
     return Column(
       children: [
         Container(
-          color: Colors.blue,
+          color: Colors.black,
           child: TabBar(
             controller: tabController,
             indicatorColor: Colors.white,

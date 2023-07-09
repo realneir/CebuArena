@@ -39,34 +39,57 @@ class _ProfileScreenState extends State<ProfileScreen>
     final screenWidth = MediaQuery.of(context).size.width;
 
     return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'CebuArena',
-            style: GoogleFonts.metalMania(
-              fontSize: 30 * (screenWidth / 720), // Responsive font size
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            Container(
-              height: constraints.maxHeight * 0.4,
-              child: ProfileBody(
-                coverHeight: screenHeight *
-                    (constraints.maxHeight > 600
-                        ? 0.3
-                        : 0.2), // Adjust coverHeight based on height of the screen
-                profileHeight: profileHeight *
-                    (constraints.maxHeight > 600
-                        ? 0.5
-                        : 0.4), // Adjust profileHeight based on height of the screen
+      return Theme(
+        data: ThemeData(
+          brightness: Brightness.light,
+          primaryColor: Colors.white,
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(
+            color: Colors.white,
+            iconTheme: IconThemeData(color: Colors.black),
+            elevation: 0,
+            toolbarTextStyle: TextTheme(
+              headline6: TextStyle(
+                color: Colors.black,
+                fontSize: 30 * (screenWidth / 720), // Responsive font size
+                fontFamily: GoogleFonts.metalMania().fontFamily,
               ),
-            ),
-            Expanded(
-              child: ProfileTab(tabController: _tabController),
-            ),
-          ],
+            ).bodyText2,
+            titleTextStyle: TextTheme(
+              headline6: TextStyle(
+                color: Colors.black,
+                fontSize: 30 * (screenWidth / 720), // Responsive font size
+                fontFamily: GoogleFonts.metalMania().fontFamily,
+              ),
+            ).headline6,
+          ),
+          colorScheme:
+              ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
+        ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('CebuArena'),
+          ),
+          body: Column(
+            children: [
+              Container(
+                height: constraints.maxHeight * 0.4,
+                child: ProfileBody(
+                  coverHeight: screenHeight *
+                      (constraints.maxHeight > 600
+                          ? 0.3
+                          : 0.2), // Adjust coverHeight based on height of the screen
+                  profileHeight: profileHeight *
+                      (constraints.maxHeight > 600
+                          ? 0.5
+                          : 0.4), // Adjust profileHeight based on height of the screen
+                ),
+              ),
+              Expanded(
+                child: ProfileTab(tabController: _tabController),
+              ),
+            ],
+          ),
         ),
       );
     });
