@@ -175,7 +175,7 @@ def login(request):
                 break
                 
         if email is None:
-            return Response({'error_message': 'Invalid username'}, status=400)
+            return Response({'error_message': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
 
         password = request.data.get('password')
 
@@ -184,15 +184,54 @@ def login(request):
             user = authe.sign_in_with_email_and_password(email, password)
 
             # You can include additional logic here, such as verifying the user's email status
-            
-            # Return a success response
-            return Response({'message': 'Login successful'})
+
+            # Fetch the username from the database using the local_id
+            local_id = user['localId']
+            username = None
+            users = database.child('users').get()
+            for user in users.each():
+                if user.key() == local_id:
+                    username = user.val()['username']
+                    break
+
+            # Return the username along with the success response
+            return Response({'message': 'Login successful', 'username': username})
         except Exception as e:
             # Handle login errors and return an appropriate response
+            error_message = str(e)
+            return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_username(request):
+    if request.method == 'GET':
+        # Get the user's token from the request headers
+        token = request.headers.get('Authorization')
+
+        try:
+            # Verify the user's token
+            user = authe.get_account_info(token)
+            local_id = user['users'][0]['localId']
+
+            # Fetch the username from the database using the local_id
+            username = None
+            users = database.child('users').get()
+            for user in users.each():
+                if user.key() == local_id:
+                    username = user.val()['username']
+                    break
+
+            if username is not None:
+                return Response({'username': username})
+            else:
+                return Response({'error_message': 'Username not found'}, status=404)
+
+        except Exception as e:
+            # Handle errors and return an appropriate response
             error_message = str(e)
             return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
-
-
-

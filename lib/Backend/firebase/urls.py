@@ -8,12 +8,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
+    path('user/<str:username>/', views.get_username, name='get_username'),
     path('logout/', views.logout, name='logout'),
     path('delete_account/', views.delete_account, name='delete_account'),
-    path('api/users/', views.get_all_users, name='get_all_users'),
-    path('api/get_current_username', views.get_current_user, name='get_current_username'),  # New endpoint
-
-
-
+    path('get-username/', views.get_username, name='get_username'),
 ]
 

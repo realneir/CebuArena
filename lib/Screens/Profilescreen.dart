@@ -19,7 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         coverHeight = MediaQuery.of(context).size.height * 0.3;
         profileHeight = coverHeight! * 0.5;

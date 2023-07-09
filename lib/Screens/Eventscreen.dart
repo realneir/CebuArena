@@ -1,10 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:captsone_ui/Screens/Eventsdetail.dart';
-import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class EventScreen extends StatefulWidget {
   final Event event;

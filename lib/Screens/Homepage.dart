@@ -1,32 +1,41 @@
-import 'package:captsone_ui/Screens/Eventscreen.dart';
 import 'package:captsone_ui/Screens/Eventsdetail.dart';
 import 'package:captsone_ui/Screens/Leaderboards.dart';
-import 'package:captsone_ui/services/user_provider.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/Screens/Scrimmagespage.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
 import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class CurrentIndexNotifier extends StateNotifier<int> {
-  CurrentIndexNotifier() : super(0);
+class CurrentIndexNotifier extends ChangeNotifier {
+  int _currentIndex = 0;
+
+  int get currentIndex => _currentIndex;
 
   void setCurrentIndex(int index) {
-    state = index;
+    _currentIndex = index;
+    notifyListeners();
   }
 }
 
-class Homepage extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final currentIndex = ref.watch(currentIndexProvider);
-    final scaffoldKey = ref.watch(scaffoldKeyProvider);
+class Homepage extends StatefulWidget {
+  final String? username;
 
+  const Homepage({Key? key, this.username}) : super(key: key);
+
+  @override
+  _HomepageState createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
+        key: UniqueKey(), // Add a UniqueKey here to ensure uniqueness
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
@@ -42,7 +51,7 @@ class Homepage extends ConsumerWidget {
             ),
             SizedBox(width: 10),
             Text(
-              'CebuArena', //change username to the current user logged in
+              'CebuArena',
               style: GoogleFonts.metalMania(fontSize: 30),
             ),
           ],
@@ -66,12 +75,16 @@ class Homepage extends ConsumerWidget {
         elevation: 20,
         titleSpacing: 20,
       ),
-      drawer: SidebarMenu(username: 'user'),
-      body: _buildPage(currentIndex),
+      drawer: SidebarMenu(
+        username: widget.username ?? '',
+      ),
+      body: _buildPage(_currentIndex),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
+        currentIndex: _currentIndex,
         onTap: (index) {
-          ref.read(currentIndexProvider.notifier).setCurrentIndex(index);
+          setState(() {
+            _currentIndex = index;
+          });
         },
         items: [
           BottomNavigationBarItem(

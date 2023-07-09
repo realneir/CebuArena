@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 Future<String?> signUpWithEmail(
     {required String email, required String password}) async {
@@ -38,39 +39,54 @@ Future<String?> signUpWithEmail(
   }
 }
 
-Future<String?> loginWithEmailAPI({
-  required String email,
-  required String password,
-}) async {
-  String url =
-      'http://127.0.0.1:8000/login/'; // Replace with your API endpoint URL
+class UserDetailsProvider extends ChangeNotifier {
+  String? _username;
 
-  Map<String, String> data = {
-    'username': email,
-    'password': password,
-  };
+  static final provider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
+    return UserDetailsProvider();
+  });
 
-  try {
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(data),
-    );
+  String? get username => _username;
 
-    if (response.statusCode == 200) {
-      // Login successful
-      return null;
-    } else {
-      // Login failed
-      var responseBody = json.decode(response.body);
-      var errorMessage = responseBody['error_message'];
-      return errorMessage;
+  Future<String?> loginWithEmailAPI(
+      {required String username, required String password}) async {
+    String url = 'http://127.0.0.1:8000/login/';
+
+    Map<String, String> data = {
+      'username': username,
+      'password': password,
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200) {
+        // Login successful
+        _username = username;
+        notifyListeners();
+        return null;
+      } else {
+        // Login failed
+        var responseBody = json.decode(response.body);
+        var errorMessage = responseBody['error_message'];
+        return errorMessage;
+      }
+    } catch (error) {
+      // Handle the error
+      print('Error occurred while logging in: $error');
+      return 'An error occurred. Please try again.';
     }
-  } catch (error) {
-    // Handle the error
-    print('Error occurred while logging in: $error');
-    return 'An error occurred. Please try again.';
   }
+}
+
+class AuthProvider {
+  static final provider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
+    return UserDetailsProvider();
+  });
 }
 
 // Future<String> fetchUsername(String userId) async {

@@ -1,5 +1,6 @@
 import 'package:captsone_ui/Screens/LoginScreen.dart';
 import 'package:captsone_ui/Screens/Profilescreen.dart';
+import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/services/firebase_auth_methods.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,22 +24,22 @@ class FirebaseAuthMethods {
   }
 
   // DELETE ACCOUNT
-  // Future<void> deleteAccount(BuildContext context) async {
-  //   try {
-  //     await _auth.currentUser!.delete();
-  //     showSnackBar(context, 'Account deleted successfully.');
-  //   } on FirebaseAuthException catch (e) {
-  //     showSnackBar(context, e.message!); // Displaying the error message
-  //     // if an error of requires-recent-login is thrown, make sure to log
-  //     // in user again and then delete account.
-  //   }
-  // }
+  Future<void> deleteAccount(BuildContext context) async {
+    try {
+      await _auth.currentUser!.delete();
+      showSnackBar(context, 'Account deleted successfully.');
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message!); // Displaying the error message
+      // if an error of requires-recent-login is thrown, make sure to log
+      // in user again and then delete account.
+    }
+  }
 }
 
 class SidebarMenu extends StatelessWidget {
   final String username;
 
-  SidebarMenu({required this.username});
+  const SidebarMenu({required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +55,12 @@ class SidebarMenu extends StatelessWidget {
                 colors: [
                   Colors.yellow.withOpacity(0.7),
                   Colors.green.withOpacity(0.7)
-                ], // You can adjust the colors and opacity here
+                ],
               ),
             ),
             accountName: Text(username, style: TextStyle(color: Colors.white)),
             accountEmail: Text(
-              'Followers: 10 | Following: 20', // Replace with your real followers and following data
+              'Followers: 10 | Following: 20',
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
             ),
             currentAccountPicture: CircleAvatar(
@@ -104,14 +105,14 @@ class SidebarMenu extends StatelessWidget {
               context.read<FirebaseAuthMethods>().signOut(context);
             },
           ),
-          // Divider(),
-          // ListTile(
-          //   leading: Icon(Icons.delete, color: Colors.red),
-          //   title: Text('Delete Account', style: TextStyle(color: Colors.red)),
-          //   onTap: () {
-          //     context.read<FirebaseAuthMethods>().deleteAccount(context);
-          //   },
-          // ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text('Delete Account', style: TextStyle(color: Colors.red)),
+            onTap: () {
+              context.read<FirebaseAuthMethods>().deleteAccount(context);
+            },
+          ),
         ],
       ),
     );
