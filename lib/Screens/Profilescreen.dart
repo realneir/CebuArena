@@ -10,8 +10,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  double? coverHeight;
-  double? profileHeight;
+  late double coverHeight;
+  late double profileHeight;
   late TabController _tabController;
 
   @override
@@ -22,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         coverHeight = MediaQuery.of(context).size.height * 0.3;
-        profileHeight = coverHeight! * 0.5;
+        profileHeight = coverHeight * 0.5;
       });
     });
   }
@@ -35,31 +35,40 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (coverHeight == null || profileHeight == null) {
-      return Container(); // Placeholder widget when the heights are not yet initialized
-    }
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'CebuArena',
-          style: GoogleFonts.metalMania(fontSize: 30),
-        ),
-      ),
-      body: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: ProfileBody(
-              coverHeight: coverHeight!,
-              profileHeight: profileHeight!,
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'CebuArena',
+            style: GoogleFonts.metalMania(
+              fontSize: 30 * (screenWidth / 720), // Responsive font size
             ),
           ),
-          Expanded(
-            child: ProfileTab(tabController: _tabController),
-          ),
-        ],
-      ),
-    );
+        ),
+        body: Column(
+          children: [
+            Container(
+              height: constraints.maxHeight * 0.4,
+              child: ProfileBody(
+                coverHeight: screenHeight *
+                    (constraints.maxHeight > 600
+                        ? 0.3
+                        : 0.2), // Adjust coverHeight based on height of the screen
+                profileHeight: profileHeight *
+                    (constraints.maxHeight > 600
+                        ? 0.5
+                        : 0.4), // Adjust profileHeight based on height of the screen
+              ),
+            ),
+            Expanded(
+              child: ProfileTab(tabController: _tabController),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

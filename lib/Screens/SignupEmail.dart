@@ -14,10 +14,9 @@ class EmailPasswordSignup extends StatefulWidget {
 }
 
 class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController usernameController =
-      TextEditingController(); // New Username Controller
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final usernameController = TextEditingController(); // New Username Controller
 
   Future<String?> signUpUser() async {
     String? result = await signUpWithEmail(
@@ -27,8 +26,10 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
     );
 
     if (result == null) {
-      // Registration successful
-      // Add your desired navigation logic here
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => EmailPasswordLogin()),
+      );
     } else {
       // Registration failed
       // Handle the failure, e.g., display an error message
@@ -41,42 +42,23 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
       {required String email,
       required String password,
       required String username}) async {
-    // Receiving the username parameter
-    String url =
-        'http://127.0.0.1:8000/register/'; // Replace with your API endpoint URL
+    final response = await http.post(
+      Uri.parse("http://127.0.0.1:8000/register/"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'email': email,
+        'password': password,
+        'confirm_password': password,
+      }),
+    );
 
-    // Create a JSON object with the signup data
-    Map<String, String> data = {
-      'username': username, // Using the username parameter in the data map
-      'email': email,
-      'password': password,
-      'confirm_password': password,
-    };
-
-    try {
-      var response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(data),
-      );
-
-      // Handle the response
-      if (response.statusCode == 200) {
-        // Registration successful
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => EmailPasswordLogin()),
-        );
-      } else {
-        // Registration failed
-        var responseBody = json.decode(response.body);
-        var errorMessage = responseBody['error_message'];
-        return errorMessage;
-      }
-    } catch (error) {
-      // Handle the error
-      print('Error occurred while registering: $error');
-      return 'An error occurred. Please try again.';
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      return jsonDecode(response.body)['error_message'];
     }
   }
 

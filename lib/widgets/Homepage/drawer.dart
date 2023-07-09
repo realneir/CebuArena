@@ -14,26 +14,10 @@ class FirebaseAuthMethods {
   // ... Rest of the code ...
 
   // SIGN OUT
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await _auth.signOut();
-      showSnackBar(context, 'Signed out successfully.');
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!); // Displaying the error message
-    }
-  }
+  Future<void> signOut() async {}
 
   // DELETE ACCOUNT
-  Future<void> deleteAccount(BuildContext context) async {
-    try {
-      await _auth.currentUser!.delete();
-      showSnackBar(context, 'Account deleted successfully.');
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!); // Displaying the error message
-      // if an error of requires-recent-login is thrown, make sure to log
-      // in user again and then delete account.
-    }
-  }
+  Future<void> deleteAccount() async {}
 }
 
 class SidebarMenu extends StatelessWidget {
@@ -53,8 +37,8 @@ class SidebarMenu extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.yellow.withOpacity(0.7),
-                  Colors.green.withOpacity(0.7)
+                  Colors.black.withOpacity(0.7),
+                  Colors.black12.withOpacity(0.7)
                 ],
               ),
             ),
@@ -64,7 +48,7 @@ class SidebarMenu extends StatelessWidget {
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
             ),
             currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
+              backgroundColor: Colors.black,
               child: Text(
                 username.isNotEmpty ? username[0].toUpperCase() : '?',
                 style: TextStyle(fontSize: 40.0),
@@ -72,8 +56,8 @@ class SidebarMenu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.account_circle, color: Colors.blue),
-            title: Text('Profile', style: TextStyle(color: Colors.blue)),
+            leading: Icon(Icons.account_circle, color: Colors.black),
+            title: Text('Profile', style: TextStyle(color: Colors.black)),
             onTap: () {
               Navigator.push(
                 context,
@@ -83,16 +67,16 @@ class SidebarMenu extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.verified_user, color: Colors.green),
-            title: Text('Get Verified', style: TextStyle(color: Colors.green)),
+            leading: Icon(Icons.verified_user, color: Colors.black),
+            title: Text('Get Verified', style: TextStyle(color: Colors.black)),
             onTap: () {
               // Add your Get Verified page navigation logic here
             },
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.settings, color: Colors.orange),
-            title: Text('Settings', style: TextStyle(color: Colors.orange)),
+            leading: Icon(Icons.settings, color: Colors.black),
+            title: Text('Settings', style: TextStyle(color: Colors.black)),
             onTap: () {
               // Add your Settings page navigation logic here
             },
@@ -101,17 +85,13 @@ class SidebarMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.logout, color: Colors.red),
             title: Text('Logout', style: TextStyle(color: Colors.red)),
-            onTap: () {
-              context.read<FirebaseAuthMethods>().signOut(context);
-            },
+            onTap: () {},
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
             title: Text('Delete Account', style: TextStyle(color: Colors.red)),
-            onTap: () {
-              context.read<FirebaseAuthMethods>().deleteAccount(context);
-            },
+            onTap: () {},
           ),
         ],
       ),

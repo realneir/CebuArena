@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 import pyrebase
 
@@ -142,11 +143,11 @@ def register(request):
         try:
             # Create the user with the provided email and password
             user = authe.create_user_with_email_and_password(email, password)
+
             # Save the registered user in the Realtime Database
             data = {
                 'username': username,
                 'email': email,  # also save email
-                'password': password
             }
             database.child('users').child(user['localId']).set(data)
 
@@ -158,7 +159,6 @@ def register(request):
             return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
-
     
 @api_view(['POST'])
 @csrf_exempt

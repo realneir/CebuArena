@@ -1,11 +1,11 @@
+import 'package:captsone_ui/screens/Homepage.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/screens/Homepage.dart';
+import 'package:provider/provider.dart';
 
 class EmailPasswordLogin extends StatefulWidget {
-  static String routeName = '/login-email-password';
   const EmailPasswordLogin({Key? key}) : super(key: key);
 
   @override
@@ -17,7 +17,8 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
   final TextEditingController passwordController = TextEditingController();
 
   void handleLogin() async {
-    UserDetailsProvider userDetailsProvider = UserDetailsProvider();
+    UserDetailsProvider userDetailsProvider =
+        Provider.of<UserDetailsProvider>(context, listen: false);
 
     String? errorMessage = await userDetailsProvider.loginWithEmailAPI(
       username: usernameController.text,
