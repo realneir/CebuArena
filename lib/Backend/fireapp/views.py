@@ -23,7 +23,6 @@ database=firebase.database()
 @csrf_exempt
 def get_current_user(request):
     if request.method == 'GET':
-<<<<<<< Updated upstream
         # Get the user's token from the request headers
         token = request.headers.get('Authorization')
 
@@ -76,13 +75,6 @@ def get_all_users(request):
 
             # Return the users data
             return Response(users_data)
-=======
-        
-        users = database.child('users').get()
-        for user in users.each():
-            if user.val()['username'] == username:
-                return Response({'username': user.val()['username']})
->>>>>>> Stashed changes
 
         except Exception as e:
             # Handle errors and return an appropriate response
@@ -96,17 +88,19 @@ def get_all_users(request):
 @csrf_exempt
 def logout(request):
     if request.method == 'POST':
-      
+        # Get the user's token from the request headers
         token = request.headers.get('Authorization')
 
         try:
-          
-            authe.current_user = None 
-            
+            # Perform the logout process
+            authe.current_user = None  # Set the current user to None
+            # Delete the user account using the token
             authe.delete_account(token)
 
+            # Return a success response
             return Response({'message': 'Logout and account deletion successful'})
         except Exception as e:
+            # Handle logout and account deletion errors and return an appropriate response
             error_message = str(e)
             return Response({'error_message': error_message}, status=400)
 
@@ -116,17 +110,17 @@ def logout(request):
 @csrf_exempt
 def delete_account(request):
     if request.method == 'POST':
-       
+        # Get the user's token from the request headers
         token = request.headers.get('Authorization')
 
         try:
-           
+            # Delete the user account using the token
             authe.delete_account(token)
 
-           
+            # Return a success response
             return Response({'message': 'Account deleted'})
         except Exception as e:
-            
+            # Handle account deletion errors and return an appropriate response
             error_message = str(e)
             return Response({'error_message': error_message}, status=400)
 
@@ -138,30 +132,26 @@ def delete_account(request):
 def register(request):
     if request.method == 'POST':
         username = request.data.get('username')
-        email = request.data.get('email')  
+        email = request.data.get('email')  # get email from request
         password = request.data.get('password')
         confirm_password = request.data.get('confirm_password')
+        firstname = request.data.get('firstname')  # get first name from request
+        lastname = request.data.get('lastname')  # get last name from request
 
         if password != confirm_password:
             error_message = "Passwords do not match."
             return Response({'error_message': error_message}, status=400)
 
         try:
-           
+            # Create the user with the provided email and password
             user = authe.create_user_with_email_and_password(email, password)
-<<<<<<< Updated upstream
 
             # Save the registered user in the Realtime Database
             data = {
                 'username': username,
                 'email': email,  # also save email
-=======
-           
-            data = {
-                'username': username,
-                'email': email,  
-                'password': password
->>>>>>> Stashed changes
+                'firstname': firstname,  # save first name
+                'lastname': lastname,  # save last name
             }
             database.child('users').child(user['localId']).set(data)
 
@@ -173,6 +163,7 @@ def register(request):
             return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
     
 @api_view(['POST'])
 @csrf_exempt

@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 class AuthRegis {
   static const String API_ENDPOINT = "http://127.0.0.1:8000";
 
-  Future<String> signUpWithEmail(String username, String email, String password,
+  Future<String> signUpWithEmail(String firstname, String lastname, String username, String email, String password,
       String confirmPassword) async {
     final response = await http.post(
       Uri.parse("$API_ENDPOINT/register/"),
@@ -20,6 +20,8 @@ class AuthRegis {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
+        'firstname' : firstname,
+        'lastname' : lastname,
         'username': username,
         'email': email,
         'password': password,

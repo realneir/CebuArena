@@ -20,9 +20,11 @@ class ProfileBody extends StatefulWidget {
 class _ProfileBodyState extends State<ProfileBody> {
   @override
   Widget build(BuildContext context) {
-    final username = Provider.of<UserDetailsProvider>(context).username;
+   final userDetailsProvider = Provider.of<UserDetailsProvider>(context);
+    final username = userDetailsProvider.username;
 
     final profileWidth = MediaQuery.of(context).size.width * 0.3;
+    
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -47,7 +49,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildTextWithPadding(
-                      'Master Leeroy', 20, FontWeight.bold, Colors.black),
+                      'Firstname + Lastname', 20, FontWeight.bold, Colors.black),
                   buildTextWithPadding(
                       '@$username', 14, FontWeight.normal, Colors.grey),
                 ],

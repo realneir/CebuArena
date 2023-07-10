@@ -14,6 +14,8 @@ class EmailPasswordSignup extends StatefulWidget {
 }
 
 class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
+  final firstnameController = TextEditingController();
+  final lastnameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final usernameController = TextEditingController(); // New Username Controller
@@ -23,6 +25,8 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
       email: emailController.text,
       password: passwordController.text,
       username: usernameController.text, // Passing the username to the function
+      firstname: firstnameController.text, 
+      lastname: lastnameController.text, 
     );
 
     if (result == null) {
@@ -41,7 +45,11 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   Future<String?> signUpWithEmail(
       {required String email,
       required String password,
-      required String username}) async {
+      required String username,
+      required String firstname,
+      required String lastname
+
+      }) async {
     final response = await http.post(
       Uri.parse("http://127.0.0.1:8000/register/"),
       headers: <String, String>{
@@ -52,6 +60,8 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         'email': email,
         'password': password,
         'confirm_password': password,
+        'firstname' :firstname ,
+        'lastname' :lastname,
       }),
     );
 
@@ -73,6 +83,22 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
           const Text(
             "Sign Up",
             style: TextStyle(fontSize: 30),
+          ),
+          const SizedBox(height: 20),
+           Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomTextField(
+              controller: firstnameController, // New TextField for username
+              hintText: 'Enter your first name',
+            ),
+          ),
+          const SizedBox(height: 20),
+           Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomTextField(
+              controller: lastnameController, // New TextField for username
+              hintText: 'Enter your last name',
+            ),
           ),
           const SizedBox(height: 20),
           Container(

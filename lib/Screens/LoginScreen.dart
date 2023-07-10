@@ -37,22 +37,24 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
 
   @override
   Widget build(BuildContext context) {
+        double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      backgroundColor: Colors.white, // changing background color to white
+      backgroundColor: Colors.white, 
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 30), // Adding padding for overall adjustment
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.05), 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                SizedBox(height: screenWidth * 0.05),
 
                 Image.asset(
                   'blackLogo.png',
-                  width: 200,
-                  height: 200,
+                  width: screenWidth * 0.5,
+                  height: screenWidth * 0.5,
                 ),
 
                 const SizedBox(height: 50),
