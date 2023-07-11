@@ -5,9 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/Screens/Scrimmagespage.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
 import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
-import 'package:provider/provider.dart';
-
-import '../services/auth_provider.dart';
 
 class CurrentIndexNotifier extends ChangeNotifier {
   int _currentIndex = 0;
@@ -35,42 +32,34 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    final username = Provider.of<UserDetailsProvider>(context).username;
-
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
+        key: UniqueKey(), // Add a UniqueKey here to  ensure uniqueness
         leading: IconButton(
-          color: Colors.black,
           icon: Icon(Icons.menu),
           onPressed: () {
             scaffoldKey.currentState?.openDrawer();
           },
         ),
-        title: Align(
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'blackLogo.png',
-                width: 40,
-                height: 40,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'CebuArena ',
-                style:
-                    GoogleFonts.metalMania(fontSize: 30, color: Colors.black),
-              ),
-            ],
-          ),
+        title: Row(
+          children: [
+            Image.asset(
+              'Logo.png',
+              width: 40,
+              height: 40,
+            ),
+            SizedBox(width: 10),
+            Text(
+              'CebuArena',
+              style: GoogleFonts.metalMania(fontSize: 30),
+            ),
+          ],
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none),
-            color: Colors.black,
             onPressed: () {},
           ),
         ],
@@ -87,7 +76,7 @@ class _HomepageState extends State<Homepage> {
         titleSpacing: 20,
       ),
       drawer: SidebarMenu(
-        username: '$username',
+        username: widget.username ?? '',
       ),
       body: _buildPage(_currentIndex),
       bottomNavigationBar: BottomNavigationBar(

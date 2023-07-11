@@ -1,13 +1,10 @@
-import 'package:captsone_ui/Screens/Homescreen.dart';
-import 'package:captsone_ui/Screens/LoginScreen.dart';
 import 'package:captsone_ui/Screens/Lottie.dart';
-import 'package:captsone_ui/Screens/SignupEmail.dart';
-import 'package:captsone_ui/services/firebase_auth_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:captsone_ui/screens/Homepage.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
+
+import 'widgets/Homepage/drawer.dart';
 
 void main() {
   runApp(
