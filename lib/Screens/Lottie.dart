@@ -42,24 +42,25 @@ class _CoverPageState extends State<CoverPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.grey,
         body: Center(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            // you need to wrap your state changes in setState method
-            if (bookmarked == false) {
-              bookmarked = true;
-              _controller.forward();
-            } else {
-              bookmarked = false;
-              _controller.reverse();
-            }
-          });
-        },
-        child: Lottie.network(
-            'https://assets4.lottiefiles.com/packages/lf20_xvqam5qh.json',
-            controller: _controller),
-      ),
-    ));
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                // you need to wrap your state changes in setState method
+                if (bookmarked == false) {
+                  bookmarked = true;
+                  _controller.forward();
+                } else {
+                  bookmarked = false;
+                  _controller.reverse();
+                }
+              });
+            },
+            child: Lottie.network(
+                'https://assets4.lottiefiles.com/packages/lf20_xvqam5qh.json',
+                controller: _controller),
+          ),
+        ));
   }
 }

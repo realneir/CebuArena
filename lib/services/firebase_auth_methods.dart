@@ -1,9 +1,11 @@
+import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/utils/showOtpDialog.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class FirebaseAuthMethods {
   final FirebaseAuth _auth;
@@ -17,6 +19,8 @@ class FirebaseAuthMethods {
   Future<void> signUpWithEmail({
     required String email,
     required String password,
+    required String firstname,
+    required String lastname,
     required BuildContext context,
   }) async {
     try {
@@ -24,6 +28,7 @@ class FirebaseAuthMethods {
         email: email,
         password: password,
       );
+
       await sendEmailVerification(context);
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!);
@@ -40,6 +45,8 @@ class FirebaseAuthMethods {
       if (!_auth.currentUser!.emailVerified) {
         await sendEmailVerification(context);
       }
+      await Provider.of<UserDetailsProvider>(context, listen: false)
+          .fetchUserDetails();
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!);
     }

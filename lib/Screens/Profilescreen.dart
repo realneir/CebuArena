@@ -10,8 +10,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  late double coverHeight;
-  late double profileHeight;
+  double? coverHeight;
+  double? profileHeight;
   late TabController _tabController;
 
   @override
@@ -19,24 +19,26 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {
         coverHeight = MediaQuery.of(context).size.height * 0.3;
-        profileHeight = coverHeight * 0.5;
+        profileHeight = coverHeight! * 0.5;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
+    if (coverHeight == null || profileHeight == null) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return LayoutBuilder(builder: (context, constraints) {
       return Theme(
@@ -79,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       (constraints.maxHeight > 600
                           ? 0.3
                           : 0.2), // Adjust coverHeight based on height of the screen
-                  profileHeight: profileHeight *
+                  profileHeight: profileHeight! *
                       (constraints.maxHeight > 600
                           ? 0.5
                           : 0.4), // Adjust profileHeight based on height of the screen

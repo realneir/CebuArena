@@ -37,15 +37,14 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
 
   @override
   Widget build(BuildContext context) {
-        double screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.05), 
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -72,7 +71,7 @@ class _EmailPasswordLoginState extends State<EmailPasswordLogin> {
                 TextField(
                   controller: usernameController,
                   decoration: InputDecoration(
-                    hintText: 'Email',
+                    hintText: 'Username',
                     filled: true, // added for a fill color
                     fillColor: Colors.grey[200], // light grey fill color
                     border: OutlineInputBorder(), // added border

@@ -36,35 +36,41 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     final username = Provider.of<UserDetailsProvider>(context).username;
+
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        key: UniqueKey(), // Add a UniqueKey here to ensure uniqueness
         leading: IconButton(
-          color: Colors.blue[300],
+          color: Colors.black,
           icon: Icon(Icons.menu),
           onPressed: () {
             scaffoldKey.currentState?.openDrawer();
           },
         ),
-        title: Row(
-          children: [
-            Image.asset(
-              'Logo.png',
-              width: 40,
-              height: 40,
-            ),
-            SizedBox(width: 10),
-            Text(
-              'CebuArena',
-              style: GoogleFonts.metalMania(fontSize: 30, color: Colors.blue),
-            ),
-          ],
+        title: Align(
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'blackLogo.png',
+                width: 40,
+                height: 40,
+              ),
+              SizedBox(width: 10),
+              Text(
+                'CebuArena ',
+                style:
+                    GoogleFonts.metalMania(fontSize: 30, color: Colors.black),
+              ),
+            ],
+          ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none),
+            color: Colors.black,
             onPressed: () {},
           ),
         ],

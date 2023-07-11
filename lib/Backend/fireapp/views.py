@@ -21,7 +21,7 @@ database=firebase.database()
 
 @api_view(['GET'])
 @csrf_exempt
-def get_current_user(request):
+def current_user(request):
     if request.method == 'GET':
         # Get the user's token from the request headers
         token = request.headers.get('Authorization')
@@ -44,17 +44,21 @@ def get_current_user(request):
             if not user_data:
                 return Response({'error_message': 'User not found in the database'}, status=404)
 
-            # Get the username
-            username = user_data['username']
+            # Get the firstname and lastname
+            firstname = user_data.get('firstname', '')
+            lastname = user_data.get('lastname', '')
 
-            # Return the username
-            return Response({'username': username})
+            # Return the firstname and lastname
+            return Response({'firstname': firstname, 'lastname': lastname})
         except Exception as e:
             # Handle errors and return an appropriate response
             error_message = str(e)
             return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
 
 
 
@@ -171,12 +175,19 @@ def login(request):
     if request.method == 'POST':
         username = request.data.get('username')
         
-        # Fetch the email associated with this username from the database
+        # Fetch the email, firstname, and lastname associated with this username from the database
         users = database.child('users').get()
         email = None
+        firstname = None
+        lastname = None
+        local_id = None
+
         for user in users.each():
             if user.val()['username'] == username:
                 email = user.val()['email']
+                firstname = user.val().get('firstname', '')
+                lastname = user.val().get('lastname', '')
+                local_id = user.key()
                 break
                 
         if email is None:
@@ -188,25 +199,22 @@ def login(request):
             # Perform the login process
             user = authe.sign_in_with_email_and_password(email, password)
 
-            # You can include additional logic here, such as verifying the user's email status
-
-            # Fetch the username from the database using the local_id
-            local_id = user['localId']
-            username = None
-            users = database.child('users').get()
-            for user in users.each():
-                if user.key() == local_id:
-                    username = user.val()['username']
-                    break
-
-            # Return the username along with the success response
-            return Response({'message': 'Login successful', 'username': username})
+            # Return the username, localId, firstname, and lastname along with the success response
+            return Response({
+                'message': 'Login successful',
+                'username': username,
+                'localId': local_id,
+                'firstname': firstname,
+                'lastname': lastname
+            })
         except Exception as e:
             # Handle login errors and return an appropriate response
             error_message = str(e)
             return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @api_view(['GET'])

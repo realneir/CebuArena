@@ -19,6 +19,9 @@ void main() {
         ChangeNotifierProvider<UserDetailsProvider>(
           create: (_) => UserDetailsProvider(),
         ),
+        // ChangeNotifierProvider<UserDataProvider>(
+        //   create: (_) => UserDataProvider(),
+        // ),
       ],
       child: MyApp(),
     ),

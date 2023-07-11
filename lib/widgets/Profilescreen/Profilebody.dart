@@ -20,11 +20,12 @@ class ProfileBody extends StatefulWidget {
 class _ProfileBodyState extends State<ProfileBody> {
   @override
   Widget build(BuildContext context) {
-   final userDetailsProvider = Provider.of<UserDetailsProvider>(context);
+    final userDetailsProvider = Provider.of<UserDetailsProvider>(context);
     final username = userDetailsProvider.username;
+    final firstname = userDetailsProvider.firstname;
+    final lastname = userDetailsProvider.lastname;
 
     final profileWidth = MediaQuery.of(context).size.width * 0.3;
-    
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -49,9 +50,8 @@ class _ProfileBodyState extends State<ProfileBody> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildTextWithPadding(
-                      'Firstname + Lastname', 20, FontWeight.bold, Colors.black),
-                  buildTextWithPadding(
-                      '@$username', 14, FontWeight.normal, Colors.grey),
+                      '$firstname $lastname', 20, FontWeight.bold),
+                  buildTextWithPadding('@$username', 14, FontWeight.normal),
                 ],
               ),
             ),
@@ -62,11 +62,10 @@ class _ProfileBodyState extends State<ProfileBody> {
                 children: [
                   Column(
                     children: [
-                      buildTagWithIcon(
-                          context, 'Player', Icons.verified_user, Colors.black),
+                      buildTagWithIcon(context, 'Player', Icons.verified_user),
                       SizedBox(height: 5),
-                      buildTagWithIcon(context, 'Organizer',
-                          Icons.verified_user, Colors.black),
+                      buildTagWithIcon(
+                          context, 'Organizer', Icons.verified_user),
                     ],
                   ),
                   SizedBox(width: 40),
@@ -85,35 +84,4 @@ class _ProfileBodyState extends State<ProfileBody> {
       },
     );
   }
-}
-
-Text buildTextWithPadding(
-    String text, double size, FontWeight weight, Color color) {
-  return Text(
-    text,
-    style: TextStyle(
-      fontSize: size,
-      fontWeight: weight,
-      color: color,
-    ),
-  );
-}
-
-Widget buildTagWithIcon(
-    BuildContext context, String text, IconData icon, Color color) {
-  return Row(
-    children: [
-      IconTheme(
-        data: IconThemeData(
-          color: color,
-        ),
-        child: Icon(icon),
-      ),
-      SizedBox(width: 5),
-      Text(
-        text,
-        style: TextStyle(color: color),
-      ),
-    ],
-  );
 }

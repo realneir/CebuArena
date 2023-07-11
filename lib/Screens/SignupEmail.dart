@@ -4,6 +4,8 @@ import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:captsone_ui/services/auth_provider.dart';
 
 class EmailPasswordSignup extends StatefulWidget {
   static String routeName = '/signup-email-password';
@@ -20,24 +22,24 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   final passwordController = TextEditingController();
   final usernameController = TextEditingController(); // New Username Controller
 
-  Future<String?> signUpUser() async {
+  void signUpUser() async {
     String? result = await signUpWithEmail(
       email: emailController.text,
       password: passwordController.text,
-      username: usernameController.text, // Passing the username to the function
-      firstname: firstnameController.text, 
-      lastname: lastnameController.text, 
+      username: usernameController.text,
+      firstname: firstnameController.text,
+      lastname: lastnameController.text,
     );
 
     if (result == null) {
+      // Registration successful
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => EmailPasswordLogin()),
       );
     } else {
       // Registration failed
-      // Handle the failure, e.g., display an error message
-      print('Registration failed: $result');
       showSnackBar(context, 'Registration failed: $result');
     }
   }
@@ -47,9 +49,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
       required String password,
       required String username,
       required String firstname,
-      required String lastname
-
-      }) async {
+      required String lastname}) async {
     final response = await http.post(
       Uri.parse("http://127.0.0.1:8000/register/"),
       headers: <String, String>{
@@ -60,8 +60,8 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         'email': email,
         'password': password,
         'confirm_password': password,
-        'firstname' :firstname ,
-        'lastname' :lastname,
+        'firstname': firstname,
+        'lastname': lastname,
       }),
     );
 
@@ -72,90 +72,139 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
     }
   }
 
+  TextField buildTextField(
+      {required String hintText,
+      required TextEditingController controller,
+      bool obscureText = false}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true, // added for a fill color
+        fillColor: Colors.grey[200], // light grey fill color
+        border: OutlineInputBorder(), // added border
+      ),
+      obscureText: obscureText,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     final TextEditingController confirmController = TextEditingController();
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Sign Up",
-            style: TextStyle(fontSize: 30),
-          ),
-          const SizedBox(height: 20),
-           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomTextField(
-              controller: firstnameController, // New TextField for username
-              hintText: 'Enter your first name',
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: screenWidth * 0.05),
+
+                Image.asset(
+                  'blackLogo.png',
+                  width: screenWidth * 0.5,
+                  height: screenWidth * 0.5,
+                ),
+                const SizedBox(height: 25),
+
+                // Firstname TextField
+                buildTextField(
+                  hintText: 'First name',
+                  controller: firstnameController,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Lastname TextField
+                buildTextField(
+                  hintText: 'Last name',
+                  controller: lastnameController,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Username TextField
+                buildTextField(
+                  hintText: 'Username',
+                  controller: usernameController,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Email TextField
+                buildTextField(
+                  hintText: 'Email',
+                  controller: emailController,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Password TextField
+                buildTextField(
+                  hintText: 'Password',
+                  controller: passwordController,
+                  obscureText: true,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Confirm Password TextField
+                buildTextField(
+                  hintText: 'Confirm Password',
+                  controller: confirmController,
+                  obscureText: true,
+                ),
+
+                const SizedBox(height: 40),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.black, // changing button color to black
+                  ),
+                  onPressed: () {
+                    if (passwordController.text == confirmController.text) {
+                      signUpUser();
+                    } else {
+                      showSnackBar(context, "Passwords do not match.");
+                    }
+                  },
+                  child: Text('Sign Up'),
+                ),
+
+                const SizedBox(height: 50),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account?',
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                    const SizedBox(width: 4),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EmailPasswordLogin(),
+                          ),
+                        );
+                      },
+                      child: Text('Sign In'),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 20),
-           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomTextField(
-              controller: lastnameController, // New TextField for username
-              hintText: 'Enter your last name',
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomTextField(
-              controller: usernameController, // New TextField for username
-              hintText: 'Enter your username',
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomTextField(
-              controller: emailController,
-              hintText: 'Enter your email',
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomTextField(
-              controller: passwordController,
-              hintText: 'Enter your password',
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomTextField(
-              controller: confirmController,
-              hintText: 'Confirm your password',
-            ),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: () {
-              if (passwordController.text == confirmController.text) {
-                signUpUser();
-              } else {
-                showSnackBar(context, "Passwords do not match.");
-              }
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.blue),
-              textStyle: MaterialStateProperty.all(
-                const TextStyle(color: Colors.white),
-              ),
-              minimumSize: MaterialStateProperty.all(
-                Size(MediaQuery.of(context).size.width / 2.5, 50),
-              ),
-            ),
-            child: const Text(
-              "Sign Up",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

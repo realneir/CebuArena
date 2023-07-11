@@ -155,7 +155,7 @@ class _HomeViewState extends State<HomeView> {
                     child: Container(
                       margin: EdgeInsets.only(top: 90, bottom: 20),
                       height: 200,
-                      color: Colors.green,
+                      color: Colors.grey,
                       child: Center(
                         child: Text(
                           'Leaderboard Container',
@@ -170,7 +170,7 @@ class _HomeViewState extends State<HomeView> {
                     child: Container(
                       margin: EdgeInsets.only(top: 90, bottom: 20),
                       height: 200,
-                      color: Colors.purple,
+                      color: Colors.grey,
                       child: Center(
                         child: Text(
                           'Events Container',
