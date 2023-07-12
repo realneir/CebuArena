@@ -5,12 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class AuthRegis {
   static const String API_ENDPOINT = "http://127.0.0.1:8000/register/";
-
   Future<String> signUpWithEmail(
       String firstname,
       String lastname,
@@ -54,6 +51,7 @@ class UserDetailsProvider extends ChangeNotifier {
   String? get username => _username;
   String? get firstname => _firstname;
   String? get lastname => _lastname;
+  String? get localId => _localId;
 
   Future<void> fetchUserDetails() async {
     try {
@@ -111,7 +109,7 @@ class UserDetailsProvider extends ChangeNotifier {
         print('Last Name: $_lastname');
 
         notifyListeners();
-        return _localId;
+        return null;
       } else {
         // Login failed
         var responseBody = json.decode(response.body);

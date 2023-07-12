@@ -87,6 +87,12 @@ class SidebarMenu extends StatelessWidget {
             title: Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () {},
           ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text('Delete Account', style: TextStyle(color: Colors.red)),
+            onTap: () {},
+          ),
         ],
       ),
     );

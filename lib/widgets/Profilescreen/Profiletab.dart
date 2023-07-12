@@ -31,7 +31,7 @@ class ProfileTab extends StatelessWidget {
               controller: tabController,
               children: [
                 buildAboutSection(),
-                buildTeamsSection(),
+                buildTeamsSection(context),
                 buildAlbumSection(),
               ],
             ),

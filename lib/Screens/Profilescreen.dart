@@ -10,36 +10,24 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  double? coverHeight;
-  double? profileHeight;
+  late double coverHeight = 150.0; // Set a fixed value for coverHeight
+  late double profileHeight = 75.0; // Set a fixed value for profileHeight
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+  }
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      setState(() {
-        coverHeight = MediaQuery.of(context).size.height * 0.3;
-        profileHeight = coverHeight! * 0.5;
-      });
-    });
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    if (coverHeight == null || profileHeight == null) {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
     return LayoutBuilder(builder: (context, constraints) {
       return Theme(
         data: ThemeData(
@@ -50,20 +38,16 @@ class _ProfileScreenState extends State<ProfileScreen>
             color: Colors.white,
             iconTheme: IconThemeData(color: Colors.black),
             elevation: 0,
-            toolbarTextStyle: TextTheme(
-              headline6: TextStyle(
-                color: Colors.black,
-                fontSize: 30 * (screenWidth / 720), // Responsive font size
-                fontFamily: GoogleFonts.metalMania().fontFamily,
-              ),
-            ).bodyText2,
-            titleTextStyle: TextTheme(
-              headline6: TextStyle(
-                color: Colors.black,
-                fontSize: 30 * (screenWidth / 720), // Responsive font size
-                fontFamily: GoogleFonts.metalMania().fontFamily,
-              ),
-            ).headline6,
+            toolbarTextStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 30, // Fixed font size
+              fontFamily: GoogleFonts.metalMania().fontFamily,
+            ),
+            titleTextStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 30, // Fixed font size
+              fontFamily: GoogleFonts.metalMania().fontFamily,
+            ),
           ),
           colorScheme:
               ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
@@ -75,16 +59,10 @@ class _ProfileScreenState extends State<ProfileScreen>
           body: Column(
             children: [
               Container(
-                height: constraints.maxHeight * 0.4,
+                height: coverHeight,
                 child: ProfileBody(
-                  coverHeight: screenHeight *
-                      (constraints.maxHeight > 600
-                          ? 0.3
-                          : 0.2), // Adjust coverHeight based on height of the screen
-                  profileHeight: profileHeight! *
-                      (constraints.maxHeight > 600
-                          ? 0.5
-                          : 0.4), // Adjust profileHeight based on height of the screen
+                  coverHeight: coverHeight,
+                  profileHeight: profileHeight,
                 ),
               ),
               Expanded(
