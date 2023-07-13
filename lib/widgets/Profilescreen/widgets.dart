@@ -1,76 +1,71 @@
+import 'dart:async';
+
 import 'package:captsone_ui/services/team.dart';
 import 'package:flutter/material.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 
-Widget buildAboutSection() {
-  return const Center(
-    child: Text('About Section'),
-  );
-}
-
-Widget buildTeamsSection(BuildContext context) {
+Widget buildTeamsSection(BuildContext context,
+    StreamController<Map<String, dynamic>> teamStreamController) {
   final provider = Provider.of<UserDetailsProvider>(context, listen: false);
   String? managerId = provider.localId;
+  bool isManager = provider.isManager;
 
-  return FutureBuilder<Map<String, dynamic>>(
-    future: fetchTeam(managerId!),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
-      } else if (snapshot.hasData) {
-        var teamData = snapshot.data;
+  return StreamBuilder<Map<String, dynamic>>(
+    stream: teamStreamController.stream,
+    initialData: null,
+    builder:
+        (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+      if (snapshot.hasError) {
+        // Show an error message if there is an error
+        return Text('Error: ${snapshot.error}');
+      } else if (snapshot.connectionState == ConnectionState.active) {
+        // Display the team data
+        if (snapshot.data == null) {
+          // If there is no team data available, show a message
+          return Center(child: Text('No team data available.'));
+        }
 
-        if (teamData == null || teamData.isEmpty) {
+        final teamData = snapshot.data!;
+        String teamName = teamData['team_name'] ?? '';
+        List<dynamic> members = teamData['members'] ?? [];
+
+        // Checking if the members or teamName is null
+        if (members.isEmpty || teamName.isEmpty) {
+          return Center(child: Text('Incomplete team data.'));
+        }
+
+        return Column(
+          children: [
+            Center(
+              child: Text(
+                teamName,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: members.length,
+                itemBuilder: (context, index) {
+                  var member = members[index] as Map<String, dynamic>;
+                  return ListTile(
+                    title: Text('${member['username']}'),
+                    subtitle: Text(
+                        'Firstname: ${member['firstname']} Lastname: ${member['lastname']}'),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      } else {
+        // If the user is not a manager, show the message
+        if (!isManager) {
           return Scaffold(
-            body: Center(child: Text('No team found for this manager.')),
+            body: Center(child: Text('No team data available.')),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                // existing dialog code here...
-              },
-              child: const Icon(Icons.add),
-              backgroundColor: Colors.black,
-            ),
-          );
-        } else {
-          var members = teamData['members'] as List<dynamic>?;
-          var teamName = teamData['team_name'] as String?;
-
-          // Checking if the members or teamName is null
-          if (members == null || teamName == null) {
-            return Center(child: Text('Incomplete team data.'));
-          }
-
-          return Column(
-            children: [
-              Center(
-                child: Text(
-                  teamName,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: members.length,
-                  itemBuilder: (context, index) {
-                    var member = members[index] as Map<String, dynamic>;
-                    return ListTile(
-                      title: Text('${member['username']}'),
-                      subtitle: Text(
-                          'Firstname: ${member['firstname']} Lastname: ${member['lastname']}'),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        }
-      } else {
-        return Scaffold(
-          body: Center(child: Text('No team data available.')),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              showDialog(
+                showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     final provider = Provider.of<UserDetailsProvider>(context,
@@ -88,84 +83,93 @@ Widget buildTeamsSection(BuildContext context) {
                     ]; // List of games
 
                     return StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                      return AlertDialog(
-                        title: const Text("Create a team"),
-                        content: Column(
-                          mainAxisSize: MainAxisSize
-                              .min, // add this line to handle overflowing issue
-                          children: [
-                            TextField(
-                              onChanged: (value) {
-                                _teamName =
-                                    value; // store the input value in _teamName variable
-                              },
-                              decoration: const InputDecoration(
-                                labelText: 'Enter team name',
+                      builder: (BuildContext context, StateSetter setState) {
+                        return AlertDialog(
+                          title: const Text("Create a team"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                onChanged: (value) {
+                                  _teamName = value;
+                                },
+                                decoration: const InputDecoration(
+                                  labelText: 'Enter team name',
+                                ),
                               ),
-                            ),
-                            DropdownButton<String>(
-                              value: _selectedGame,
-                              hint: const Text('Select a game'),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedGame =
-                                      newValue; // store the selected value in _selectedGame variable
-                                });
-                              },
-                              items: _games.map<DropdownMenuItem<String>>(
+                              DropdownButton<String>(
+                                value: _selectedGame,
+                                hint: const Text('Select a game'),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedGame = newValue;
+                                  });
+                                },
+                                items: _games.map<DropdownMenuItem<String>>(
                                   (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  },
+                                ).toList(),
+                              ),
+                            ],
+                          ),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            ElevatedButton(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                // Check if team name, game, and managerId are not null
+                                if (_teamName != null &&
+                                    _teamName!.isNotEmpty &&
+                                    _selectedGame != null &&
+                                    managerId != null) {
+                                  createTeam(context, managerId, _teamName!,
+                                          _selectedGame!)
+                                      .then((String result) {
+                                    // The team was created successfully
+                                    print("Team was created: $result");
+                                  }).catchError((error) {
+                                    // There was an error creating the team
+                                    print("Error creating team: $error");
+                                  });
+                                  Navigator.of(context).pop();
+                                } else {
+                                  // Show an error if the team name, game, or managerId is null
+                                  print(
+                                      "Please enter a team name, select a game, and ensure the user is logged in.");
+                                }
+                              },
                             ),
                           ],
-                        ),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            child: const Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          ElevatedButton(
-                            child: const Text('OK'),
-                            onPressed: () {
-                              // Check if team name, game and managerId are not null
-                              if (_teamName != null &&
-                                  _teamName!.isNotEmpty &&
-                                  _selectedGame != null &&
-                                  managerId != null) {
-                                createTeam(context, managerId, _teamName!,
-                                        _selectedGame!)
-                                    .then((String result) {
-                                  // The team was created successfully
-                                  print("Team was created: $result");
-                                }).catchError((error) {
-                                  // There was an error creating the team
-                                  print("Error creating team: $error");
-                                });
-                                Navigator.of(context).pop();
-                              } else {
-                                // Show an error if the team name, game or managerId is null
-                                print(
-                                    "Please enter a team name, select a game, and ensure user is logged in.");
-                              }
-                            },
-                          ),
-                        ],
-                      );
-                    });
-                  });
-            },
-            child: const Icon(Icons.add),
-            backgroundColor: Colors.black,
-          ),
-        );
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              child: const Icon(Icons.add),
+              backgroundColor: Colors.black,
+            ),
+          );
+        }
+        return Center(child: Text('No team data available.'));
+        // If the user is a manager, show the message and the "Add Team" button
       }
     },
+  );
+}
+
+Widget buildAboutSection() {
+  return const Center(
+    child: Text('Album Section'),
   );
 }
 

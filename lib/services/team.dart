@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -42,13 +44,40 @@ Future<String> createTeam(
   }
 }
 
-Future<Map<String, dynamic>> fetchTeam(String managerId) async {
-  final response = await http
-      .get(Uri.parse('http://127.0.0.1:8000/get_team_info/$managerId/'));
+StreamController<Map<String, dynamic>> streamTeam(
+    String managerId, BuildContext context) {
+  StreamController<Map<String, dynamic>> controller =
+      StreamController<Map<String, dynamic>>();
 
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to load team');
+  Future<void> fetchData() async {
+    final provider = Provider.of<UserDetailsProvider>(context, listen: false);
+    bool isManager = provider.isManager ?? false;
+
+    if (isManager) {
+      while (true) {
+        try {
+          final response = await http.get(
+              Uri.parse('http://127.0.0.1:8000/get_team_info/$managerId/'));
+
+          if (response.statusCode == 200) {
+            var data = jsonDecode(response.body) as Map<String, dynamic>;
+            controller.add(data);
+          } else {
+            // log the error or handle it differently
+            print('Server returned status code ${response.statusCode}');
+          }
+        } catch (e) {
+          // handle network error
+          print('Network request failed: $e');
+        }
+
+        // wait for a few seconds before the next request
+        await Future.delayed(Duration(seconds: 5));
+      }
+    }
   }
+
+  fetchData(); // Start fetching data immediately if the user is a manager
+
+  return controller;
 }

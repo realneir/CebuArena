@@ -1,10 +1,35 @@
+import 'dart:async';
+import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/services/team.dart';
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ProfileTab extends StatelessWidget {
+class ProfileTab extends StatefulWidget {
   final TabController tabController;
 
   const ProfileTab({required this.tabController});
+
+  @override
+  _ProfileTabState createState() => _ProfileTabState();
+}
+
+class _ProfileTabState extends State<ProfileTab> {
+  late StreamController<Map<String, dynamic>> teamStreamController;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<UserDetailsProvider>(context, listen: false);
+    String? managerId = provider.localId;
+    teamStreamController = streamTeam(managerId!, context);
+  }
+
+  @override
+  void dispose() {
+    teamStreamController.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +38,7 @@ class ProfileTab extends StatelessWidget {
         Container(
           color: Colors.black,
           child: TabBar(
-            controller: tabController,
+            controller: widget.tabController,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
@@ -28,10 +53,10 @@ class ProfileTab extends StatelessWidget {
         Expanded(
           child: Container(
             child: TabBarView(
-              controller: tabController,
+              controller: widget.tabController,
               children: [
                 buildAboutSection(),
-                buildTeamsSection(context),
+                buildTeamsSection(context, teamStreamController),
                 buildAlbumSection(),
               ],
             ),
