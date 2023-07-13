@@ -15,5 +15,7 @@ urlpatterns = [
     path('all_users/', views.get_all_users, name='get_all_users'),
     path('current_user/', views.current_user, name='current_user'),
     path('create_team/', views.create_team, name='create_team'),
+    path('get_team_info/<str:manager_id>/', views.get_team_info, name='get_team_info'), 
+    # path('get_teams_by_manager/<str:manager_id>/', views.get_teams_by_manager, name='get_teams_by_manager'),
 ]
 

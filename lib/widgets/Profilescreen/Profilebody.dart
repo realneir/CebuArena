@@ -24,6 +24,7 @@ class _ProfileBodyState extends State<ProfileBody> {
     final username = userDetailsProvider.username;
     final firstname = userDetailsProvider.firstname;
     final lastname = userDetailsProvider.lastname;
+    final isManager = userDetailsProvider.isManager;
 
     final profileWidth = MediaQuery.of(context).size.width * 0.3;
 
@@ -62,10 +63,10 @@ class _ProfileBodyState extends State<ProfileBody> {
                 children: [
                   Column(
                     children: [
-                      buildTagWithIcon(context, 'Player', Icons.verified_user),
+                      if (isManager) // Conditionally display the "Manager" tag
+                        buildTagWithIcon(
+                            context, 'Manager', Icons.verified_user),
                       SizedBox(height: 5),
-                      buildTagWithIcon(
-                          context, 'Organizer', Icons.verified_user),
                     ],
                   ),
                   SizedBox(width: 40),

@@ -44,6 +44,7 @@ def register(request):
                 'email': email,  # also save email
                 'firstname': firstname,  # save first name
                 'lastname': lastname,  # save last name
+                'is_manager': False,  # set is_manager to False by default
             }
             database.child('users').child(user['localId']).set(data)
 
@@ -56,25 +57,29 @@ def register(request):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
-    
+
+from rest_framework import status
+
 @api_view(['POST'])
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
         username = request.data.get('username')
-        
+
         # Fetch the email, firstname, and lastname associated with this username from the database
         users = database.child('users').get()
         email = None
         firstname = None
         lastname = None
         local_id = None
+        is_manager = False
 
         for user in users.each():
             if user.val()['username'] == username:
                 email = user.val()['email']
                 firstname = user.val().get('firstname', '')
                 lastname = user.val().get('lastname', '')
+                is_manager = user.val().get('is_manager', False)
                 local_id = user.key()
                 break
                 
@@ -93,7 +98,8 @@ def login(request):
                 'username': username,
                 'localId': local_id,
                 'firstname': firstname,
-                'lastname': lastname
+                'lastname': lastname,  # Add comma here
+                'is_manager': is_manager
             })
         except Exception as e:
             # Handle login errors and return an appropriate response
@@ -101,6 +107,7 @@ def login(request):
             return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @csrf_exempt
@@ -210,9 +217,35 @@ def create_team(request):
             
             # Update the user's data to set 'role' to 'manager: true'
             user_ref = database.child('users').child(manager_id)
-            user_ref.update({'role': {'manager': True}})
+            user_ref.update({'is_manager': True})
 
             return Response({'message': 'Team created successfully.'})
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_team_info(request, manager_id):
+    if request.method == 'GET':
+        try:
+            # Retrieve all the team data from Firebase
+            all_teams = database.child('teams').get().val()
+            
+            if all_teams:
+                # Find the team that has the given manager_id
+                for team_id, team_info in all_teams.items():
+                    if team_info.get('manager_id') == manager_id:
+                        return Response(team_info)
+                
+                # If no team is found with the given manager_id
+                return Response({'error_message': 'No team found for the given manager_id'}, status=400)
+            
+            else:
+                return Response({'error_message': 'No teams found'}, status=400)
+
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 

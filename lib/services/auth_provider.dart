@@ -9,12 +9,13 @@ import 'package:flutter/foundation.dart';
 class AuthRegis {
   static const String API_ENDPOINT = "http://127.0.0.1:8000/register/";
   Future<String> signUpWithEmail(
-      String firstname,
-      String lastname,
-      String username,
-      String email,
-      String password,
-      String confirmPassword) async {
+    String firstname,
+    String lastname,
+    String username,
+    String email,
+    String password,
+    String confirmPassword,
+  ) async {
     final response = await http.post(
       Uri.parse("$API_ENDPOINT/register/"),
       headers: <String, String>{
@@ -43,6 +44,7 @@ class UserDetailsProvider extends ChangeNotifier {
   String? _firstname;
   String? _lastname;
   String? _localId;
+  bool _isManager = false;
 
   static final provider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
     return UserDetailsProvider();
@@ -52,6 +54,7 @@ class UserDetailsProvider extends ChangeNotifier {
   String? get firstname => _firstname;
   String? get lastname => _lastname;
   String? get localId => _localId;
+  bool get isManager => _isManager;
 
   Future<void> fetchUserDetails() async {
     try {
@@ -69,6 +72,8 @@ class UserDetailsProvider extends ChangeNotifier {
         _username = data['username'];
         _firstname = data['firstname'];
         _lastname = data['lastname'];
+        _isManager = data['is_manager'] ??
+            false; // Use 'ismanager' instead of 'isManager'
 
         notifyListeners();
       } else {
@@ -80,8 +85,10 @@ class UserDetailsProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> loginWithEmailAPI(
-      {required String username, required String password}) async {
+  Future<String?> loginWithEmailAPI({
+    required String username,
+    required String password,
+  }) async {
     String url = 'http://127.0.0.1:8000/login/';
 
     Map<String, String> data = {
@@ -102,11 +109,14 @@ class UserDetailsProvider extends ChangeNotifier {
         _localId = responseData['localId'];
         _firstname = responseData['firstname'];
         _lastname = responseData['lastname'];
+        _isManager = responseData['is_manager'] ??
+            false; // Use 'ismanager' instead of 'isManager'
 
         print('Local ID: $_localId');
         print('Username: $_username');
         print('First Name: $_firstname');
         print('Last Name: $_lastname');
+        print('isManager: $_isManager');
 
         notifyListeners();
         return null;
