@@ -122,7 +122,9 @@ class _HomepageState extends State<Homepage> {
       case 0:
         return HomeView();
       case 1:
-        return ScrimmagesPage();
+        return ScrimmagesPage(
+          scrimmagesResults: {},
+        );
       case 2:
         return Leaderboards();
       case 3:

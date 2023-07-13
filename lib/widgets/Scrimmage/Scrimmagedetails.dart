@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:captsone_ui/services/scrim.dart';
 
 class ScrimmageDetails extends StatefulWidget {
   @override
@@ -7,21 +8,17 @@ class ScrimmageDetails extends StatefulWidget {
 }
 
 class _ScrimmageDetailsState extends State<ScrimmageDetails> {
-  String dropdownValue = 'MLBB';
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay selectedTime = TimeOfDay.now();
-  String preferences = '';
-  String contactDetails = '';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Scrimmage Details'),
+        backgroundColor: Colors.grey,
       ),
+      backgroundColor: Colors.white24,
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
           children: <Widget>[
             DropdownButton<String>(
               value: dropdownValue,
@@ -40,11 +37,17 @@ class _ScrimmageDetailsState extends State<ScrimmageDetails> {
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value),
+                  child: Text(value, style: TextStyle(color: Colors.black)),
                 );
               }).toList(),
+              dropdownColor: Colors.grey[200],
             ),
+            SizedBox(height: 16.0),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.grey[200],
+                onPrimary: Colors.black,
+              ),
               onPressed: () async {
                 final DateTime? picked = await showDatePicker(
                   context: context,
@@ -60,10 +63,17 @@ class _ScrimmageDetailsState extends State<ScrimmageDetails> {
               },
               child: Text('Select date'),
             ),
+            SizedBox(height: 16.0),
             Text(
               "Selected date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}",
+              style: TextStyle(color: Colors.black),
             ),
+            SizedBox(height: 16.0),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.grey[200],
+                onPrimary: Colors.black,
+              ),
               onPressed: () async {
                 final TimeOfDay? picked = await showTimePicker(
                   context: context,
@@ -77,9 +87,12 @@ class _ScrimmageDetailsState extends State<ScrimmageDetails> {
               },
               child: Text('Select time'),
             ),
+            SizedBox(height: 16.0),
             Text(
               "Selected time: ${selectedTime.format(context)}",
+              style: TextStyle(color: Colors.black),
             ),
+            SizedBox(height: 16.0),
             TextField(
               onChanged: (value) {
                 setState(() {
@@ -88,8 +101,13 @@ class _ScrimmageDetailsState extends State<ScrimmageDetails> {
               },
               decoration: InputDecoration(
                 labelText: "Enter your preferences",
+                fillColor: Colors.grey[200],
+                filled: true,
+                border: OutlineInputBorder(),
               ),
+              style: TextStyle(color: Colors.black),
             ),
+            SizedBox(height: 16.0),
             TextField(
               onChanged: (value) {
                 setState(() {
@@ -98,19 +116,19 @@ class _ScrimmageDetailsState extends State<ScrimmageDetails> {
               },
               decoration: InputDecoration(
                 labelText: "Enter your contact details",
+                fillColor: Colors.grey[200],
+                filled: true,
+                border: OutlineInputBorder(),
               ),
+              style: TextStyle(color: Colors.black),
             ),
+            const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
-                // Pass back the data
-                Navigator.pop(context, {
-                  'game': dropdownValue,
-                  'date': selectedDate,
-                  'time': selectedTime,
-                  'preferences': preferences,
-                  'contact': contactDetails,
-                });
-              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.black,
+                onPrimary: Colors.white,
+              ),
+              onPressed: () => createScrimmage(context),
               child: Text('Set'),
             ),
           ],

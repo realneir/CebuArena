@@ -5,6 +5,10 @@ import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ScrimmagesPage extends StatefulWidget {
+  final Map<String, Map<String, dynamic>> scrimmagesResults;
+
+  ScrimmagesPage({required this.scrimmagesResults});
+
   @override
   _ScrimmagesPageState createState() => _ScrimmagesPageState();
 }
@@ -76,15 +80,20 @@ class _ScrimmagesPageState extends State<ScrimmagesPage> {
                               children: [
                                 SizedBox(height: 8),
                                 Text(
-                                    'Date: ${DateFormat('yyyy-MM-dd').format(entry.value['date'])}'),
+                                  'Date: ${DateFormat('yyyy-MM-dd').format(entry.value['date'])}',
+                                ),
                                 SizedBox(height: 8),
                                 Text(
-                                    'Time: ${entry.value['time'].format(context)}'),
+                                  'Time: ${entry.value['time']}',
+                                ),
                                 SizedBox(height: 8),
                                 Text(
-                                    'Preferences: ${entry.value['preferences']}'),
+                                  'Preferences: ${entry.value['preferences']}',
+                                ),
                                 SizedBox(height: 8),
-                                Text('Contact: ${entry.value['contact']}'),
+                                Text(
+                                  'Contact: ${entry.value['contact']}',
+                                ),
                               ],
                             ),
                           ),
@@ -119,7 +128,7 @@ class _ScrimmagesPageState extends State<ScrimmagesPage> {
             print(scrimmagesResults);
           },
           child: Icon(Icons.add),
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.black26,
         ),
       ),
     );

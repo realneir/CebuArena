@@ -86,7 +86,7 @@ StreamController<Map<String, dynamic>> streamTeam(
         }
 
         // wait for a few seconds before the next request
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(Duration(seconds: 5));
       }
     }
   }

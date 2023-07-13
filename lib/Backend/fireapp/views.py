@@ -58,7 +58,7 @@ def register(request):
     return Response({'error_message': 'Invalid request'}, status=400)
 
 
-from rest_framework import status
+
 
 @api_view(['POST'])
 @csrf_exempt
@@ -250,5 +250,59 @@ def get_team_info(request, manager_id):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['POST'])
+def create_scrim(request):
+    if request.method == 'POST':
+        
+        game = request.data.get('game')
+        date = request.data.get('date')
+        time = request.data.get('time')
+        preferences = request.data.get('preferences')
+        contact = request.data.get('contact')
+
+        # Get the user who created the scrim (assuming you have user authentication)
+        user = request.user
+
+        data = {
+            'date': date,
+            'time': time,
+            'preferences': preferences,
+            'contact': contact
+        }
+
+        try:
+            # Push the data to the 'scrims' collection in Firebase under the specific game folder
+            new_scrim = database.child('scrims').child(game).push(data)
+            scrim_id = new_scrim["name"]  # Get the generated scrim ID
+            data["scrim_id"] = scrim_id  # Add scrim ID to the data
+
+            return Response(data, status=201)
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=500)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_scrim_details(request, game):
+    if request.method == 'GET':
+        try:
+            # Retrieve the scrim details for the given game from Firebase
+            game_scrims = database.child('scrims').child(game).get().val()
+
+            if game_scrims:
+                return Response(game_scrims)
+            else:
+                return Response({'error_message': 'No scrims found for the given game'}, status=400)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
