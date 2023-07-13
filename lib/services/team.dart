@@ -33,7 +33,21 @@ Future<Map<String, dynamic>> createTeam(
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, then parse the JSON.
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      var teamData = jsonDecode(response.body) as Map<String, dynamic>;
+
+      // Fetch the team data again to get complete team data
+      final teamResponse = await http
+          .get(Uri.parse('http://127.0.0.1:8000/get_team_info/$managerId/'));
+
+      if (teamResponse.statusCode == 200) {
+        var completeTeamData = jsonDecode(teamResponse.body);
+        return completeTeamData;
+      } else {
+        // log the error or handle it differently
+        print('Server returned status code ${teamResponse.statusCode}');
+      }
+
+      return teamData;
     } else {
       // If the server returns an unsuccessful response code, then throw an exception.
       throw Exception('Failed to create team: ${response.body}');

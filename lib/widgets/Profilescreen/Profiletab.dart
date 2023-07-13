@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/services/team.dart';
+import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildTeamsSection.dart';
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +58,7 @@ class _ProfileTabState extends State<ProfileTab> {
               controller: widget.tabController,
               children: [
                 buildAboutSection(),
-                buildTeamsSection(context, teamStreamController),
+                TeamsSection(teamStreamController: teamStreamController),
                 buildAlbumSection(),
               ],
             ),

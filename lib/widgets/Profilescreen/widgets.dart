@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 Widget buildTeamsSection(BuildContext context,
     StreamController<Map<String, dynamic>> teamStreamController) {
   final provider = Provider.of<UserDetailsProvider>(context, listen: false);
-  String? managerId = provider.localId;
   bool isManager = provider.isManager;
 
   return StreamBuilder<Map<String, dynamic>>(
