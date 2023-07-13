@@ -7,7 +7,7 @@ import 'dart:convert';
 
 import 'package:provider/provider.dart';
 
-Future<String> createTeam(
+Future<Map<String, dynamic>> createTeam(
     BuildContext context, String managerId, String teamName, String game,
     [String? selectedGame]) async {
   final provider = Provider.of<UserDetailsProvider>(context, listen: false);
@@ -33,7 +33,7 @@ Future<String> createTeam(
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, then parse the JSON.
-      return response.body;
+      return jsonDecode(response.body) as Map<String, dynamic>;
     } else {
       // If the server returns an unsuccessful response code, then throw an exception.
       throw Exception('Failed to create team: ${response.body}');
@@ -47,11 +47,11 @@ Future<String> createTeam(
 StreamController<Map<String, dynamic>> streamTeam(
     String managerId, BuildContext context) {
   StreamController<Map<String, dynamic>> controller =
-      StreamController<Map<String, dynamic>>();
+      StreamController<Map<String, dynamic>>.broadcast();
 
   Future<void> fetchData() async {
     final provider = Provider.of<UserDetailsProvider>(context, listen: false);
-    bool isManager = provider.isManager ?? false;
+    bool isManager = provider.isManager;
 
     if (isManager) {
       while (true) {
@@ -72,7 +72,7 @@ StreamController<Map<String, dynamic>> streamTeam(
         }
 
         // wait for a few seconds before the next request
-        await Future.delayed(Duration(seconds: 5));
+        await Future.delayed(Duration(seconds: 1));
       }
     }
   }

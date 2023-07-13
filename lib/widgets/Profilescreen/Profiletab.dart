@@ -22,6 +22,7 @@ class _ProfileTabState extends State<ProfileTab> {
     super.initState();
     final provider = Provider.of<UserDetailsProvider>(context, listen: false);
     String? managerId = provider.localId;
+    teamStreamController = StreamController<Map<String, dynamic>>.broadcast();
     teamStreamController = streamTeam(managerId!, context);
   }
 

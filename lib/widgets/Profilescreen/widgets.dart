@@ -31,8 +31,10 @@ Widget buildTeamsSection(BuildContext context,
         List<dynamic> members = teamData['members'] ?? [];
 
         // Checking if the members or teamName is null
-        if (members.isEmpty || teamName.isEmpty) {
-          return Center(child: Text('Incomplete team data.'));
+        if (teamData['members'] == null || teamName.isEmpty) {
+          return Center(
+              child: Text(
+                  'Team has been created but no members have been added yet.'));
         }
 
         return Column(
@@ -133,9 +135,11 @@ Widget buildTeamsSection(BuildContext context,
                                     managerId != null) {
                                   createTeam(context, managerId, _teamName!,
                                           _selectedGame!)
-                                      .then((String result) {
+                                      .then((Map<String, dynamic> newTeamData) {
                                     // The team was created successfully
-                                    print("Team was created: $result");
+                                    print("Team was created: $newTeamData");
+                                    teamStreamController.add(
+                                        newTeamData); // Add new team data to the stream
                                   }).catchError((error) {
                                     // There was an error creating the team
                                     print("Error creating team: $error");
