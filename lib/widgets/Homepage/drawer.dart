@@ -1,32 +1,17 @@
-import 'package:captsone_ui/Screens/LoginScreen.dart';
 import 'package:captsone_ui/Screens/Profilescreen.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:captsone_ui/services/firebase_auth_methods.dart';
-import 'package:captsone_ui/utils/showSnackBar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FirebaseAuthMethods {
-  final FirebaseAuth _auth;
-  FirebaseAuthMethods(this._auth);
+class SidebarMenu extends ConsumerWidget {
+  final String? username;
 
-  // ... Rest of the code ...
-
-  // SIGN OUT
-  Future<void> signOut() async {}
-
-  // DELETE ACCOUNT
-  Future<void> deleteAccount() async {}
-}
-
-class SidebarMenu extends StatelessWidget {
-  final String username;
-
-  const SidebarMenu({required this.username});
+  const SidebarMenu({Key? key, required this.username}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final username = ref.watch(userDetailsProvider).username;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.all(10.0),
@@ -42,7 +27,7 @@ class SidebarMenu extends StatelessWidget {
                 ],
               ),
             ),
-            accountName: Text(username, style: TextStyle(color: Colors.white)),
+            accountName: Text(username!, style: TextStyle(color: Colors.white)),
             accountEmail: Text(
               'Followers: 10 | Following: 20',
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
@@ -85,13 +70,17 @@ class SidebarMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.logout, color: Colors.red),
             title: Text('Logout', style: TextStyle(color: Colors.red)),
-            onTap: () {},
+            onTap: () {
+              // ref.read(authProvider).signOut();
+            },
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
             title: Text('Delete Account', style: TextStyle(color: Colors.red)),
-            onTap: () {},
+            onTap: () {
+              // ref.read(authProvider).deleteAccount();
+            },
           ),
         ],
       ),

@@ -16,6 +16,7 @@ class TeamsSection extends StatefulWidget {
 
 class _TeamsSectionState extends State<TeamsSection>
     with AutomaticKeepAliveClientMixin {
+  late StreamController<Map<String, dynamic>> teamStreamController;
   @override
   bool get wantKeepAlive => true;
   @override

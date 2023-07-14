@@ -1,13 +1,16 @@
 import 'package:captsone_ui/Screens/Eventsdetail.dart';
 import 'package:captsone_ui/Screens/Leaderboards.dart';
+import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/Screens/Scrimmagespage.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
 import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/auth_provider.dart';
+final currentIndexProvider = ChangeNotifierProvider<CurrentIndexNotifier>(
+  (ref) => CurrentIndexNotifier(),
+);
 
 class CurrentIndexNotifier extends ChangeNotifier {
   int _currentIndex = 0;
@@ -20,22 +23,16 @@ class CurrentIndexNotifier extends ChangeNotifier {
   }
 }
 
-class Homepage extends StatefulWidget {
-  final String? username;
-
-  const Homepage({Key? key, this.username}) : super(key: key);
+class Homepage extends ConsumerWidget {
+  const Homepage({Key? key}) : super(key: key);
 
   @override
-  _HomepageState createState() => _HomepageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scaffoldKey = GlobalKey<ScaffoldState>();
+    final currentIndex = ref.watch(currentIndexProvider);
+    final username = ref.watch(userDetailsProvider).username ?? '';
 
-class _HomepageState extends State<Homepage> {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  int _currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final username = Provider.of<UserDetailsProvider>(context).username;
+    debugPrint('Username: $username');
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -81,15 +78,13 @@ class _HomepageState extends State<Homepage> {
         titleSpacing: 20,
       ),
       drawer: SidebarMenu(
-        username: '$username',
+        username: username,
       ),
-      body: _buildPage(_currentIndex),
+      body: _buildPage(currentIndex.currentIndex),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex.currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          currentIndex.setCurrentIndex(index);
         },
         items: [
           BottomNavigationBarItem(

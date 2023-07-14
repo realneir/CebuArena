@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+final authRegisProvider = Provider<AuthRegis>((ref) => AuthRegis());
 
 class AuthRegis {
-  static const String API_ENDPOINT = "http://127.0.0.1:8000/register/";
+  static const String API_ENDPOINT = "http://10.0.2.2:8000/register/";
+
   Future<String> signUpWithEmail(
     String firstname,
     String lastname,
@@ -39,16 +42,16 @@ class AuthRegis {
   }
 }
 
+final userDetailsProvider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
+  return UserDetailsProvider();
+});
+
 class UserDetailsProvider extends ChangeNotifier {
   String? _username;
   String? _firstname;
   String? _lastname;
   String? _localId;
   bool _isManager = false;
-
-  static final provider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
-    return UserDetailsProvider();
-  });
 
   String? get username => _username;
   String? get firstname => _firstname;
@@ -61,9 +64,8 @@ class UserDetailsProvider extends ChangeNotifier {
       final user = FirebaseAuth.instance.currentUser;
       final token = await user!.getIdToken();
 
-      // Fetch the user details from the API
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/current_user/'),
+        Uri.parse('http://10.0.2.2:8000/current_user/'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -72,8 +74,7 @@ class UserDetailsProvider extends ChangeNotifier {
         _username = data['username'];
         _firstname = data['firstname'];
         _lastname = data['lastname'];
-        _isManager = data['is_manager'] ??
-            false; // Use 'ismanager' instead of 'isManager'
+        _isManager = data['is_manager'] ?? false;
 
         notifyListeners();
       } else {
@@ -89,7 +90,7 @@ class UserDetailsProvider extends ChangeNotifier {
     required String username,
     required String password,
   }) async {
-    String url = 'http://127.0.0.1:8000/login/';
+    String url = 'http://10.0.2.2:8000/login/';
 
     Map<String, String> data = {
       'username': username,
@@ -109,8 +110,7 @@ class UserDetailsProvider extends ChangeNotifier {
         _localId = responseData['localId'];
         _firstname = responseData['firstname'];
         _lastname = responseData['lastname'];
-        _isManager = responseData['is_manager'] ??
-            false; // Use 'ismanager' instead of 'isManager'
+        _isManager = responseData['is_manager'] ?? false;
 
         print('Local ID: $_localId');
         print('Username: $_username');
@@ -121,21 +121,17 @@ class UserDetailsProvider extends ChangeNotifier {
         notifyListeners();
         return null;
       } else {
-        // Login failed
         var responseBody = json.decode(response.body);
         var errorMessage = responseBody['error_message'];
         return errorMessage;
       }
     } catch (error) {
-      // Handle the error
       print('Error occurred while logging in: $error');
       return 'An error occurred. Please try again.';
     }
   }
 }
 
-class AuthProvider {
-  static final provider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
-    return UserDetailsProvider();
-  });
-}
+final authProvider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
+  return UserDetailsProvider();
+});

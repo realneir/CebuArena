@@ -68,14 +68,18 @@ StreamController<Map<String, dynamic>> streamTeam(
     bool isManager = provider.isManager;
 
     if (isManager) {
-      while (true) {
+      while (!controller.isClosed) {
+        // Only fetch data if the controller is not closed
         try {
           final response = await http.get(
               Uri.parse('http://127.0.0.1:8000/get_team_info/$managerId/'));
 
           if (response.statusCode == 200) {
             var data = jsonDecode(response.body) as Map<String, dynamic>;
-            controller.add(data);
+            if (!controller.isClosed) {
+              // Only add data if the controller is not closed
+              controller.add(data);
+            }
           } else {
             // log the error or handle it differently
             print('Server returned status code ${response.statusCode}');

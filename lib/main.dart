@@ -1,25 +1,13 @@
 import 'package:captsone_ui/Screens/Lottie.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'widgets/Homepage/drawer.dart';
-
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
-    MultiProvider(
-      providers: [
-        Provider<FirebaseAuthMethods>(
-          create: (_) => FirebaseAuthMethods(FirebaseAuth.instance),
-        ),
-        ChangeNotifierProvider<UserDetailsProvider>(
-          create: (_) => UserDetailsProvider(),
-        ),
-        // ChangeNotifierProvider<UserDataProvider>(
-        //   create: (_) => UserDataProvider(),
-        // ),
-      ],
+    ProviderScope(
       child: MyApp(),
     ),
   );

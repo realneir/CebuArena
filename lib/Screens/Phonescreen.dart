@@ -1,7 +1,4 @@
-import 'package:captsone_ui/services/firebase_auth_methods.dart';
-import 'package:captsone_ui/widgets/SignupEmail/custom_button.dart';
 import 'package:captsone_ui/widgets/SignupEmail/custom_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'package:provider/provider.dart';
