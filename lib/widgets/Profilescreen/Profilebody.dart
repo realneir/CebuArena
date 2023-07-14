@@ -1,10 +1,9 @@
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:captsone_ui/services/auth_provider.dart';
 
-import '../../services/auth_provider.dart';
-
-class ProfileBody extends StatefulWidget {
+class ProfileBody extends ConsumerWidget {
   final double coverHeight;
   final double profileHeight;
 
@@ -14,17 +13,12 @@ class ProfileBody extends StatefulWidget {
   });
 
   @override
-  _ProfileBodyState createState() => _ProfileBodyState();
-}
-
-class _ProfileBodyState extends State<ProfileBody> {
-  @override
-  Widget build(BuildContext context) {
-    final userDetailsProvider = Provider.of<UserDetailsProvider>(context);
-    final username = userDetailsProvider.username;
-    final firstname = userDetailsProvider.firstname;
-    final lastname = userDetailsProvider.lastname;
-    final isManager = userDetailsProvider.isManager;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userDetails = ref.watch(userDetailsProvider);
+    final username = userDetails.username;
+    final firstname = userDetails.firstname;
+    final lastname = userDetails.lastname;
+    final isManager = userDetails.isManager;
 
     final profileWidth = MediaQuery.of(context).size.width * 0.3;
 
@@ -35,18 +29,16 @@ class _ProfileBodyState extends State<ProfileBody> {
             FractionallySizedBox(
               widthFactor: 1,
               heightFactor: 0.6,
-              child: buildCoverPhoto(widget
-                  .coverHeight), // This will depend on how you implemented buildCoverPhoto function
+              child: buildCoverPhoto(coverHeight),
             ),
             Positioned(
               left: profileWidth * 0.1,
-              bottom: widget.coverHeight * 0.35,
-              child: buildProfilePhoto(widget
-                  .profileHeight), // This will depend on how you implemented buildProfilePhoto function
+              bottom: coverHeight * 0.35,
+              child: buildProfilePhoto(profileHeight),
             ),
             Positioned(
               left: profileWidth * 0.1,
-              bottom: widget.coverHeight * 0.1,
+              bottom: coverHeight * 0.1,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -58,7 +50,7 @@ class _ProfileBodyState extends State<ProfileBody> {
             ),
             Positioned(
               left: profileWidth * 1.2,
-              bottom: widget.coverHeight * 0.3,
+              bottom: coverHeight * 0.3,
               child: Row(
                 children: [
                   Column(

@@ -30,7 +30,8 @@ class Homepage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final currentIndex = ref.watch(currentIndexProvider);
-    final username = ref.watch(userDetailsProvider).username ?? '';
+    final username =
+        ref.watch(userDetailsProvider).username ?? 'username is not passed';
 
     debugPrint('Username: $username');
     return Scaffold(
@@ -47,7 +48,7 @@ class Homepage extends ConsumerWidget {
         title: Row(
           children: [
             Image.asset(
-              'blackLogo.png',
+              'assets/blackLogo.png',
               width: 40,
               height: 40,
             ),

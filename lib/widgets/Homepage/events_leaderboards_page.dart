@@ -11,9 +11,9 @@ class _HomeViewState extends State<HomeView> {
   int _currentIndex = 0;
   int _sliderIndex = 0;
   final List<String> _sliderItems = [
-    'Slider1.jpg',
-    'Slider2.jpg',
-    'Slider3.jpg',
+    'assets/Slider1.jpg',
+    'assets/Slider2.jpg',
+    'assets/Slider3.jpg',
   ];
 
   List<Widget> generateDotIndicators() {

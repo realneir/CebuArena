@@ -10,7 +10,8 @@ class SidebarMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final username = ref.watch(userDetailsProvider).username;
+    final userDetails = ref.watch(userDetailsProvider);
+    final String? username = userDetails.username;
 
     return Drawer(
       child: ListView(
@@ -27,7 +28,8 @@ class SidebarMenu extends ConsumerWidget {
                 ],
               ),
             ),
-            accountName: Text(username!, style: TextStyle(color: Colors.white)),
+            accountName:
+                Text(username ?? '', style: TextStyle(color: Colors.white)),
             accountEmail: Text(
               'Followers: 10 | Following: 20',
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
@@ -35,7 +37,9 @@ class SidebarMenu extends ConsumerWidget {
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.black,
               child: Text(
-                username.isNotEmpty ? username[0].toUpperCase() : '?',
+                (username != null && username.isNotEmpty)
+                    ? username[0].toUpperCase()
+                    : '?',
                 style: TextStyle(fontSize: 40.0),
               ),
             ),

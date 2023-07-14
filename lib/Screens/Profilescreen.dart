@@ -2,32 +2,14 @@ import 'package:captsone_ui/widgets/Profilescreen/Profilebody.dart';
 import 'package:captsone_ui/widgets/Profilescreen/Profiletab.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // import ConsumerWidget and WidgetRef
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerWidget {
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    double coverHeight = 150.0;
+    double profileHeight = 75.0;
 
-class _ProfileScreenState extends State<ProfileScreen>
-    with SingleTickerProviderStateMixin {
-  late double coverHeight = 150.0; // Set a fixed value for coverHeight
-  late double profileHeight = 75.0; // Set a fixed value for profileHeight
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Theme(
         data: ThemeData(
@@ -40,12 +22,12 @@ class _ProfileScreenState extends State<ProfileScreen>
             elevation: 0,
             toolbarTextStyle: TextStyle(
               color: Colors.black,
-              fontSize: 30, // Fixed font size
+              fontSize: 30,
               fontFamily: GoogleFonts.metalMania().fontFamily,
             ),
             titleTextStyle: TextStyle(
               color: Colors.black,
-              fontSize: 30, // Fixed font size
+              fontSize: 30,
               fontFamily: GoogleFonts.metalMania().fontFamily,
             ),
           ),
@@ -66,7 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
               Expanded(
-                child: ProfileTab(tabController: _tabController),
+                child:
+                    ProfileTab(), // just call ProfileTab without passing tabController
               ),
             ],
           ),

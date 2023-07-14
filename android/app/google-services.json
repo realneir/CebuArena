@@ -1,33 +1,34 @@
 {
   "project_info": {
-    "project_number": "1011622029564",
-    "project_id": "cebuarena-e378a",
-    "storage_bucket": "cebuarena-e378a.appspot.com"
+    "project_number": "252862784800",
+    "firebase_url": "https://tests-c91d0-default-rtdb.firebaseio.com",
+    "project_id": "tests-c91d0",
+    "storage_bucket": "tests-c91d0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1011622029564:android:fdd88cd2996957c1f90f79",
+        "mobilesdk_app_id": "1:252862784800:android:ee9836ea1c5c3ceb9c6345",
         "android_client_info": {
-          "package_name": "com.example.captsone_ui"
+          "package_name": "com.example.capstone_ui"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1011622029564-na9r8kuhsb1ekt7uckhid9r8a8harr96.apps.googleusercontent.com",
+          "client_id": "252862784800-lm325rvt4qtqj6ip8uak1tn7s144ida6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAc4szylUuZRakcQQYspHphSFSIy9M4L88"
+          "current_key": "AIzaSyC3wDbB5HBRt2GppgpZcWT3hu8EzJuCKMo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1011622029564-na9r8kuhsb1ekt7uckhid9r8a8harr96.apps.googleusercontent.com",
+              "client_id": "252862784800-lm325rvt4qtqj6ip8uak1tn7s144ida6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

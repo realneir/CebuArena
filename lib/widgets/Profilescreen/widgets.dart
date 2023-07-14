@@ -24,7 +24,7 @@ Widget buildCoverPhoto(double coverHeight) {
     decoration: const BoxDecoration(
       color: Colors.blue,
       image: DecorationImage(
-        image: AssetImage('Slider1.jpg'),
+        image: AssetImage('assets/Slider1.jpg'),
         fit: BoxFit.cover,
       ),
     ),
@@ -39,7 +39,7 @@ Widget buildProfilePhoto(double profileHeight) {
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 3),
         image: const DecorationImage(
-          image: AssetImage('Slider2.jpg'),
+          image: AssetImage('assets/Slider2.jpg'),
           fit: BoxFit.cover,
         ),
       ),

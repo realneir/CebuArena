@@ -1,36 +1,22 @@
 import 'dart:async';
 
+import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/services/team.dart';
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TeamsSection extends StatefulWidget {
+class TeamsSection extends ConsumerWidget {
   final StreamController<Map<String, dynamic>> teamStreamController;
 
   TeamsSection({required this.teamStreamController});
 
   @override
-  _TeamsSectionState createState() => _TeamsSectionState();
-}
-
-class _TeamsSectionState extends State<TeamsSection>
-    with AutomaticKeepAliveClientMixin {
-  late StreamController<Map<String, dynamic>> teamStreamController;
-  @override
-  bool get wantKeepAlive => true;
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    final provider = Provider.of<UserDetailsProvider>(context, listen: false);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(userDetailsProvider);
     bool isManager = provider.isManager;
+
     return StreamBuilder<Map<String, dynamic>>(
-      stream: widget.teamStreamController.stream,
+      stream: teamStreamController.stream,
       initialData: null,
       builder:
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
@@ -85,11 +71,10 @@ class _TeamsSectionState extends State<TeamsSection>
               body: Center(child: Text('No team data available.')),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
+                  final provider = ref.read(userDetailsProvider);
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      final provider = Provider.of<UserDetailsProvider>(context,
-                          listen: false);
                       String? managerId = provider.localId;
                       String? _teamName = '';
                       String? _selectedGame;
@@ -157,7 +142,7 @@ class _TeamsSectionState extends State<TeamsSection>
                                             (Map<String, dynamic> newTeamData) {
                                       // The team was created successfully
                                       print("Team was created: $newTeamData");
-                                      widget.teamStreamController.add(
+                                      teamStreamController.add(
                                           newTeamData); // Add new team data to the stream
                                     }).catchError((error) {
                                       // There was an error creating the team

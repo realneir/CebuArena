@@ -4,43 +4,45 @@ import 'package:captsone_ui/services/team.dart';
 import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildTeamsSection.dart';
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfileTab extends StatefulWidget {
-  final TabController tabController;
-
-  const ProfileTab({required this.tabController});
-
+class ProfileTab extends ConsumerStatefulWidget {
   @override
   _ProfileTabState createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<ProfileTab> {
+class _ProfileTabState extends ConsumerState<ProfileTab>
+    with SingleTickerProviderStateMixin {
   late StreamController<Map<String, dynamic>> teamStreamController;
+  late TabController _tabController;
+  String? managerId;
 
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<UserDetailsProvider>(context, listen: false);
-    String? managerId = provider.localId;
+    _tabController = TabController(length: 3, vsync: this);
     teamStreamController = StreamController<Map<String, dynamic>>.broadcast();
-    teamStreamController = streamTeam(managerId!, context);
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     teamStreamController.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(userDetailsProvider);
+    managerId = provider.localId;
+    teamStreamController = streamTeam(managerId!, context);
+
     return Column(
       children: [
         Container(
           color: Colors.black,
           child: TabBar(
-            controller: widget.tabController,
+            controller: _tabController,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
@@ -55,7 +57,7 @@ class _ProfileTabState extends State<ProfileTab> {
         Expanded(
           child: Container(
             child: TabBarView(
-              controller: widget.tabController,
+              controller: _tabController,
               children: [
                 buildAboutSection(),
                 TeamsSection(teamStreamController: teamStreamController),

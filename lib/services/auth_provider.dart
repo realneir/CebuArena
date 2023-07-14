@@ -6,6 +6,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+final userDetailsProvider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
+  return UserDetailsProvider();
+});
+
 final authRegisProvider = Provider<AuthRegis>((ref) => AuthRegis());
 
 class AuthRegis {
@@ -42,11 +46,7 @@ class AuthRegis {
   }
 }
 
-final userDetailsProvider = ChangeNotifierProvider<UserDetailsProvider>((ref) {
-  return UserDetailsProvider();
-});
-
-class UserDetailsProvider extends ChangeNotifier {
+class UserDetailsProvider with ChangeNotifier {
   String? _username;
   String? _firstname;
   String? _lastname;
@@ -62,7 +62,12 @@ class UserDetailsProvider extends ChangeNotifier {
   Future<void> fetchUserDetails() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      final token = await user!.getIdToken();
+      if (user == null) {
+        print('No user logged in');
+        return;
+      }
+
+      final token = await user.getIdToken();
 
       final response = await http.get(
         Uri.parse('http://10.0.2.2:8000/current_user/'),

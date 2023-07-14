@@ -113,7 +113,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
                       SizedBox(height: screenWidth * 0.05),
 
                       Image.asset(
-                        'blackLogo.png',
+                        'assets/blackLogo.png',
                         width: screenWidth * 0.5,
                         height: screenWidth * 0.5,
                       ),

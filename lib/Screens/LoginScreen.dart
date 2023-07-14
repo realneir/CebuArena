@@ -3,12 +3,9 @@ import 'package:captsone_ui/screens/Homepage.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final userDetailsProvider =
-    ChangeNotifierProvider<UserDetailsProvider>((ref) => UserDetailsProvider());
-
-class EmailPasswordLogin extends ConsumerWidget {
+class EmailPasswordLogin extends HookConsumerWidget {
   const EmailPasswordLogin({Key? key}) : super(key: key);
 
   @override
@@ -19,7 +16,6 @@ class EmailPasswordLogin extends ConsumerWidget {
 
     void handleLogin(BuildContext context) async {
       if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
-        // Handle empty username or password
         showSnackBar(context, 'Please enter username and password');
         return;
       }
@@ -33,10 +29,15 @@ class EmailPasswordLogin extends ConsumerWidget {
         // Fetch user details after successful login
         await userDetails.fetchUserDetails();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Homepage()),
-        );
+        // Check if the user details were fetched successfully
+        if (userDetails.username != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Homepage()),
+          );
+        } else {
+          showSnackBar(context, 'Failed to fetch user details');
+        }
       } else {
         showSnackBar(context, errorMessage);
       }
@@ -55,39 +56,31 @@ class EmailPasswordLogin extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: screenWidth * 0.05),
-
                   Image.asset(
-                    'blackLogo.png',
+                    'assets/blackLogo.png',
                     width: screenWidth * 0.5,
                     height: screenWidth * 0.5,
                   ),
-
                   const SizedBox(height: 50),
                   Text(
                     'Welcome to CebuArena',
                     style: TextStyle(
-                      color: Colors.black, // changing text color to black
+                      color: Colors.black,
                       fontSize: 16,
                     ),
                   ),
-
                   const SizedBox(height: 25),
-
-                  // email textfield
                   TextField(
                     controller: usernameController,
                     decoration: InputDecoration(
                       hintText: 'Username',
-                      filled: true, // added for a fill color
-                      fillColor: Colors.grey[200], // light grey fill color
-                      border: OutlineInputBorder(), // added border
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(),
                     ),
                     obscureText: false,
                   ),
-
-                  const SizedBox(height: 20), // added space between form fields
-
-                  // password textfield
+                  const SizedBox(height: 20),
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
@@ -98,10 +91,7 @@ class EmailPasswordLogin extends ConsumerWidget {
                     ),
                     obscureText: true,
                   ),
-
                   const SizedBox(height: 10),
-
-                  // forgot password?
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: Row(
@@ -114,21 +104,15 @@ class EmailPasswordLogin extends ConsumerWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 25),
-
-                  // sign in button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black, // changing button color to black
+                      primary: Colors.black,
                     ),
                     onPressed: () => handleLogin(context),
                     child: Text('Sign in'),
                   ),
-
                   const SizedBox(height: 50),
-
-                  // or continue with
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: Row(
@@ -155,9 +139,7 @@ class EmailPasswordLogin extends ConsumerWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 50),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
