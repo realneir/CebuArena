@@ -1,8 +1,11 @@
+import datetime
+import os
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 import pyrebase
+from django.conf import settings
 
 config = {
     "apiKey": "AIzaSyDw9O_eTCyy-Poxm9OeatzVqeYDUFZAzDo",
@@ -184,6 +187,7 @@ def create_team(request):
         manager_id = request.data.get('manager_id')
         team_name = request.data.get('team_name')
         game = request.data.get('game')
+        logo = request.FILES.get('logo')  # Retrieve the uploaded logo file
 
         try:
             # Retrieve the user data associated with the manager_id from Firebase
@@ -194,6 +198,18 @@ def create_team(request):
                 lastname = user_data.get('lastname')
             else:
                 return Response({'error_message': 'Invalid manager_id'}, status=400)
+
+            # Save the logo file to a suitable location (e.g., media directory)
+            if logo:
+                # Generate a unique filename for the logo
+                filename = f'team_logo_{team_name}_{datetime.now().strftime("%Y%m%d%H%M%S")}_{logo.name}'
+                
+                # Save the logo to the media directory
+                with open(os.path.join(settings.MEDIA_ROOT, filename), 'wb+') as destination:
+                    for chunk in logo.chunks():
+                        destination.write(chunk)
+            else:
+                filename = None
 
             data = {
                 'manager_id': manager_id,
@@ -210,11 +226,12 @@ def create_team(request):
                 ],
                 'captain_id': None,
                 'game': game,
+                'logo': filename  # Add the filename to the team data
             }
 
             # Push the team data to the 'teams' collection in Firebase
             team_ref = database.child('teams').push(data)
-            
+
             # Update the user's data to set 'role' to 'manager: true'
             user_ref = database.child('users').child(manager_id)
             user_ref.update({'is_manager': True})
@@ -224,6 +241,7 @@ def create_team(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 @api_view(['GET'])

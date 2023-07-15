@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
 
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -6,53 +8,71 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-// Define a new Riverpod provider
-Future<Map<String, dynamic>> createTeam(
-    ProviderContainer container, String teamName, String game,
-    [String? selectedGame]) async {
-  final provider = container.read(userDetailsProvider);
-  final managerId = provider.localId;
+final createTeamProvider =
+    FutureProvider.family<Map<String, dynamic>, CreateTeamParams>(
+  (ref, params) async {
+    final userDetails = ref.watch(userDetailsProvider);
+    final managerId = userDetails.localId;
 
-  if (managerId == null) {
-    throw Exception('User is not signed in.');
-  }
-
-  final response = await http.post(
-    Uri.parse('http://10.0.2.2:8000/create_team/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'manager_id': managerId,
-      'team_name': teamName,
-      'game': selectedGame ?? game,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    final teamResponse = await http
-        .get(Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'));
-
-    if (teamResponse.statusCode == 200) {
-      var completeTeamData = jsonDecode(teamResponse.body);
-      return completeTeamData;
-    } else {
-      throw Exception('Failed to fetch team info: ${teamResponse.body}');
+    if (managerId == null) {
+      throw Exception('User is not signed in.');
     }
-  } else {
-    throw Exception('Failed to create team: ${response.body}');
-  }
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://10.0.2.2:8000/create_team/'),
+    );
+
+    request.fields['manager_id'] = managerId;
+    request.fields['team_name'] = params.teamName;
+    request.fields['game'] = params.selectedGame ?? params.game;
+
+    if (params.logo != null) {
+      final file = await http.MultipartFile.fromPath('logo', params.logo!.path);
+      request.files.add(file);
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final teamResponse = await http.get(
+        Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+      );
+
+      if (teamResponse.statusCode == 200) {
+        var completeTeamData = jsonDecode(teamResponse.body);
+        return completeTeamData;
+      } else {
+        throw Exception('Failed to fetch team info: ${teamResponse.body}');
+      }
+    } else {
+      throw Exception('Failed to create team: ${response.body}');
+    }
+  },
+);
+
+class CreateTeamParams {
+  final String teamName;
+  final String game;
+  final String? selectedGame;
+  final File? logo;
+
+  CreateTeamParams(this.teamName, this.game, [this.selectedGame, this.logo]);
 }
 
 final teamProvider =
-    StateNotifierProvider<TeamNotifier, List<Map<String, dynamic>>>((ref) {
-  return TeamNotifier(ref.watch(userDetailsProvider));
-});
+    StateNotifierProvider<TeamNotifier, List<Map<String, dynamic>>>(
+  (ref) => TeamNotifier(ref.watch(userDetailsProvider)),
+);
 
-class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>>
+    with IterableMixin<Map<String, dynamic>> {
   final UserDetailsProvider userDetails;
 
-  TeamNotifier(this.userDetails) : super([]);
+  TeamNotifier(this.userDetails) : super([]) {
+    fetchTeams();
+  }
 
   Future<void> fetchTeams() async {
     try {
@@ -61,8 +81,9 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>> {
         print('No user logged in');
         return;
       }
-      final response = await http
-          .get(Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'));
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+      );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data is Map<String, dynamic> &&
@@ -71,6 +92,7 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>> {
           final teamData = {
             'team_name': data['team_name'],
             'members': data['members'],
+            'logo': data['logo'],
           };
           state = [teamData];
         } else {
@@ -83,4 +105,7 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>> {
       print('Network request failed: $e');
     }
   }
+
+  @override
+  Iterator<Map<String, dynamic>> get iterator => state.iterator;
 }
