@@ -87,7 +87,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         hintText: hintText,
         filled: true, // added for a fill color
         fillColor: Colors.grey[200], // light grey fill color
-        border: OutlineInputBorder(), // added border
+        border: const OutlineInputBorder(), // added border
       ),
       obscureText: obscureText,
     );

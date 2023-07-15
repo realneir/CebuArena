@@ -136,6 +136,8 @@ class UserDetailsProvider with ChangeNotifier {
       return 'An error occurred. Please try again.';
     }
   }
+
+  void signOut() {}
 }
 
 final authProvider = ChangeNotifierProvider<UserDetailsProvider>((ref) {

@@ -15,7 +15,7 @@ List<TabData> tabs = [
     label: 'MLBB',
     icon: CircleAvatar(
       radius: 20,
-      backgroundImage: AssetImage('assets/ML.png'),
+      backgroundImage: AssetImage('assets/blackLogo.png'),
       backgroundColor: Colors.white,
     ),
   ),
@@ -23,7 +23,7 @@ List<TabData> tabs = [
     label: 'VALORANT',
     icon: CircleAvatar(
       radius: 20,
-      backgroundImage: AssetImage('assets/ML.png'),
+      backgroundImage: AssetImage('assets/blackLogo.png'),
       backgroundColor: Colors.white,
     ),
   ),
@@ -31,7 +31,7 @@ List<TabData> tabs = [
     label: 'DOTA 2',
     icon: CircleAvatar(
       radius: 20,
-      backgroundImage: AssetImage('assets/ML.png'),
+      backgroundImage: AssetImage('assets/blackLogo.png'),
       backgroundColor: Colors.white,
     ),
   ),
@@ -39,7 +39,7 @@ List<TabData> tabs = [
     label: 'LOL',
     icon: CircleAvatar(
       radius: 20,
-      backgroundImage: AssetImage('assets/ML.png'),
+      backgroundImage: AssetImage('assets/blackLogo.png'),
       backgroundColor: Colors.white,
     ),
   ),
@@ -47,7 +47,7 @@ List<TabData> tabs = [
     label: 'CODM',
     icon: CircleAvatar(
       radius: 20,
-      backgroundImage: AssetImage('assets/ML.png'),
+      backgroundImage: AssetImage('assets/blackLogo.png'),
       backgroundColor: Colors.white,
     ),
   ),
@@ -55,7 +55,7 @@ List<TabData> tabs = [
     label: 'WILDRIFT',
     icon: CircleAvatar(
       radius: 20,
-      backgroundImage: AssetImage('assets/Ml.png'),
+      backgroundImage: AssetImage('assets/blackLogo.png'),
       backgroundColor: Colors.white,
     ),
   ),

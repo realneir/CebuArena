@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors_in_immutables, use_key_in_widget_constructors
 
 import 'package:captsone_ui/Screens/Eventsdetail.dart';
 import 'package:flutter/material.dart';
@@ -26,32 +26,32 @@ class _EventScreenState extends State<EventScreen> {
         child: ListView(
           children: [
             Text('Game: ${widget.event.game}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Description: ${widget.event.description}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Contact Details: ${widget.event.contactDetails}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Rules: ${widget.event.rules}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Prize: ${widget.event.prize}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Schedule: ${widget.event.schedule}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Minimum Players: ${widget.event.minPlayers}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Maximum Players: ${widget.event.maxPlayers}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Registration Limit: ${widget.event.registrationLimit}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Participants Limit: ${widget.event.participantsLimit}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Challong Link: ${widget.event.challongLink}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Registration Location: ${widget.event.registrationLocation}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
                 'Specific Specification: ${widget.event.specificSpecification}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Specific Town: ${widget.event.specificTown}'),
           ],
         ),

@@ -1,7 +1,11 @@
+import 'package:captsone_ui/Screens/Leaderboards.dart';
 import 'package:captsone_ui/Screens/Profilescreen.dart';
+import 'package:captsone_ui/Screens/Scrimmagespage.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/services/firebase_auth_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 
 class SidebarMenu extends ConsumerWidget {
   final String? username;
@@ -64,6 +68,17 @@ class SidebarMenu extends ConsumerWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(Icons.leaderboard, color: Colors.black),
+            title: Text('Leaderboards', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Leaderboards()),
+              );
+            },
+          ),
+          Divider(),
+          ListTile(
             leading: Icon(Icons.settings, color: Colors.black),
             title: Text('Settings', style: TextStyle(color: Colors.black)),
             onTap: () {
@@ -75,7 +90,7 @@ class SidebarMenu extends ConsumerWidget {
             leading: Icon(Icons.logout, color: Colors.red),
             title: Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () {
-              // ref.read(authProvider).signOut();
+              context.read<FirebaseAuthMethods>().signOut(context);
             },
           ),
           Divider(),

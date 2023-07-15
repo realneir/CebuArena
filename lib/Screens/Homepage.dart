@@ -97,12 +97,16 @@ class Homepage extends ConsumerWidget {
             label: 'Scrimmages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboards',
+            icon: Icon(Icons.flag),
+            label: 'Team',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: 'Messages',
           ),
         ],
         selectedItemColor: Colors.black,
@@ -122,9 +126,11 @@ class Homepage extends ConsumerWidget {
           scrimmagesResults: {},
         );
       case 2:
-        return Leaderboards();
+      // return ListofTeams();
       case 3:
         return EventCreationPage();
+      case 4:
+      // return Messages();
       default:
         return Container();
     }

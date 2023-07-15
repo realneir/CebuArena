@@ -129,6 +129,7 @@ class FirebaseAuthMethods {
     try {
       // Send a POST request to the logout endpoint
       await http.post(Uri.parse('http://127.0.0.1:8000/logout/'));
+      // await _auth.signOut();
       // Perform any additional logout logic in your frontend
     } catch (e) {
       showSnackBar(context, 'Logout failed'); // Display an error message

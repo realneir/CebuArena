@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:captsone_ui/Screens/SignupEmail.dart';
 import 'package:captsone_ui/screens/Homepage.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
