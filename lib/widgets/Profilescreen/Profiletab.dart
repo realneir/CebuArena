@@ -13,30 +13,25 @@ class ProfileTab extends ConsumerStatefulWidget {
 
 class _ProfileTabState extends ConsumerState<ProfileTab>
     with SingleTickerProviderStateMixin {
-  late StreamController<Map<String, dynamic>> teamStreamController;
   late TabController _tabController;
-  String? managerId;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    teamStreamController = StreamController<Map<String, dynamic>>.broadcast();
+
+    // Fetch the teams when the widget is created
+    ref.read(teamProvider.notifier).fetchTeams();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    teamStreamController.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(userDetailsProvider);
-    managerId = provider.localId;
-    teamStreamController = streamTeam(managerId!, context);
-
     return Column(
       children: [
         Container(
@@ -60,7 +55,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
               controller: _tabController,
               children: [
                 buildAboutSection(),
-                TeamsSection(teamStreamController: teamStreamController),
+                TeamsSection(), // Now you don't need to pass the StreamController
                 buildAlbumSection(),
               ],
             ),

@@ -79,6 +79,7 @@ class UserDetailsProvider with ChangeNotifier {
         _username = data['username'];
         _firstname = data['firstname'];
         _lastname = data['lastname'];
+        _localId = data['localId']; // Fetch the localId here
         _isManager = data['is_manager'] ?? false;
 
         notifyListeners();

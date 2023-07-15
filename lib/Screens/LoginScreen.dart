@@ -4,6 +4,7 @@ import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 class EmailPasswordLogin extends HookConsumerWidget {
   const EmailPasswordLogin({Key? key}) : super(key: key);
@@ -11,8 +12,8 @@ class EmailPasswordLogin extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userDetails = ref.watch(userDetailsProvider);
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+    final usernameController = useTextEditingController();
+    final passwordController = useTextEditingController();
 
     void handleLogin(BuildContext context) async {
       if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
@@ -26,10 +27,8 @@ class EmailPasswordLogin extends HookConsumerWidget {
       );
 
       if (errorMessage == null) {
-        // Fetch user details after successful login
         await userDetails.fetchUserDetails();
 
-        // Check if the user details were fetched successfully
         if (userDetails.username != null) {
           Navigator.pushReplacement(
             context,
