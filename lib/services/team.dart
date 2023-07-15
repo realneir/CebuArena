@@ -27,10 +27,10 @@ final createTeamProvider =
     request.fields['team_name'] = params.teamName;
     request.fields['game'] = params.selectedGame ?? params.game;
 
-    if (params.logo != null) {
-      final file = await http.MultipartFile.fromPath('logo', params.logo!.path);
-      request.files.add(file);
-    }
+    // if (params.logo != null) {
+    //   final file = await http.MultipartFile.fromPath('logo', params.logo!.path);
+    //   request.files.add(file);
+    // }
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);

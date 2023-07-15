@@ -187,10 +187,8 @@ def create_team(request):
         manager_id = request.data.get('manager_id')
         team_name = request.data.get('team_name')
         game = request.data.get('game')
-        logo = request.FILES.get('logo')  # Retrieve the uploaded logo file
 
         try:
-            # Retrieve the user data associated with the manager_id from Firebase
             user_data = database.child('users').child(manager_id).get().val()
             if user_data:
                 username = user_data.get('username')
@@ -199,37 +197,18 @@ def create_team(request):
             else:
                 return Response({'error_message': 'Invalid manager_id'}, status=400)
 
-            # Save the logo file to a suitable location (e.g., media directory)
-            if logo:
-                # Generate a unique filename for the logo
-                filename = f'team_logo_{team_name}_{datetime.now().strftime("%Y%m%d%H%M%S")}_{logo.name}'
-                
-                # Save the logo to the media directory
-                with open(os.path.join(settings.MEDIA_ROOT, filename), 'wb+') as destination:
-                    for chunk in logo.chunks():
-                        destination.write(chunk)
-            else:
-                filename = None
-
             data = {
                 'manager_id': manager_id,
                 'manager_username': username,
                 'manager_firstname': firstname,
                 'manager_lastname': lastname,
                 'team_name': team_name,
-                'members': [
-                    {
-                        'username': username,
-                        'firstname': firstname,
-                        'lastname': lastname
-                    }
-                ],
+                'members': [],  # Initialize members as an empty list
+                'pending_requests': [],  # Initialize pending_requests as an empty list
                 'captain_id': None,
-                'game': game,
-                'logo': filename  # Add the filename to the team data
+                'game': game
             }
 
-            # Push the team data to the 'teams' collection in Firebase
             team_ref = database.child('teams').push(data)
 
             # Update the user's data to set 'role' to 'manager: true'
@@ -242,6 +221,143 @@ def create_team(request):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
+@api_view(['POST'])
+@csrf_exempt
+def join_team(request):
+    if request.method == 'POST':
+        team_id = request.data.get('team_id')
+        localId = request.data.get('localId')
+
+        try:
+            team_data = database.child('teams').child(team_id).get().val()
+            if not team_data:
+                return Response({'error_message': 'Invalid team_id'}, status=400)
+
+            # Add the player's id to the pending_requests list
+            team_ref = database.child('teams').child(team_id)
+            pending_requests = team_data.get('pending_requests', [])
+            pending_requests.append(localId)
+            team_ref.update({'pending_requests': pending_requests})
+
+            return Response({'message': 'Request sent successfully.'})
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['POST'])
+@csrf_exempt
+def respond_to_request(request):
+    if request.method == 'POST':
+        team_id = request.data.get('team_id')
+        localId = request.data.get('localId')
+        accept = request.data.get('accept')  # This should be a boolean
+
+        try:
+            team_data = database.child('teams').child(team_id).get().val()
+            if not team_data:
+                return Response({'error_message': 'Invalid team_id'}, status=400)
+
+            # Remove the player's id from the pending_requests list
+            team_ref = database.child('teams').child(team_id)
+            pending_requests = team_data.get('pending_requests', [])
+            if localId in pending_requests:
+                pending_requests.remove(localId)
+
+            if accept:
+                # Get the player's details
+                player_data = database.child('users').child(localId).get().val()
+                if not player_data:
+                    return Response({'error_message': 'Invalid localId'}, status=400)
+
+                player_details = {
+                    'username': player_data.get('username'),
+                    'firstname': player_data.get('firstname'),
+                    'lastname': player_data.get('lastname'),
+                    'id': localId
+                }
+
+                # If the manager accepted the request, add the player to the team
+                members = team_data.get('members', [])
+                members.append(player_details)
+                team_ref.update({'members': members})
+
+            team_ref.update({'pending_requests': pending_requests})
+
+            return Response({'message': 'Request processed successfully.'})
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+# @api_view(['POST'])
+# @csrf_exempt
+# def join_team(request):
+#     if request.method == 'POST':
+#         user_id = request.data.get('user_id')
+#         team_id = request.data.get('team_id')
+
+#         try:
+#             user_data = database.child('users').child(user_id).get().val()
+#             if user_data:
+#                 request_data = {
+#                     'user_id': user_id,
+#                     'username': user_data.get('username'),
+#                     'firstname': user_data.get('firstname'),
+#                     'lastname': user_data.get('lastname'),
+#                 }
+#             else:
+#                 return Response({'error_message': 'Invalid user_id'}, status=400)
+            
+#             team_ref = database.child('teams').child(team_id)
+#             current_requests = team_ref.child('pending_requests').get().val() or []
+
+#             # Prevent duplicate requests
+#             if any(req['user_id'] == user_id for req in current_requests):
+#                 return Response({'error_message': 'Request already sent'}, status=400)
+
+#             current_requests.append(request_data)
+#             team_ref.update({'pending_requests': current_requests})
+
+#             return Response({'message': 'Request to join team sent successfully.'})
+#         except Exception as e:
+#             return Response({'error_message': str(e)}, status=400)
+
+#     return Response({'error_message': 'Invalid request'}, status=400)
+
+
+# @api_view(['POST'])
+# @csrf_exempt
+# def manage_team_request(request):
+#     if request.method == 'POST':
+#         user_id = request.data.get('user_id')
+#         team_id = request.data.get('team_id')
+#         action = request.data.get('action')  # 'accept' or 'decline'
+
+#         try:
+#             team_ref = database.child('teams').child(team_id)
+#             current_requests = team_ref.child('pending_requests').get().val() or []
+#             current_members = team_ref.child('members').get().val() or []
+
+#             # Find the request to be managed
+#             for i, req in enumerate(current_requests):
+#                 if req['user_id'] == user_id:
+#                     if action == 'accept':
+#                         current_members.append(req)
+#                     current_requests.pop(i)
+#                     break
+#             else:
+#                 return Response({'error_message': 'No pending request from this user'}, status=400)
+
+#             # Update the team's members and pending_requests
+#             team_ref.update({'members': current_members, 'pending_requests': current_requests})
+
+#             return Response({'message': f'Request to join team has been {action}ed.'})
+#         except Exception as e:
+#             return Response({'error_message': str(e)}, status=400)
+
+#     return Response({'error_message': 'Invalid request'}, status=400)
 
 
 @api_view(['GET'])
