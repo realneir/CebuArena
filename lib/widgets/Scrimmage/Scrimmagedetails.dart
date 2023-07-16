@@ -1,138 +1,142 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:captsone_ui/services/scrim.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ScrimmageDetails extends StatefulWidget {
+class Scrimmagedetails extends ConsumerWidget {
   @override
-  _ScrimmageDetailsState createState() => _ScrimmageDetailsState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<String> games = [
+      "MLBB",
+      "DOTA 2",
+      "CODM",
+      "Valorant",
+      "League of Legends",
+      "Wildrift"
+    ];
+    String? dropdownValue;
+    DateTime? selectedDate;
+    TimeOfDay? selectedTime;
+    String? preferences;
+    String? contactDetails;
 
-class _ScrimmageDetailsState extends State<ScrimmageDetails> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Scrimmage Details'),
-        backgroundColor: Colors.grey,
-      ),
-      backgroundColor: Colors.white24,
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: ListView(
-          children: <Widget>[
-            DropdownButton<String>(
-              value: dropdownValue,
-              onChanged: (String? newValue) {
-                setState(() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Material(
+              child: DropdownButton<String>(
+                value: dropdownValue,
+                hint: const Text('Select a game'),
+                onChanged: (String? newValue) {
                   dropdownValue = newValue!;
-                });
-              },
-              items: <String>[
-                'MLBB',
-                'VALORANT',
-                'DOTA2',
-                'LOL',
-                'CODM',
-                'WILDRIFT'
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value, style: TextStyle(color: Colors.black)),
-                );
-              }).toList(),
-              dropdownColor: Colors.grey[200],
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.grey[200],
-                onPrimary: Colors.black,
+                },
+                items: games.map<DropdownMenuItem<String>>(
+                  (String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  },
+                ).toList(),
               ),
-              onPressed: () async {
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate,
-                  firstDate: DateTime(2023),
-                  lastDate: DateTime(2026),
-                );
-                if (picked != null && picked != selectedDate) {
-                  setState(() {
-                    selectedDate = picked;
-                  });
-                }
-              },
-              child: Text('Select date'),
             ),
-            SizedBox(height: 16.0),
-            Text(
-              "Selected date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}",
-              style: TextStyle(color: Colors.black),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.grey[200],
-                onPrimary: Colors.black,
-              ),
-              onPressed: () async {
-                final TimeOfDay? picked = await showTimePicker(
-                  context: context,
-                  initialTime: selectedTime,
-                );
-                if (picked != null && picked != selectedTime) {
-                  setState(() {
-                    selectedTime = picked;
-                  });
-                }
-              },
-              child: Text('Select time'),
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              "Selected time: ${selectedTime.format(context)}",
-              style: TextStyle(color: Colors.black),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
+          ),
+          Material(
+            child: TextField(
               onChanged: (value) {
-                setState(() {
-                  preferences = value;
-                });
+                preferences = value;
               },
-              decoration: InputDecoration(
-                labelText: "Enter your preferences",
-                fillColor: Colors.grey[200],
-                filled: true,
-                border: OutlineInputBorder(),
+              decoration: const InputDecoration(
+                labelText: 'Enter your preferences',
               ),
-              style: TextStyle(color: Colors.black),
             ),
-            SizedBox(height: 16.0),
-            TextField(
+          ),
+          Material(
+            child: TextField(
               onChanged: (value) {
-                setState(() {
-                  contactDetails = value;
-                });
+                contactDetails = value;
               },
-              decoration: InputDecoration(
-                labelText: "Enter your contact details",
-                fillColor: Colors.grey[200],
-                filled: true,
-                border: OutlineInputBorder(),
+              decoration: const InputDecoration(
+                labelText: 'Enter your contact details',
               ),
-              style: TextStyle(color: Colors.black),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.black,
-                onPrimary: Colors.white,
-              ),
-              onPressed: () => createScrimmage(context),
-              child: Text('Set'),
-            ),
-          ],
-        ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              selectedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now(),
+                lastDate: DateTime.now().add(Duration(days: 365)),
+              );
+            },
+            child: const Text('Pick Date'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              selectedTime = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+              );
+            },
+            child: const Text('Pick Time'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (dropdownValue != null &&
+                  selectedDate != null &&
+                  selectedTime != null &&
+                  preferences != null &&
+                  contactDetails != null) {
+                try {
+                  await ref.read(scrimProvider.notifier).createScrimmage(
+                        dropdownValue!,
+                        selectedDate!,
+                        selectedTime!,
+                        preferences!,
+                        contactDetails!,
+                      );
+
+                  // Scrimmage created successfully, show a dialog
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Scrimmage Created'),
+                      content: Text('Scrimmage was created successfully!'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // Close dialog
+                            Navigator.pop(
+                                context); // Navigate back to ScrimmagesPage
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                } catch (e) {
+                  // Error while creating scrimmage, show a dialog
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Error'),
+                      content: Text('Failed to create scrimmage: $e'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Create Scrimmage'),
+          ),
+        ],
       ),
     );
   }

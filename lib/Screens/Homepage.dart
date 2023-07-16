@@ -40,7 +40,7 @@ class Homepage extends ConsumerWidget {
         key: UniqueKey(), // Add a UniqueKey here to ensure uniqueness
         leading: IconButton(
           color: Colors.blue[300],
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () {
             scaffoldKey.currentState?.openDrawer();
           },
@@ -52,7 +52,7 @@ class Homepage extends ConsumerWidget {
               width: 40,
               height: 40,
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               'CebuArena',
               style: GoogleFonts.metalMania(fontSize: 30, color: Colors.black),
@@ -62,7 +62,7 @@ class Homepage extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_none),
+            icon: const Icon(Icons.notifications_none),
             onPressed: () {},
           ),
         ],
@@ -87,7 +87,7 @@ class Homepage extends ConsumerWidget {
         onTap: (index) {
           currentIndex.setCurrentIndex(index);
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -97,7 +97,7 @@ class Homepage extends ConsumerWidget {
             label: 'Scrimmages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.flag),
+            icon: Icon(Icons.group),
             label: 'Team',
           ),
           BottomNavigationBarItem(
@@ -122,9 +122,7 @@ class Homepage extends ConsumerWidget {
       case 0:
         return HomeView();
       case 1:
-        return ScrimmagesPage(
-          scrimmagesResults: {},
-        );
+        return ScrimmagesPage();
       case 2:
       // return ListofTeams(); himo og bag o nga dart file para ani
       case 3:
