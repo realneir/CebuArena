@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import os
 from rest_framework.decorators import api_view
@@ -229,15 +230,22 @@ def join_team(request):
         localId = request.data.get('localId')
 
         try:
+            # Verify that the localId corresponds to a valid user
+            user_data = database.child('users').child(localId).get().val()
+            if not user_data:
+                return Response({'error_message': 'Invalid localId'}, status=400)
+
             team_data = database.child('teams').child(team_id).get().val()
             if not team_data:
                 return Response({'error_message': 'Invalid team_id'}, status=400)
 
             # Add the player's id to the pending_requests list
-            team_ref = database.child('teams').child(team_id)
             pending_requests = team_data.get('pending_requests', [])
             pending_requests.append(localId)
-            team_ref.update({'pending_requests': pending_requests})
+
+            # Update the pending_requests field
+            pending_requests_path = team_id + '/pending_requests'
+            database.child('teams').child(pending_requests_path).set(pending_requests)
 
             return Response({'message': 'Request sent successfully.'})
         except Exception as e:
@@ -252,21 +260,30 @@ def respond_to_request(request):
         team_id = request.data.get('team_id')
         localId = request.data.get('localId')
         accept = request.data.get('accept')  # This should be a boolean
+        manager_id = request.data.get('manager_id')  # This should be the id of the manager making the request
 
         try:
             team_data = database.child('teams').child(team_id).get().val()
             if not team_data:
                 return Response({'error_message': 'Invalid team_id'}, status=400)
 
+            # Check if the user making the request is the manager of the team
+            if team_data['manager_id'] != manager_id:
+                return Response({'error_message': 'Only the manager can accept or reject requests.'}, status=403)
+
             # Remove the player's id from the pending_requests list
-            team_ref = database.child('teams').child(team_id)
             pending_requests = team_data.get('pending_requests', [])
             if localId in pending_requests:
                 pending_requests.remove(localId)
 
+            # Update the pending_requests field
+            pending_requests_path = team_id + '/pending_requests'
+            database.child('teams').child(pending_requests_path).set(pending_requests)
+
             if accept:
                 # Get the player's details
                 player_data = database.child('users').child(localId).get().val()
+                print(player_data)
                 if not player_data:
                     return Response({'error_message': 'Invalid localId'}, status=400)
 
@@ -280,15 +297,46 @@ def respond_to_request(request):
                 # If the manager accepted the request, add the player to the team
                 members = team_data.get('members', [])
                 members.append(player_details)
-                team_ref.update({'members': members})
 
-            team_ref.update({'pending_requests': pending_requests})
+                # Update the members field
+                members_path = team_id + '/members'
+                database.child('teams').child(members_path).set(members)
 
             return Response({'message': 'Request processed successfully.'})
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
+@api_view(['GET'])
+def get_all_teams(request):
+    if request.method == 'GET':
+        try:
+            teams_data = database.child('teams').get().val()
+            if not teams_data:
+                return Response({'error_message': 'No teams found'}, status=404)
+
+            teams_list = []
+            for team_id, team in teams_data.items():
+                team_info = {
+                    'team_name': team.get('team_name'),
+                    'manager': {
+                        'username': team.get('manager_username'),
+                        'firstname': team.get('manager_firstname'),
+                        'lastname': team.get('manager_lastname')
+                    },
+                    'members': team.get('members'),
+                    'game': team.get('game')
+                }
+                teams_list.append(team_info)
+
+            return Response({'teams': teams_list}, status=200)
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 # @api_view(['POST'])

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:captsone_ui/services/team.dart';
+import 'package:captsone_ui/services/Teams%20provider/team.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';

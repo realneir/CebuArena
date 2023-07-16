@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
 import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:captsone_ui/Screens/navbar/teamlist.dart';
 
 final currentIndexProvider = ChangeNotifierProvider<CurrentIndexNotifier>(
   (ref) => CurrentIndexNotifier(),
@@ -123,7 +124,7 @@ class Homepage extends ConsumerWidget {
       case 1:
         return ScrimmagesPage();
       case 2:
-      // return TeamList(); himo og bag o nga dart file para ani
+        return const TeamsList();
       case 3:
         return EventCreationPage();
       case 4:
