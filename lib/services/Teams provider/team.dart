@@ -27,11 +27,6 @@ final createTeamProvider =
     request.fields['team_name'] = params.teamName;
     request.fields['game'] = params.selectedGame ?? params.game;
 
-    // if (params.logo != null) {
-    //   final file = await http.MultipartFile.fromPath('logo', params.logo!.path);
-    //   request.files.add(file);
-    // }
-
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
 
@@ -56,9 +51,8 @@ class CreateTeamParams {
   final String teamName;
   final String game;
   final String? selectedGame;
-  final File? logo;
 
-  CreateTeamParams(this.teamName, this.game, [this.selectedGame, this.logo]);
+  CreateTeamParams(this.teamName, this.game, [this.selectedGame]);
 }
 
 final teamProvider =
@@ -92,7 +86,7 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>>
           final teamData = {
             'team_name': data['team_name'],
             'members': data['members'],
-            'logo': data['logo'],
+            // 'logo': data['logo'],
           };
           state = [teamData];
         } else {

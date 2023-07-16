@@ -41,15 +41,15 @@ class ProfileScreen extends ConsumerWidget {
           body: Column(
             children: [
               Container(
-                height: coverHeight,
+                height: MediaQuery.of(context).size.height *
+                    0.28, // Change this to your desired height as a percentage of the screen height
                 child: ProfileBody(
                   coverHeight: coverHeight,
                   profileHeight: profileHeight,
                 ),
               ),
               Expanded(
-                child:
-                    ProfileTab(), // just call ProfileTab without passing tabController
+                child: ProfileTab(),
               ),
             ],
           ),

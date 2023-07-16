@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:captsone_ui/Screens/teams%20Profile/teamProfile.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/services/Teams%20provider/team.dart';
 import 'package:flutter/material.dart';
@@ -37,21 +38,6 @@ class TeamsSection extends ConsumerWidget {
                         "Wildrift"
                       ]; // List of games
 
-                      File? logo;
-
-                      Future<void> _pickLogo() async {
-                        final status = await Permission.storage.request();
-                        if (status.isGranted) {
-                          final pickedImage = await ImagePicker()
-                              .pickImage(source: ImageSource.gallery);
-                          if (pickedImage != null) {
-                            logo = File(pickedImage.path);
-                          }
-                        } else {
-                          // Handle permission denied
-                        }
-                      }
-
                       return StatefulBuilder(
                         builder: (BuildContext context, StateSetter setState) {
                           return AlertDialog(
@@ -84,14 +70,6 @@ class TeamsSection extends ConsumerWidget {
                                     },
                                   ).toList(),
                                 ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickLogo();
-                                    setState(() {});
-                                  },
-                                  child: const Text('Pick Logo'),
-                                ),
-                                if (logo != null) Image.file(logo!),
                               ],
                             ),
                             actions: <Widget>[
@@ -119,8 +97,7 @@ class TeamsSection extends ConsumerWidget {
                                       CreateTeamParams(
                                         teamName!,
                                         game,
-                                        selectedGame!,
-                                        logo, // Pass the logo file
+                                        selectedGame!, // Pass the logo file
                                       ),
                                     ))
                                         .when(
@@ -175,33 +152,68 @@ class TeamsSection extends ConsumerWidget {
         }
       }
 
-      return Column(
-        children: [
-          for (final teamData in teamList)
-            Column(
-              children: [
-                Text(
-                  teamData['team_name'] ?? '',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount:
-                      (teamData['members'] as List<dynamic>?)?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final member = (teamData['members']
-                        as List<dynamic>?)?[index] as Map<String, dynamic>;
-                    return ListTile(
-                      title: Text('${member['username']}'),
-                      subtitle: Text(
-                        'Firstname: ${member['firstname']} Lastname: ${member['lastname']}',
+      return Padding(
+        padding: const EdgeInsets.all(10), // Set the desired top padding value
+        child: Column(
+          children: [
+            for (final teamData in teamList)
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TeamProfileScreen(),
+                    ),
+                  );
+                },
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white, // Set your desired background color
+                    border: Border.all(
+                      color: Colors.black, // Set your desired border color
+                      width: 1.0, // Set your desired border width
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        10), // Set your desired border radius
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Center(
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            backgroundImage: AssetImage(
+                                'assets/Slider1.jpg'), // Set the path to your team logo image
+                            radius: 25,
+                          ),
+                          SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                teamData['team_name'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Manager: ${teamData['members']?[0]['username']}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-              ],
-            ),
-        ],
+              ),
+          ],
+        ),
       );
     });
   }

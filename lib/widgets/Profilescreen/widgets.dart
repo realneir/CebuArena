@@ -1,9 +1,4 @@
-import 'dart:async';
-
-import 'package:captsone_ui/services/Teams%20provider/team.dart';
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 Widget buildAboutSection() {
   return const Center(
@@ -17,12 +12,26 @@ Widget buildAlbumSection() {
   );
 }
 
+Widget buildProfilePhoto(double profileHeight) {
+  return Container(
+    width: profileHeight,
+    height: profileHeight,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(color: Colors.white, width: 3),
+      image: const DecorationImage(
+        image: AssetImage('assets/Slider2.jpg'),
+        fit: BoxFit.cover,
+      ),
+    ),
+  );
+}
+
 Widget buildCoverPhoto(double coverHeight) {
   return Container(
     width: double.infinity,
     height: coverHeight,
     decoration: const BoxDecoration(
-      color: Colors.blue,
       image: DecorationImage(
         image: AssetImage('assets/Slider1.jpg'),
         fit: BoxFit.cover,
@@ -31,18 +40,12 @@ Widget buildCoverPhoto(double coverHeight) {
   );
 }
 
-Widget buildProfilePhoto(double profileHeight) {
-  return CircleAvatar(
-    radius: profileHeight / 2,
-    child: Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
-        image: const DecorationImage(
-          image: AssetImage('assets/Slider2.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
+Widget buildTextWithPadding(String text, double size, FontWeight weight) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Text(
+      text,
+      style: TextStyle(fontSize: size, fontWeight: weight),
     ),
   );
 }
@@ -64,20 +67,5 @@ Widget buildTagWithIcon(BuildContext context, String tag, IconData icon) {
         ),
       ),
     ],
-  );
-}
-
-Widget buildTextWithPadding(
-    String text, double fontSize, FontWeight fontWeight) {
-  return Padding(
-    padding: const EdgeInsets.only(left: 10),
-    child: Text(
-      text,
-      style: TextStyle(
-        fontFamily: 'Montserrat',
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-      ),
-    ),
   );
 }

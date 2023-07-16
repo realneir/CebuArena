@@ -26,47 +26,68 @@ class ProfileBody extends ConsumerWidget {
       builder: (context, constraints) {
         return Stack(
           children: [
-            FractionallySizedBox(
-              widthFactor: 1,
-              heightFactor: 0.6,
+            Container(
+              height: coverHeight,
               child: buildCoverPhoto(coverHeight),
             ),
             Positioned(
-              left: profileWidth * 0.1,
-              bottom: coverHeight * 0.35,
+              left: 20,
+              top: coverHeight - (profileHeight / 1.5),
               child: buildProfilePhoto(profileHeight),
             ),
             Positioned(
-              left: profileWidth * 0.1,
-              bottom: coverHeight * 0.1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildTextWithPadding(
-                      '$firstname $lastname', 20, FontWeight.bold),
-                  buildTextWithPadding('@$username', 14, FontWeight.normal),
-                ],
-              ),
-            ),
-            Positioned(
-              left: profileWidth * 1.2,
-              bottom: coverHeight * 0.3,
+              left: 20,
+              top: coverHeight - (profileHeight / 1.3) + profileHeight,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Column 1 - First and Last Name
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (isManager) // Conditionally display the "Manager" tag
-                        buildTagWithIcon(
-                            context, 'Manager', Icons.verified_user),
-                      SizedBox(height: 5),
+                      buildTextWithPadding(
+                          '$firstname $lastname', 20, FontWeight.bold),
+                      buildTextWithPadding('@$username', 14, FontWeight.normal),
                     ],
                   ),
-                  SizedBox(width: 40),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text('View Org'),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+
+                  // Column 2 - Manager Field
+                  if (userDetails.isManager) // Check if the user is a manager
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 15.0, left: 40.0), // Add left padding here
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            radius:
+                                10, // Adjust the size of the circular background here
+                            backgroundColor: Colors.blue,
+                            child: Icon(Icons.check,
+                                color: Colors.white,
+                                size: 14), // Adjust the size of the icon here
+                          ),
+                          const SizedBox(
+                              width:
+                                  8.0), // Add a space between the icon and text
+                          buildTextWithPadding('Manager', 14, FontWeight.bold),
+                        ],
+                      ),
+                    ),
+
+                  // Column 3 - View Org Button
+                  Padding(
+                    padding:
+                        EdgeInsets.only(left: 45.0), // Add left padding here
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: const Text('View Org'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
