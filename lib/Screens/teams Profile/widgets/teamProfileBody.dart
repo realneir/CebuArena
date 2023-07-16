@@ -31,6 +31,7 @@ class TeamProfileBody extends ConsumerWidget {
               left: 20,
               right: 20,
               top: coverHeight + (profileHeight / 2),
+              bottom: 5,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -65,7 +66,7 @@ Widget buildProfilePhoto(double profileHeight) {
       shape: BoxShape.circle,
       border: Border.all(color: Colors.white, width: 3),
       image: const DecorationImage(
-        image: AssetImage('assets/Slider2.jpg'),
+        image: AssetImage('assets/teamProfile.jpg'),
         fit: BoxFit.cover,
       ),
     ),
@@ -78,7 +79,7 @@ Widget buildCoverPhoto(double coverHeight) {
     height: coverHeight,
     decoration: const BoxDecoration(
       image: DecorationImage(
-        image: AssetImage('assets/Slider1.jpg'),
+        image: AssetImage('assets/teamLogo.jpg'),
         fit: BoxFit.cover,
       ),
     ),

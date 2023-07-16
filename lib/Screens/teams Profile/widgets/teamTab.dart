@@ -24,37 +24,40 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Colors.black,
-          child: TabBar(
-            controller: _tabController,
-            indicatorColor: Colors.white,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
-            labelStyle: TextStyle(fontFamily: 'Montserrat', fontSize: 16),
-            tabs: [
-              Tab(text: 'About'),
-              Tab(text: 'Members'),
-              Tab(text: 'Join Requests'),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Container(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                buildAboutSection(),
-                buildMembersSection(),
-                buildPendingRequestsSection(),
-              ],
+    return Padding(
+        padding: EdgeInsets.only(
+            top: 30.0), // Adjust the top padding value as needed
+        child: Column(
+          children: [
+            Container(
+              color: Colors.black,
+              child: TabBar(
+                controller: _tabController,
+                indicatorColor: Colors.white,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.grey,
+                labelStyle: TextStyle(fontFamily: 'Montserrat', fontSize: 16),
+                tabs: [
+                  Tab(text: 'About'),
+                  Tab(text: 'Members'),
+                  Tab(text: 'Join Requests'),
+                ],
+              ),
             ),
-          ),
-        ),
-      ],
-    );
+            Expanded(
+              child: Container(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    buildAboutSection(),
+                    buildMembersSection(),
+                    buildPendingRequestsSection(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   Widget buildAboutSection() {

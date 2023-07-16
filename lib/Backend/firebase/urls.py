@@ -20,8 +20,11 @@ urlpatterns = [
     path('get_all_teams/', views.get_all_teams, name='get_all_teams'),
     path('get_team_info/<str:manager_id>/', views.get_team_info, name='get_team_info'), 
     path('create_scrim/', views.create_scrim, name='create_scrim'),
-    path('get_scrim_details/', views.get_scrim_details, name='get_scrim_details'),
-    path('get_scrim_details/<str:game>/', views.get_scrim_details)
+    path('get_scrim_details/<str:game>/<str:scrim_id>/', views.get_scrim_details, name='get_scrim_details'),
+        path('get_all_scrims/<str:game>/', views.get_all_scrims, name='get_all_scrinms'),
+
+
+    
 
     # path('get_teams_by_manager/<str:manager_id>/', views.get_teams_by_manager, name='get_teams_by_manager'),
 ]

@@ -447,6 +447,7 @@ def create_scrim(request):
         user = request.user
 
         data = {
+            'game' : game,
             'date': date,
             'time': time,
             'preferences': preferences,
@@ -467,17 +468,34 @@ def create_scrim(request):
 
 
 
+@api_view(['GET'])
+@csrf_exempt
+def get_scrim_details(request, game, scrim_id):
+    if request.method == 'GET':
+        try:
+            # Retrieve the scrim details for the given game and scrim_id from Firebase
+            scrim = database.child('scrims').child(game).child(scrim_id).get().val()
+
+            if scrim:
+                return Response(scrim)
+            else:
+                return Response({'error_message': 'No scrim found for the given id'}, status=400)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
 
 @api_view(['GET'])
 @csrf_exempt
-def get_scrim_details(request, game):
+def get_all_scrims(request, game):
     if request.method == 'GET':
         try:
-            # Retrieve the scrim details for the given game from Firebase
-            game_scrims = database.child('scrims').child(game).get().val()
+            # Retrieve all scrims for the given game from Firebase
+            scrims = database.child('scrims').child(game).get().val()
 
-            if game_scrims:
-                return Response(game_scrims)
+            if scrims:
+                return Response(scrims)
             else:
                 return Response({'error_message': 'No scrims found for the given game'}, status=400)
 
@@ -485,6 +503,8 @@ def get_scrim_details(request, game):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
 
 
 
