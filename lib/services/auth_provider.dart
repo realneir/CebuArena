@@ -52,12 +52,14 @@ class UserDetailsProvider with ChangeNotifier {
   String? _lastname;
   String? _localId;
   bool _isManager = false;
+  String? _teamName;
 
   String? get username => _username;
   String? get firstname => _firstname;
   String? get lastname => _lastname;
   String? get localId => _localId;
   bool get isManager => _isManager;
+  String? get teamName => _teamName;
 
   Future<void> fetchUserDetails() async {
     try {
@@ -135,6 +137,11 @@ class UserDetailsProvider with ChangeNotifier {
       print('Error occurred while logging in: $error');
       return 'An error occurred. Please try again.';
     }
+  }
+
+  void setTeamName(String teamName) {
+    _teamName = teamName;
+    notifyListeners();
   }
 
   void signOut() {}

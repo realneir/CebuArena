@@ -1,4 +1,4 @@
-import 'package:captsone_ui/Screens/LoginScreen.dart';
+import 'package:captsone_ui/Screens/authentication/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 

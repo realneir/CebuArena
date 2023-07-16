@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/Screens/Eventscreen.dart';
+import 'package:captsone_ui/Screens/navbar/event_screen.dart';
 
 class Event {
   final String eventName;

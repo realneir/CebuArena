@@ -1,6 +1,5 @@
-import 'package:captsone_ui/Screens/Leaderboards.dart';
-import 'package:captsone_ui/Screens/Profilescreen.dart';
-import 'package:captsone_ui/Screens/Scrimmagespage.dart';
+import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
+import 'package:captsone_ui/Screens/sidebar/profile_screen.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/services/firebase_auth_methods.dart';
 import 'package:flutter/material.dart';

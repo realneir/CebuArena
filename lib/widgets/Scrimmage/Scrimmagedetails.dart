@@ -91,12 +91,11 @@ class Scrimmagedetails extends ConsumerWidget {
                   contactDetails != null) {
                 try {
                   await ref.read(scrimProvider.notifier).createScrimmage(
-                        dropdownValue!,
-                        selectedDate!,
-                        selectedTime!,
-                        preferences!,
-                        contactDetails!,
-                      );
+                      dropdownValue!,
+                      selectedDate!,
+                      selectedTime!,
+                      preferences!,
+                      contactDetails!);
 
                   // Scrimmage created successfully, show a dialog
                   showDialog(
