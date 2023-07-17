@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:io';
-
 import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -86,8 +83,11 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>>
           final teamData = {
             'team_name': data['team_name'],
             'manager_username': data['manager_username'],
-            // add other data fields as required
+            'members': data['members'],
+            'game': data['game'],
+            'pending_requests': data['pending_requests'],
           };
+          print(teamData); // Print teamData
           state = [teamData];
         } else {
           print('Invalid response data: $data');

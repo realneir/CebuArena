@@ -239,9 +239,13 @@ def join_team(request):
             if not team_data:
                 return Response({'error_message': 'Invalid team_id'}, status=400)
 
-            # Add the player's id to the pending_requests list
+            # Retrieve the username and email from the user data
+            username = user_data.get('username')
+            email = user_data.get('email')
+
+            # Add the player's username and email to the pending_requests list
             pending_requests = team_data.get('pending_requests', [])
-            pending_requests.append(localId)
+            pending_requests.append({'team_id': team_id, 'localId': localId, 'username': username, 'email': email})
 
             # Update the pending_requests field
             pending_requests_path = team_id + '/pending_requests'
@@ -252,6 +256,7 @@ def join_team(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 @api_view(['POST'])
 @csrf_exempt
@@ -271,16 +276,14 @@ def respond_to_request(request):
             if team_data['manager_id'] != manager_id:
                 return Response({'error_message': 'Only the manager can accept or reject requests.'}, status=403)
 
-            # Remove the player's id from the pending_requests list
+            # Get the pending_requests list
             pending_requests = team_data.get('pending_requests', [])
-            if localId in pending_requests:
-                pending_requests.remove(localId)
-
-            # Update the pending_requests field
-            pending_requests_path = team_id + '/pending_requests'
-            database.child('teams').child(pending_requests_path).set(pending_requests)
-
+            
             if accept:
+                # Remove the player's id from the pending_requests list if it is accepted
+                if localId in pending_requests:
+                    pending_requests.remove(localId)
+
                 # Get the player's details
                 player_data = database.child('users').child(localId).get().val()
                 print(player_data)
@@ -294,7 +297,7 @@ def respond_to_request(request):
                     'id': localId
                 }
 
-                # If the manager accepted the request, add the player to the team
+                # Add the player to the members list
                 members = team_data.get('members', [])
                 members.append(player_details)
 
@@ -302,11 +305,17 @@ def respond_to_request(request):
                 members_path = team_id + '/members'
                 database.child('teams').child(members_path).set(members)
 
+            # Update the pending_requests field with the modified list
+            pending_requests_path = team_id + '/pending_requests'
+            database.child('teams').child(pending_requests_path).set(pending_requests)
+
             return Response({'message': 'Request processed successfully.'})
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
 
 
 @api_view(['GET'])

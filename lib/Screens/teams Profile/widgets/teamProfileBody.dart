@@ -4,15 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class TeamProfileBody extends ConsumerWidget {
   final double coverHeight;
   final double profileHeight;
+  final Map<String, dynamic> teamData;
 
   const TeamProfileBody({
     required this.coverHeight,
     required this.profileHeight,
+    required this.teamData,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileWidth = MediaQuery.of(context).size.width * 0.3;
+    final teamName = teamData['team_name'] ?? '';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -35,11 +37,15 @@ class TeamProfileBody extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Team Name',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(
+                    teamName,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   Padding(
-                    padding: EdgeInsets.only(left: 20), // Add this
+                    padding: EdgeInsets.only(left: 20),
                     child: ElevatedButton(
                       onPressed: () {},
                       child: const Text('Join Team'),

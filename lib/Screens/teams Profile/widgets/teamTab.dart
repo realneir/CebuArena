@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:captsone_ui/Screens/teams%20Profile/widgets/tabs/requests.dart';
+import 'package:captsone_ui/services/Teams%20provider/team.dart';
+import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 class TeamsTab extends ConsumerStatefulWidget {
   @override
@@ -24,6 +30,7 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
 
   @override
   Widget build(BuildContext context) {
+    final teamData = ref.watch(teamProvider).firstOrNull;
     return Padding(
         padding: EdgeInsets.only(
             top: 30.0), // Adjust the top padding value as needed
@@ -50,8 +57,8 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
                   controller: _tabController,
                   children: [
                     buildAboutSection(),
-                    buildMembersSection(),
-                    buildPendingRequestsSection(),
+                    buildMembersSection(teamData!),
+                    buildPendingRequestsSection(context, ref, teamData),
                   ],
                 ),
               ),
@@ -64,23 +71,62 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
     return Center(child: Text('About Section'));
   }
 
-  Widget buildMembersSection() {
-    return Center(child: Text('Members Section'));
+  Widget buildMembersSection(Map<String, dynamic>? teamData) {
+    final List<dynamic> membersData = teamData?['members'] ?? [];
+    final List<Map<String, dynamic>> members =
+        membersData.cast<Map<String, dynamic>>();
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            for (final member in members)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        backgroundImage: AssetImage('assets/Slider1.jpg'),
+                        radius: 25,
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            member['username'] ?? '',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Member: ${member['username'] ?? ''}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
-
-  Widget buildPendingRequestsSection() {
-    return Center(child: Text('Pending Requests Section'));
-  }
-}
-
-Widget buildAboutSection() {
-  return Center(child: Text('About Section'));
-}
-
-Widget buildMembersSection() {
-  return Center(child: Text('Members Section'));
-}
-
-Widget buildPendingRequestsSection() {
-  return Center(child: Text('Pending Requests Section'));
 }
