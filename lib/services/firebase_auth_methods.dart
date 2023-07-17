@@ -64,7 +64,7 @@ class FirebaseAuthMethods {
   Future<void> signOut(BuildContext context) async {
     try {
       // Send a POST request to the logout endpoint
-      await http.post(Uri.parse('http://10.0.2.2:8000/logout/'));
+      await http.post(Uri.parse('http://172.30.12.51:8000/logout/'));
       // await _auth.signOut();
       // Perform any additional logout logic in your frontend
     } catch (e) {
@@ -75,11 +75,11 @@ class FirebaseAuthMethods {
   Future<void> deleteAccount(BuildContext context) async {
     try {
       // Send a POST request to the delete account endpoint
-      await http
-          .post(Uri.parse('http://10.0.2.2:8000/delete_account/'), headers: {
-        'Authorization':
-            'Bearer your_token', // Replace 'your_token' with the user's token
-      });
+      await http.post(Uri.parse('http://172.30.12.51:8000/delete_account/'),
+          headers: {
+            'Authorization':
+                'Bearer your_token', // Replace 'your_token' with the user's token
+          });
       // Perform any additional logic in your frontend, such as navigating to a different screen
     } catch (e) {
       showSnackBar(

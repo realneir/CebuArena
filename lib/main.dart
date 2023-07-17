@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:captsone_ui/Screens/authentication/login_screen.dart';
 import 'package:captsone_ui/Screens/splash_screen/Lottie.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'My App',
-      home: CoverPage(),
+      home: EmailPasswordLogin(),
     );
   }
 }

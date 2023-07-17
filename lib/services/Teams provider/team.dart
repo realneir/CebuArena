@@ -20,7 +20,7 @@ final createTeamProvider =
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.0.2.2:8000/create_team/'),
+      Uri.parse('http://172.30.12.51:8000/create_team/'),
     );
 
     request.fields['manager_id'] = managerId;
@@ -32,7 +32,7 @@ final createTeamProvider =
 
     if (response.statusCode == 200) {
       final teamResponse = await http.get(
-        Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+        Uri.parse('http://172.30.12.51:8000/get_team_info/$managerId/'),
       );
 
       if (teamResponse.statusCode == 200) {
@@ -76,17 +76,17 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>>
         return;
       }
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+        Uri.parse('http://172.30.12.51:8000/get_team_info/$managerId/'),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data is Map<String, dynamic> &&
             data.containsKey('team_name') &&
-            data.containsKey('members')) {
+            data.containsKey('manager_username')) {
           final teamData = {
             'team_name': data['team_name'],
-            'members': data['members'],
-            // 'logo': data['logo'],
+            'manager_username': data['manager_username'],
+            // add other data fields as required
           };
           state = [teamData];
         } else {

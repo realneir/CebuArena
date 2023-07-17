@@ -14,7 +14,7 @@ final createScrimProvider =
   (ref, params) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.0.2.2:8000/create_scrim/'),
+      Uri.parse('http://172.30.12.51:8000/create_scrim/'),
     );
 
     request.fields['game'] = params.dropdownValue;
@@ -35,7 +35,7 @@ final createScrimProvider =
       // Now use this scrim ID to fetch the scrim details
       final scrimmageResponse = await http.get(
         Uri.parse(
-            'http://10.0.2.2:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
+            'http://172.30.12.51:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
       );
 
       if (scrimmageResponse.statusCode == 200) {
@@ -69,7 +69,7 @@ class CreateScrimParams {
 
 Future<List<Map<String, dynamic>>> getAllScrimsByGame(String game) async {
   final response = await http.get(
-    Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
+    Uri.parse('http://172.30.12.51:8000/get_all_scrims/$game/'),
   );
 
   if (response.statusCode == 200) {
@@ -91,7 +91,7 @@ Future<List<Map<String, dynamic>>> getAllScrimsByGame(String game) async {
 Future<Map<String, dynamic>> getScrimDetails(
     String game, String scrimId) async {
   final response = await http.get(
-    Uri.parse('http://10.0.2.2:8000/get_scrim_details/$game/$scrimId/'),
+    Uri.parse('http://172.30.12.51:8000/get_scrim_details/$game/$scrimId/'),
   );
 
   if (response.statusCode == 200) {

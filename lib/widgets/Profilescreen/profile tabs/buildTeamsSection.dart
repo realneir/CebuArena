@@ -198,7 +198,7 @@ class TeamsSection extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                'Manager: ${teamData['members']?[0]['username']}',
+                                'Manager: ${teamData['manager_username'] ?? ''}',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

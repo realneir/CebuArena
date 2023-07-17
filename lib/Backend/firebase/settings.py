@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-u%fmdw(!1xg@lp7fjy3*77vi)0o=&#o0g=82=!50a7s^ee_n$d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['172.30.12.51', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -59,7 +59,6 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '10.0.2.2']
 
 ROOT_URLCONF = 'firebase.urls'
 
