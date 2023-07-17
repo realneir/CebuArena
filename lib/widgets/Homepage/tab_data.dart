@@ -28,7 +28,7 @@ List<TabData> tabs = [
     ),
   ),
   TabData(
-    label: 'DOTA 2',
+    label: 'DOTA2',
     icon: CircleAvatar(
       radius: 20,
       backgroundImage: AssetImage('assets/blackLogo.png'),

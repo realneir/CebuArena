@@ -3,7 +3,6 @@ import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-
 import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -41,7 +40,36 @@ class ScrimmagesPage extends ConsumerWidget {
         ),
         body: TabBarView(
           children: tabs.map((tab) {
-            return ListView();
+            return FutureBuilder(
+              future: getAllScrimsByGame(tab.label),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      var scrim = snapshot.data![index];
+                      return ListTile(
+                        title: Text('Game: ${scrim['game']}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Date: ${scrim['date']}'),
+                            Text('Time: ${scrim['time']}'),
+                            Text('Preferences: ${scrim['preferences']}'),
+                            Text('Contact: ${scrim['contact']}'),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            );
           }).toList(),
         ),
         floatingActionButton: FloatingActionButton(

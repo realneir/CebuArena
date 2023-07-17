@@ -10,11 +10,11 @@ class Scrimmagedetails extends ConsumerWidget {
     String? selectedGame;
     final List<String> games = [
       "MLBB",
-      "DOTA 2",
+      "DOTA2",
       "CODM",
-      "Valorant",
-      "League of Legends",
-      "Wildrift"
+      "VALORANT",
+      "LOL",
+      "WILDRIFT"
     ];
     DateTime? selectedDate;
     TimeOfDay? selectedTime;

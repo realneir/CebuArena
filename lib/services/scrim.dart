@@ -14,7 +14,7 @@ final createScrimProvider =
   (ref, params) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://172.30.12.51:8000/create_scrim/'),
+      Uri.parse('http://10.0.2.2:8000/create_scrim/'),
     );
 
     request.fields['game'] = params.dropdownValue;
@@ -32,10 +32,14 @@ final createScrimProvider =
       var responseBody = jsonDecode(response.body);
       var scrimId = responseBody['scrim_id'];
 
+      if (scrimId == null || scrimId == "") {
+        throw Exception('Scrim ID is missing in the response');
+      }
+
       // Now use this scrim ID to fetch the scrim details
       final scrimmageResponse = await http.get(
         Uri.parse(
-            'http://172.30.12.51:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
+            'http://10.0.2.2:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
       );
 
       if (scrimmageResponse.statusCode == 200) {
@@ -68,21 +72,34 @@ class CreateScrimParams {
 }
 
 Future<List<Map<String, dynamic>>> getAllScrimsByGame(String game) async {
+  print('Fetching scrims for game: $game'); // Add this line
   final response = await http.get(
-    Uri.parse('http://172.30.12.51:8000/get_all_scrims/$game/'),
+    Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
   );
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-    if (data is List<dynamic>) {
-      final scrims = data
-          .map<Map<String, dynamic>>((scrim) => scrim as Map<String, dynamic>)
-          .toList();
+    if (data is Map<String, dynamic>) {
+      final scrims = data.entries.map<Map<String, dynamic>>(
+        (entry) {
+          final scrimId = entry.key;
+          if (entry.value is Map<String, dynamic>) {
+            final scrimDetails = entry.value as Map<String, dynamic>;
+            return {
+              'id': scrimId,
+              ...scrimDetails, // Include all scrim details in the result
+            };
+          } else {
+            throw Exception('Invalid scrim details for scrim with ID $scrimId');
+          }
+        },
+      ).toList();
       return scrims;
     } else {
       throw Exception('Invalid response data: $data');
     }
   } else {
+    print('Server error: ${response.body}'); // Add this line
     throw Exception(
         'Failed to fetch scrims. Server returned status code ${response.statusCode}');
   }
@@ -91,7 +108,7 @@ Future<List<Map<String, dynamic>>> getAllScrimsByGame(String game) async {
 Future<Map<String, dynamic>> getScrimDetails(
     String game, String scrimId) async {
   final response = await http.get(
-    Uri.parse('http://172.30.12.51:8000/get_scrim_details/$game/$scrimId/'),
+    Uri.parse('http://10.0.2.2:8000/get_scrim_details/$game/$scrimId/'),
   );
 
   if (response.statusCode == 200) {
