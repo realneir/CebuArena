@@ -280,34 +280,44 @@ def respond_to_request(request):
             pending_requests = team_data.get('pending_requests', [])
             
             if accept:
+                # Find the index of the request corresponding to the localId
+                request_index = None
+                for i, request in enumerate(pending_requests):
+                    if request.get('localId') == localId:
+                        request_index = i
+                        break
+
                 # Remove the player's id from the pending_requests list if it is accepted
-                if localId in pending_requests:
-                    pending_requests.remove(localId)
+                if request_index is not None:
+                    pending_requests.pop(request_index)
 
-                # Get the player's details
-                player_data = database.child('users').child(localId).get().val()
-                print(player_data)
-                if not player_data:
+                    # Update the pending_requests field with the modified list
+                    pending_requests_path = team_id + '/pending_requests'
+                    database.child('teams').child(pending_requests_path).set(pending_requests)
+
+                    # Get the player's details
+                    player_data = database.child('users').child(localId).get().val()
+                    print(player_data)
+                    if not player_data:
+                        return Response({'error_message': 'Invalid localId'}, status=400)
+
+                    player_details = {
+                        'username': player_data.get('username'),
+                        'firstname': player_data.get('firstname'),
+                        'lastname': player_data.get('lastname'),
+                        'id': localId
+                    }
+
+                    # Add the player to the members list
+                    members = team_data.get('members', [])
+                    members.append(player_details)
+
+                    # Update the members field
+                    members_path = team_id + '/members'
+                    database.child('teams').child(members_path).set(members)
+
+                else:
                     return Response({'error_message': 'Invalid localId'}, status=400)
-
-                player_details = {
-                    'username': player_data.get('username'),
-                    'firstname': player_data.get('firstname'),
-                    'lastname': player_data.get('lastname'),
-                    'id': localId
-                }
-
-                # Add the player to the members list
-                members = team_data.get('members', [])
-                members.append(player_details)
-
-                # Update the members field
-                members_path = team_id + '/members'
-                database.child('teams').child(members_path).set(members)
-
-            # Update the pending_requests field with the modified list
-            pending_requests_path = team_id + '/pending_requests'
-            database.child('teams').child(pending_requests_path).set(pending_requests)
 
             return Response({'message': 'Request processed successfully.'})
         except Exception as e:
@@ -329,6 +339,7 @@ def get_all_teams(request):
             teams_list = []
             for team_id, team in teams_data.items():
                 team_info = {
+                    'team_id': team_id,  # This is the key of the team in the 'teams' node
                     'team_name': team.get('team_name'),
                     'manager': {
                         'username': team.get('manager_username'),
@@ -339,6 +350,7 @@ def get_all_teams(request):
                     'game': team.get('game')
                 }
                 teams_list.append(team_info)
+                print(team_info)
 
             return Response({'teams': teams_list}, status=200)
         except Exception as e:

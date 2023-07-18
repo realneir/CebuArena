@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:captsone_ui/Screens/teams%20Profile/widgets/tabs/requests.dart';
+import 'package:captsone_ui/Screens/Manager%20team%20Profile/widgets/tabs/requests.dart';
 import 'package:captsone_ui/services/Teams%20provider/team.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';

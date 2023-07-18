@@ -124,7 +124,7 @@ class Homepage extends ConsumerWidget {
       case 1:
         return ScrimmagesPage();
       case 2:
-        return const TeamsList();
+        return TeamsList();
       case 3:
         return EventCreationPage();
       case 4:

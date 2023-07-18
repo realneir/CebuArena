@@ -8,10 +8,9 @@ import 'package:http/http.dart' as http;
 
 Widget buildPendingRequestsSection(
     BuildContext context, WidgetRef ref, Map<String, dynamic>? teamData) {
-  final List<dynamic>? pendingRequestsData = teamData?['pending_requests'];
-  final List<dynamic> pendingRequests =
-      pendingRequestsData?.cast<Map<String, dynamic>>() ?? [];
-
+  final dynamic pendingRequestsData = teamData?['pending_requests'];
+  final List<Map<String, dynamic>> pendingRequests =
+      pendingRequestsData is List ? List.from(pendingRequestsData) : [];
   return Padding(
     padding: const EdgeInsets.all(10),
     child: SingleChildScrollView(

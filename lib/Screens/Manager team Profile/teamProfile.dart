@@ -1,5 +1,5 @@
-import 'package:captsone_ui/Screens/teams%20Profile/widgets/teamProfileBody.dart';
-import 'package:captsone_ui/Screens/teams%20Profile/widgets/teamTab.dart';
+import 'package:captsone_ui/Screens/Manager%20team%20Profile/widgets/teamProfileBody.dart';
+import 'package:captsone_ui/Screens/Manager%20team%20Profile/widgets/teamTab.dart';
 import 'package:captsone_ui/services/Teams%20provider/team.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
