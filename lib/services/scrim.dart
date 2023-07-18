@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -12,38 +12,34 @@ final scrimIdProvider = StateProvider<String?>((ref) => null);
 final createScrimProvider =
     FutureProvider.family<Map<String, dynamic>, CreateScrimParams>(
   (ref, params) async {
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('http://10.0.2.2:8000/create_scrim/'),
+    final url = Uri.parse('http://10.0.2.2:8000/create_scrim/');
+
+    final response = await http.post(
+      url,
+      body: {
+        'game': params.dropdownValue,
+        'date': DateFormat('yyyy-MM-dd').format(params.selectedDate),
+        'time': formatTimeOfDay(params.selectedTime),
+        'preferences': params.preferences,
+        'contact': params.contactDetails,
+      },
     );
 
-    request.fields['game'] = params.dropdownValue;
-    request.fields['date'] =
-        DateFormat('yyyy-MM-dd').format(params.selectedDate);
-    request.fields['time'] = formatTimeOfDay(params.selectedTime);
-    request.fields['preferences'] = params.preferences;
-    request.fields['contact'] = params.contactDetails;
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
     if (response.statusCode == 201) {
-      // Decode the response body which contains the scrim ID
-      var responseBody = jsonDecode(response.body);
-      var scrimId = responseBody['scrim_id'];
+      final responseBody = jsonDecode(response.body);
+      final scrimId = responseBody['scrim_id'];
 
       if (scrimId == null || scrimId == "") {
         throw Exception('Scrim ID is missing in the response');
       }
 
-      // Now use this scrim ID to fetch the scrim details
       final scrimmageResponse = await http.get(
         Uri.parse(
             'http://10.0.2.2:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
       );
 
       if (scrimmageResponse.statusCode == 200) {
-        var completeScrimmageData = jsonDecode(scrimmageResponse.body);
+        final completeScrimmageData = jsonDecode(scrimmageResponse.body);
         return completeScrimmageData;
       } else {
         throw Exception(
@@ -71,8 +67,9 @@ class CreateScrimParams {
   );
 }
 
-Future<List<Map<String, dynamic>>> getAllScrimsByGame(String game) async {
-  print('Fetching scrims for game: $game'); // Add this line
+Future<List<Map<String, dynamic>>> getAllScrimsByGame(
+    String game, WidgetRef ref) async {
+  print('Fetching scrims for game: $game');
   final response = await http.get(
     Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
   );
@@ -80,26 +77,40 @@ Future<List<Map<String, dynamic>>> getAllScrimsByGame(String game) async {
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
     if (data is Map<String, dynamic>) {
-      final scrims = data.entries.map<Map<String, dynamic>>(
-        (entry) {
-          final scrimId = entry.key;
-          if (entry.value is Map<String, dynamic>) {
-            final scrimDetails = entry.value as Map<String, dynamic>;
-            return {
-              'id': scrimId,
-              ...scrimDetails, // Include all scrim details in the result
-            };
-          } else {
-            throw Exception('Invalid scrim details for scrim with ID $scrimId');
-          }
-        },
-      ).toList();
+      final List<Map<String, dynamic>> scrims = [];
+      final userDetails = ref.watch(userDetailsProvider);
+      final managerId = userDetails.localId;
+
+      await Future.forEach(data.entries, (entry) async {
+        final scrimId = entry.key;
+        if (entry.value is Map<String, dynamic>) {
+          final scrimDetails = entry.value as Map<String, dynamic>;
+
+          // Fetch the team name based on the manager_id from the scrimmage details
+          final teamResponse = await http.get(
+            Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+          );
+
+          final teamData = jsonDecode(teamResponse.body);
+          final teamName = teamData['team_name'];
+
+          scrims.add({
+            'id': scrimId,
+            'team_name': teamName,
+            ...scrimDetails, // Include all scrimmage details in the result
+          });
+        } else {
+          throw Exception(
+              'Invalid scrimmage details for scrimmage with ID $scrimId');
+        }
+      });
+
       return scrims;
     } else {
       throw Exception('Invalid response data: $data');
     }
   } else {
-    print('Server error: ${response.body}'); // Add this line
+    print('Server error: ${response.body}');
     throw Exception(
         'Failed to fetch scrims. Server returned status code ${response.statusCode}');
   }

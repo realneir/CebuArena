@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:captsone_ui/services/Teams%20provider/team.dart';
+import 'package:captsone_ui/services/teamsProvider/team.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'My App',
-      home: EmailPasswordLogin(),
+      home: CoverPage(),
     );
   }
 }

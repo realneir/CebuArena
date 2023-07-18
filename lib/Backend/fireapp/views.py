@@ -498,6 +498,16 @@ def get_scrim_details(request, game, scrim_id):
             scrim = database.child('scrims').child(game).child(scrim_id).get().val()
 
             if scrim:
+                # Fetch the team name based on the manager_id from the scrimmage details
+                manager_id = scrim.get('manager_id')
+                team = database.child('teams').child(manager_id).get().val()
+                if team:
+                    # Include the team_name in the scrim details
+                    scrim['team_name'] = team.get('teamName')
+                else:
+                    # If team is not found, set team_name to None or any other default value
+                    scrim['team_name'] = 'Team Not Found'
+
                 return Response(scrim)
             else:
                 return Response({'error_message': 'No scrim found for the given id'}, status=400)
@@ -506,6 +516,8 @@ def get_scrim_details(request, game, scrim_id):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
 
 @api_view(['GET'])
 @csrf_exempt
@@ -524,6 +536,7 @@ def get_all_scrims(request, game):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 
