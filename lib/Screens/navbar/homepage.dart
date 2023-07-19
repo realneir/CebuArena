@@ -62,6 +62,7 @@ class Homepage extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
+            color: Colors.blue[300],
             icon: const Icon(Icons.notifications_none),
             onPressed: () {},
           ),

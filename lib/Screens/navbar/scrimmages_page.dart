@@ -1,12 +1,15 @@
-import 'package:captsone_ui/services/scrim.dart';
+// ignore_for_file: sort_child_properties_last
+
+import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
 import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:captsone_ui/services/teamsProvider/fetchTeams.dart';
 import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ScrimmagesPage extends ConsumerWidget {
+  const ScrimmagesPage({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DefaultTabController(
@@ -45,7 +48,7 @@ class ScrimmagesPage extends ConsumerWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
@@ -68,7 +71,7 @@ class ScrimmagesPage extends ConsumerWidget {
               MaterialPageRoute(builder: (context) => Scrimmagedetails()),
             );
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           backgroundColor: Colors.black26,
         ),
       ),
@@ -79,40 +82,50 @@ class ScrimmagesPage extends ConsumerWidget {
 class ScrimDetailCard extends StatelessWidget {
   final Map<String, dynamic> scrim;
 
-  const ScrimDetailCard({required this.scrim});
+  const ScrimDetailCard({super.key, required this.scrim});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Center(
+        child: Row(
           children: [
-            Text(
-              'Team: ${scrim['team_name'] ?? 'Team Not Found'}',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            const CircleAvatar(
+              backgroundImage: AssetImage('assets/Slider1.jpg'),
+              // Set the path to your team logo image
+              radius: 25,
             ),
-            SizedBox(height: 10),
-            Text(
-              'Date: ${scrim['date']}',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Time: ${scrim['time']}',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Preferences: ${scrim['preferences']}',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Contact: ${scrim['contact']}',
-              style: TextStyle(fontSize: 16),
+            const SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Team: ${scrim['team_name']}',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(
+                    height: 4), // Add some spacing between the Text widgets
+                Text(
+                  'Date: ${scrim['date']}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Text(
+                  'Time: ${scrim['time']}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Text(
+                  'Preferences: ${scrim['preferences']}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Text(
+                  'Contact: ${scrim['contact']}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
           ],
         ),

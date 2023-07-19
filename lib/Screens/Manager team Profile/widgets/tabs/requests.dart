@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:captsone_ui/services/teamsProvider/team.dart';
+import 'package:captsone_ui/services/teamsProvider/create_team.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -60,16 +59,14 @@ Widget buildPendingRequestsSection(
                     SizedBox(width: 10),
                     IconButton(
                       onPressed: () {
-                        respondToRequest(
-                            request['team_id'], request['localId'], true, ref);
+                        _showConfirmationDialog(context, ref, request, true);
                       },
                       icon: Icon(Icons.check),
                       color: Colors.green,
                     ),
                     IconButton(
                       onPressed: () {
-                        respondToRequest(
-                            request['team_id'], request['localId'], false, ref);
+                        _showConfirmationDialog(context, ref, request, false);
                       },
                       icon: Icon(Icons.clear),
                       color: Colors.red,
@@ -84,14 +81,50 @@ Widget buildPendingRequestsSection(
   );
 }
 
-Future<void> respondToRequest(
-  String? teamId,
-  String? localId,
+Future<void> _showConfirmationDialog(
+  BuildContext context,
+  WidgetRef ref,
+  Map<String, dynamic> request,
+  bool accept,
+) async {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirmation'),
+        content: Text(accept
+            ? 'Accept the request from ${request['username']}?'
+            : 'Reject the request from ${request['username']}?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // Close the dialog
+              await _respondToRequest(request, accept, ref);
+            },
+            child: Text('Confirm'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _respondToRequest(
+  Map<String, dynamic> request,
   bool accept,
   WidgetRef ref,
 ) async {
   final managerId = ref.watch(userDetailsProvider).localId;
   final url = Uri.parse('http://10.0.2.2:8000/respond_to_request/');
+
+  final teamId = request['team_id'];
+  final localId = request['localId'];
 
   print(teamId);
   print(localId);

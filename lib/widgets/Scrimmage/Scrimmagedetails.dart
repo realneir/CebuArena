@@ -1,5 +1,5 @@
 import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:captsone_ui/services/scrim.dart';
+import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';

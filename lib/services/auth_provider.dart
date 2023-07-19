@@ -138,13 +138,6 @@ class UserDetailsProvider with ChangeNotifier {
       return 'An error occurred. Please try again.';
     }
   }
-
-  void setTeamName(String teamName) {
-    _teamName = teamName;
-    notifyListeners();
-  }
-
-  void signOut() {}
 }
 
 final authProvider = ChangeNotifierProvider<UserDetailsProvider>((ref) {

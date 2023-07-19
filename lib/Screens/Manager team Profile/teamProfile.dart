@@ -1,6 +1,6 @@
 import 'package:captsone_ui/Screens/Manager%20team%20Profile/widgets/teamProfileBody.dart';
 import 'package:captsone_ui/Screens/Manager%20team%20Profile/widgets/teamTab.dart';
-import 'package:captsone_ui/services/teamsProvider/team.dart';
+import 'package:captsone_ui/services/teamsProvider/create_team.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

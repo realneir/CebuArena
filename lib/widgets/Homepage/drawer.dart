@@ -1,7 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
 import 'package:captsone_ui/Screens/sidebar/profile_screen.dart';
 import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/services/firebase_auth_methods.dart';
+import 'package:captsone_ui/utils/showSnackBar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +22,7 @@ class SidebarMenu extends ConsumerWidget {
 
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         children: <Widget>[
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(
@@ -31,8 +35,8 @@ class SidebarMenu extends ConsumerWidget {
                 ],
               ),
             ),
-            accountName:
-                Text(username ?? '', style: TextStyle(color: Colors.white)),
+            accountName: Text(username ?? '',
+                style: const TextStyle(color: Colors.white)),
             accountEmail: Text(
               'Followers: 10 | Following: 20',
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
@@ -43,13 +47,13 @@ class SidebarMenu extends ConsumerWidget {
                 (username != null && username.isNotEmpty)
                     ? username[0].toUpperCase()
                     : '?',
-                style: TextStyle(fontSize: 40.0),
+                style: const TextStyle(fontSize: 40.0),
               ),
             ),
           ),
           ListTile(
-            leading: Icon(Icons.account_circle, color: Colors.black),
-            title: Text('Profile', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.account_circle, color: Colors.black),
+            title: const Text('Profile', style: TextStyle(color: Colors.black)),
             onTap: () {
               Navigator.push(
                 context,
@@ -57,18 +61,20 @@ class SidebarMenu extends ConsumerWidget {
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.verified_user, color: Colors.black),
-            title: Text('Get Verified', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.verified_user, color: Colors.black),
+            title: const Text('Get Verified',
+                style: TextStyle(color: Colors.black)),
             onTap: () {
               // Add your Get Verified page navigation logic here
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.leaderboard, color: Colors.black),
-            title: Text('Leaderboards', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.leaderboard, color: Colors.black),
+            title: const Text('Leaderboards',
+                style: TextStyle(color: Colors.black)),
             onTap: () {
               Navigator.push(
                 context,
@@ -76,32 +82,61 @@ class SidebarMenu extends ConsumerWidget {
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.settings, color: Colors.black),
-            title: Text('Settings', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.settings, color: Colors.black),
+            title:
+                const Text('Settings', style: TextStyle(color: Colors.black)),
             onTap: () {
               // Add your Settings page navigation logic here
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text('Logout', style: TextStyle(color: Colors.red)),
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () {
-              context.read<FirebaseAuthMethods>().signOut(context);
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text('Delete Account', style: TextStyle(color: Colors.red)),
-            onTap: () {
-              // ref.read(authProvider).deleteAccount();
+              _showLogoutConfirmationDialog(context);
             },
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showLogoutConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _handleSignOut(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _handleSignOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacementNamed(context, '/login');
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message!);
+    }
   }
 }

@@ -2,10 +2,11 @@ import 'package:captsone_ui/services/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class FirebaseAuthMethods {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   final FirebaseAuth _auth;
   FirebaseAuthMethods(this._auth);
 
@@ -63,27 +64,12 @@ class FirebaseAuthMethods {
   // SIGN OUT
   Future<void> signOut(BuildContext context) async {
     try {
-      // Send a POST request to the logout endpoint
-      await http.post(Uri.parse('http://10.0.2.2:8000/logout/'));
-      // await _auth.signOut();
-      // Perform any additional logout logic in your frontend
-    } catch (e) {
-      showSnackBar(context, 'Logout failed'); // Display an error message
-    }
-  }
-
-  Future<void> deleteAccount(BuildContext context) async {
-    try {
-      // Send a POST request to the delete account endpoint
-      await http
-          .post(Uri.parse('http://10.0.2.2:8000/delete_account/'), headers: {
-        'Authorization':
-            'Bearer your_token', // Replace 'your_token' with the user's token
-      });
-      // Perform any additional logic in your frontend, such as navigating to a different screen
-    } catch (e) {
-      showSnackBar(
-          context, 'Account deletion failed'); // Display an error message
+      await auth.signOut();
+      // Navigate to the login screen after successful sign-out
+      Navigator.pushReplacementNamed(context, '/login');
+    } on FirebaseAuthException catch (e) {
+      // Handle sign-out errors and show a message
+      showSnackBar(context, e.message!);
     }
   }
 }
