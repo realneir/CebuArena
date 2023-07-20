@@ -1,8 +1,32 @@
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_database/firebase_database.dart';
+
+class UserSyncService {
+  final DatabaseReference _userRef =
+      FirebaseDatabase.instance.reference().child('users');
+  final CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('users');
+
+  Future<void> syncUserData(String localId) async {
+    final event = await _userRef.child(localId).once();
+    final snapshot = event.snapshot;
+    if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
+      final data =
+          Map<String, dynamic>.from(snapshot.value as Map<dynamic, dynamic>);
+      await userCollection.doc(localId).set({
+        'firstname': data['firstname'],
+        'lastname': data['lastname'],
+        'username': data['username'],
+        'email': data['email'], // Also syncing email
+      });
+    }
+  }
+}
 
 class FirebaseAuthMethods extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -12,9 +36,8 @@ class FirebaseAuthMethods extends ChangeNotifier {
 
   User get user => _auth.currentUser!;
 
-  // STATE PERSISTENCE STREAM
   Stream<User?> get authState => FirebaseAuth.instance.authStateChanges();
-  //email
+
   Future<void> signUpWithEmail({
     required String email,
     required String password,
@@ -27,6 +50,7 @@ class FirebaseAuthMethods extends ChangeNotifier {
         email: email,
         password: password,
       );
+      await UserSyncService().syncUserData(_auth.currentUser!.uid);
 
       await sendEmailVerification(context);
     } on FirebaseAuthException catch (e) {
@@ -40,7 +64,8 @@ class FirebaseAuthMethods extends ChangeNotifier {
     required BuildContext context,
   }) async {
     try {
-      _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await UserSyncService().syncUserData(_auth.currentUser!.uid);
       if (!_auth.currentUser!.emailVerified) {
         await sendEmailVerification(context);
       }
@@ -51,7 +76,6 @@ class FirebaseAuthMethods extends ChangeNotifier {
     }
   }
 
-  //Email Verification
   Future<void> sendEmailVerification(BuildContext context) async {
     try {
       _auth.currentUser!.sendEmailVerification();
@@ -61,14 +85,11 @@ class FirebaseAuthMethods extends ChangeNotifier {
     }
   }
 
-  // SIGN OUT
   Future<void> signOut(BuildContext context) async {
     try {
       await auth.signOut();
-      // Navigate to the login screen after successful sign-out
       Navigator.pushReplacementNamed(context, '/login');
     } on FirebaseAuthException catch (e) {
-      // Handle sign-out errors and show a message
       showSnackBar(context, e.message!);
     }
   }

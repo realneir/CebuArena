@@ -1,4 +1,4 @@
-import 'package:captsone_ui/Screens/navbar/messages_screen.dart';
+import 'package:captsone_ui/Screens/navbar/messages/messages_screen.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/widgets/Eventscreen/Eventsdetail.dart';
