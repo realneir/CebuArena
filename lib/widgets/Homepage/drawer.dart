@@ -2,13 +2,12 @@
 
 import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
 import 'package:captsone_ui/Screens/sidebar/profile_screen.dart';
-import 'package:captsone_ui/services/auth_provider.dart';
-import 'package:captsone_ui/services/firebase_auth_methods.dart';
+import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/firebase_auth_methods.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:provider/provider.dart';
 
 class SidebarMenu extends ConsumerWidget {
   final String? username;

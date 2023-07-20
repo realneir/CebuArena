@@ -2,7 +2,7 @@
 
 import 'package:captsone_ui/Screens/authentication/signup_screen.dart';
 import 'package:captsone_ui/Screens/navbar/homepage.dart';
-import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

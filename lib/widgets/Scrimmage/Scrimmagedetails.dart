@@ -1,4 +1,4 @@
-import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

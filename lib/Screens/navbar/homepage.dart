@@ -1,5 +1,6 @@
+import 'package:captsone_ui/Screens/navbar/messages_screen.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
-import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/widgets/Eventscreen/Eventsdetail.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -127,9 +128,9 @@ class Homepage extends ConsumerWidget {
       case 2:
         return TeamsList();
       case 3:
-        return EventCreationPage();
+      // return EventCreationPage();
       case 4:
-      // return Messages(); himo og bag o nga dart file para ani
+        return ChatPage();
       default:
         return Container();
     }

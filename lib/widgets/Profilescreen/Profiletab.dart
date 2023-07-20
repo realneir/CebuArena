@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:captsone_ui/services/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/services/teamsProvider/create_team.dart';
 import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildTeamsSection.dart';
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
