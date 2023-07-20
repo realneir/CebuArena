@@ -1,5 +1,7 @@
-import 'package:captsone_ui/Screens/navbar/messages/messages_screen.dart';
+import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
+import 'package:captsone_ui/Screens/navbar/messages/user_list.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
+import 'package:captsone_ui/models/user_model.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/widgets/Eventscreen/Eventsdetail.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +40,7 @@ class Homepage extends ConsumerWidget {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        key: UniqueKey(), // Add a UniqueKey here to ensure uniqueness
+        key: UniqueKey(),
         leading: IconButton(
           color: Colors.blue[300],
           icon: const Icon(Icons.menu),
@@ -83,7 +85,7 @@ class Homepage extends ConsumerWidget {
       drawer: SidebarMenu(
         username: username,
       ),
-      body: _buildPage(currentIndex.currentIndex),
+      body: _buildPage(ref, currentIndex.currentIndex),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex.currentIndex,
         onTap: (index) {
@@ -119,7 +121,7 @@ class Homepage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPage(int index) {
+  Widget _buildPage(WidgetRef ref, int index) {
     switch (index) {
       case 0:
         return HomeView();
@@ -130,7 +132,8 @@ class Homepage extends ConsumerWidget {
       case 3:
       // return EventCreationPage();
       case 4:
-        return ChatPage();
+        return UserListPage();
+
       default:
         return Container();
     }

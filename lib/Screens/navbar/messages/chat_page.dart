@@ -6,7 +6,10 @@ import 'package:captsone_ui/services/chatProvider/chat_service.dart';
 
 class ChatPage extends ConsumerWidget {
   final TextEditingController _controller = TextEditingController();
-  final String chatId = '123'; // Replace with actual chat id
+  final String userId;
+  final String username;
+
+  ChatPage({required this.userId, required this.username});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,14 +18,15 @@ class ChatPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('General Chat'),
+        title: Text('Chat with $username'),
         backgroundColor: Colors.blueAccent,
       ),
       body: Column(
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: chatService.getMessageStream(chatId),
+              stream:
+                  chatService.getMessageStream(userDetails.localId!, userId),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
@@ -60,9 +64,23 @@ class ChatPage extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  sentByName == firstname ? 'You' : sentByName),
+                                sentByName == firstname ? 'You' : sentByName,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: sentByName == firstname
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                               SizedBox(height: 5),
-                              Text(data['message']),
+                              Text(
+                                data['message'],
+                                style: TextStyle(
+                                  color: sentByName == firstname
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -100,7 +118,12 @@ class ChatPage extends ConsumerWidget {
                       String firstname = userDetails.firstname ?? '';
                       if (localId.isNotEmpty && firstname.isNotEmpty) {
                         chatService.sendMessage(
-                            chatId, _controller.text, localId, firstname);
+                          localId,
+                          userId,
+                          _controller.text,
+                          firstname,
+                          username,
+                        );
                         _controller.clear();
                       }
                     }
