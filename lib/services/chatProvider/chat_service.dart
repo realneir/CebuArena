@@ -4,22 +4,31 @@ class ChatService {
   final CollectionReference chatCollection =
       FirebaseFirestore.instance.collection('chats');
 
-  Future<DocumentReference<Map<String, dynamic>>> sendMessage(String chatId,
-      String message, String localId, String firstname, String username) async {
+  Future<DocumentReference<Map<String, dynamic>>> sendMessage(
+      String senderId,
+      String receiverId,
+      String message,
+      String firstname,
+      String username) async {
+    String chatId = senderId.compareTo(receiverId) > 0
+        ? '$senderId-$receiverId'
+        : '$receiverId-$senderId';
+
     final docRef = await chatCollection.doc(chatId).collection('messages').add({
       'message': message,
-      'sentBy': localId,
-      'sentByName': firstname, // Adding sent by name
+      'sentBy': senderId,
+      'sentByName': firstname,
       'sentAt': Timestamp.now(),
     });
-
-    // Send a notification or trigger a real-time event to notify the other user about the new message
-    // You can use push notifications or WebSocket communication for real-time messaging
 
     return docRef;
   }
 
-  Stream<QuerySnapshot> getMessageStream(String chatId, String userId) {
+  Stream<QuerySnapshot> getMessageStream(String senderId, String receiverId) {
+    String chatId = senderId.compareTo(receiverId) > 0
+        ? '$senderId-$receiverId'
+        : '$receiverId-$senderId';
+
     return chatCollection
         .doc(chatId)
         .collection('messages')
