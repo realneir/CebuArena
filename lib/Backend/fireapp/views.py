@@ -461,16 +461,17 @@ def get_team_info(request, manager_id):
 def create_scrim(request):
     if request.method == 'POST':
         
+        manager_id = request.data.get('manager_id')  
+        # team_name = request.data.get('team_name')  # <-- Add this line
         game = request.data.get('game')
         date = request.data.get('date')
         time = request.data.get('time')
         preferences = request.data.get('preferences')
         contact = request.data.get('contact')
 
-        # Get the user who created the scrim (assuming you have user authentication)
-        user = request.user
-
         data = {
+            'manager_id': manager_id,  
+            # 'team_name': team_name,  # <-- Add this line
             'game' : game,
             'date': date,
             'time': time,
@@ -479,16 +480,16 @@ def create_scrim(request):
         }
 
         try:
-            # Push the data to the 'scrims' collection in Firebase under the specific game folder
             new_scrim = database.child('scrims').child(game).push(data)
-            scrim_id = new_scrim["name"]  # Get the generated scrim ID
-            data["scrim_id"] = scrim_id  # Add scrim ID to the data
+            scrim_id = new_scrim["name"]  
+            data["scrim_id"] = scrim_id  
 
             return Response(data, status=201)
         except Exception as e:
             return Response({'error_message': str(e)}, status=500)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 
@@ -531,7 +532,22 @@ def get_all_scrims(request, game):
             scrims = database.child('scrims').child(game).get().val()
 
             if scrims:
-                return Response(scrims)
+                result_scrims = []
+                for scrim_id, scrim_data in scrims.items():
+                    manager_id = scrim_data.get('manager_id')
+                    team_name = None
+
+                    if manager_id:
+                        # Fetch the team name based on the manager_id from the database
+                        team_data = database.child('teams').child(manager_id).get().val()
+                        if team_data:
+                            team_name = team_data.get('team_name')
+
+                    # Add the team name to the scrimmage data
+                    scrim_data['team_name'] = team_name
+                    result_scrims.append({scrim_id: scrim_data})
+
+                return Response(result_scrims)
             else:
                 return Response({'error_message': 'No scrims found for the given game'}, status=400)
 
@@ -539,6 +555,7 @@ def get_all_scrims(request, game):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 

@@ -12,11 +12,30 @@ final scrimIdProvider = StateProvider<String?>((ref) => null);
 final createScrimProvider =
     FutureProvider.family<Map<String, dynamic>, CreateScrimParams>(
   (ref, params) async {
+    final userDetails = ref.watch(userDetailsProvider);
+    final managerId = userDetails.localId;
+
+    print('ManagerId: $managerId'); // Print managerId
+
+    final teamResponse = await http.get(
+      Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+    );
+
+    print('TeamResponse: ${teamResponse.body}'); // Print the response body
+    print('StatusCode: ${teamResponse.statusCode}'); // Print the status code
+
+    final teamData = jsonDecode(teamResponse.body);
+    final teamName = teamData['team_name'] ?? 'Default team name';
+
+    print('Team name: $teamName'); // Print teamName
+
     final url = Uri.parse('http://10.0.2.2:8000/create_scrim/');
 
     final response = await http.post(
       url,
       body: {
+        'manager_id': managerId,
+        'team_name': teamName, // Add this line
         'game': params.dropdownValue,
         'date': DateFormat('yyyy-MM-dd').format(params.selectedDate),
         'time': formatTimeOfDay(params.selectedTime),
@@ -76,38 +95,47 @@ Future<List<Map<String, dynamic>>> getAllScrimsByGame(
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-    if (data is Map<String, dynamic>) {
+
+    if (data is List<dynamic>) {
       final List<Map<String, dynamic>> scrims = [];
       final userDetails = ref.watch(userDetailsProvider);
       final managerId = userDetails.localId;
+      final managerUsername = userDetails.username;
 
-      await Future.forEach(data.entries, (entry) async {
-        final scrimId = entry.key;
-        if (entry.value is Map<String, dynamic>) {
-          final scrimDetails = entry.value as Map<String, dynamic>;
+      print('ManagerId: $managerId'); // Print managerId
+
+      await Future.forEach(data, (entry) async {
+        if (entry is Map<String, dynamic>) {
+          final scrimId = entry.keys.first;
+          final scrimDetails = entry.values.first;
 
           // Fetch the team name based on the manager_id from the scrimmage details
           final teamResponse = await http.get(
             Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
           );
 
+          print('TeamResponse: ${teamResponse.body}');
           final teamData = jsonDecode(teamResponse.body);
-          final teamName = teamData['team_name'];
+          print('Team data: $teamData');
+          final teamName = teamData['team_name'] ?? 'Default team name';
+          print('Team name: $teamName');
 
           scrims.add({
+            'manager_id': managerId,
             'id': scrimId,
             'team_name': teamName,
+            'manager_username': managerUsername,
             ...scrimDetails, // Include all scrimmage details in the result
           });
         } else {
-          throw Exception(
-              'Invalid scrimmage details for scrimmage with ID $scrimId');
+          print('Invalid scrimmage details for entry: $entry');
         }
       });
 
       return scrims;
     } else {
-      throw Exception('Invalid response data: $data');
+      print('Invalid response data: $data');
+      return []; // Return an empty list if the response data is not in the expected format
     }
   } else {
     print('Server error: ${response.body}');
