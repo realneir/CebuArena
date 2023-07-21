@@ -16,10 +16,10 @@ Widget buildPlaceholderContent(String mainCategory, String subCategory) {
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Center(
-            child: Text(
-              'Placeholder for ${mainCategory} - ${subCategory} TOP ${index + 1}',
-            ),
+          child: ListTile(
+            leading: Text('${index + 1}'),
+            title: Text('${mainCategory} - ${subCategory} ${index + 1}'),
+            trailing: Text('${100 - index * 10}% Winrate'),
           ),
         );
       },
