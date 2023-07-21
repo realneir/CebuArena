@@ -3,11 +3,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/services/chatProvider/chat_service.dart';
+import 'package:intl/intl.dart';
 
 class ChatPage extends ConsumerWidget {
   final TextEditingController _controller = TextEditingController();
   final String userId;
   final String username;
+  final ScrollController _scrollController = ScrollController();
 
   ChatPage({required this.userId, required this.username});
 
@@ -23,22 +25,26 @@ class ChatPage extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          Expanded(
+          Flexible(
+            // Add this
             child: StreamBuilder<QuerySnapshot>(
               stream:
                   chatService.getMessageStream(userDetails.localId!, userId),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return Center(child: Text('Something went wrong'));
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                if (snapshot.hasData) {
+                  Future.delayed(Duration.zero, () {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeOut,
+                    );
+                  });
                 }
 
                 return ListView.builder(
-                  reverse: true,
+                  controller: _scrollController,
+                  reverse: false,
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (BuildContext context, int index) {
                     DocumentSnapshot document = snapshot.data!.docs[index];
@@ -46,6 +52,12 @@ class ChatPage extends ConsumerWidget {
                         document.data() as Map<String, dynamic>;
                     String sentByName = data['sentByName'] as String? ?? '';
                     String firstname = userDetails.firstname ?? '';
+                    Timestamp timestamp =
+                        data['sentAt'] as Timestamp? ?? Timestamp.now();
+                    DateTime date = timestamp.toDate();
+
+                    String timeText = DateFormat('hh:mm a').format(date);
+
                     return Container(
                       padding: EdgeInsets.all(10),
                       child: Align(
@@ -79,6 +91,16 @@ class ChatPage extends ConsumerWidget {
                                   color: sentByName == firstname
                                       ? Colors.white
                                       : Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                timeText,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: sentByName == firstname
+                                      ? Colors.white70
+                                      : Colors.black54,
                                 ),
                               ),
                             ],
@@ -125,6 +147,11 @@ class ChatPage extends ConsumerWidget {
                           username,
                         );
                         _controller.clear();
+                        _scrollController.animateTo(
+                          _scrollController.position.maxScrollExtent,
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.easeOut,
+                        );
                       }
                     }
                   },

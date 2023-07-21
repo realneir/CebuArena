@@ -32,7 +32,7 @@ class ChatService {
     return chatCollection
         .doc(chatId)
         .collection('messages')
-        .orderBy('sentAt', descending: true)
+        .orderBy('sentAt', descending: false) // ordered from oldest to newest
         .snapshots();
   }
 }
