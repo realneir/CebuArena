@@ -1,6 +1,7 @@
 import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -8,29 +9,122 @@ Future<String?> getCurrentUserId() async {
   return FirebaseAuth.instance.currentUser?.uid;
 }
 
-class UserListPage extends StatefulWidget {
+class UserListPage extends HookWidget {
   const UserListPage({Key? key}) : super(key: key);
 
   @override
-  _UserListPageState createState() => _UserListPageState();
-}
+  Widget build(BuildContext context) {
+    final _searchController = useTextEditingController();
+    final _users = useState<List<dynamic>>([]);
+    final _filteredUsers = useState<List<dynamic>>([]);
+    final currentUserId = useState<String?>(null);
 
-class _UserListPageState extends State<UserListPage> {
-  List<dynamic> _users = [];
-  String? currentUserId;
-
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUserId().then((userId) {
-      setState(() {
-        currentUserId = userId;
+    useEffect(() {
+      getCurrentUserId().then((userId) {
+        currentUserId.value = userId;
       });
+      _fetchUsers(currentUserId.value, _users, _filteredUsers);
+      return _searchController.dispose;
+    }, []);
+
+    _searchController.addListener(() {
+      final searchText = _searchController.text.toLowerCase();
+      final filteredUsers = _users.value
+          .where((user) => user['username'].toLowerCase().contains(searchText))
+          .toList();
+      _filteredUsers.value = filteredUsers;
     });
-    _fetchUsers();
+
+    return Scaffold(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search',
+                hintText: 'Search',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25.0),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<String?>(
+              future: getCurrentUserId(),
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  if (currentUserId.value == null) {
+                    return Center(child: Text('User not logged in'));
+                  }
+                  return ListView.builder(
+                    itemCount: _filteredUsers.value.length,
+                    itemBuilder: (context, index) {
+                      final userData = _filteredUsers.value[index];
+                      return Container(
+                        margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0,
+                            5.0), // Add left and right margin here
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.grey[300],
+                            child: Text(
+                              userData['username']?[0].toUpperCase() ?? '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            userData['username'] ?? '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Text(
+                            userData['email'] ?? '',
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          onTap: () {
+                            _navigateToChatPage(context, userData['id'] ?? '',
+                                userData['username'] ?? '');
+                          },
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Future<void> _fetchUsers() async {
+  Future<void> _fetchUsers(
+    String? currentUserId,
+    ValueNotifier<List<dynamic>> users,
+    ValueNotifier<List<dynamic>> filteredUsers,
+  ) async {
     try {
       final response =
           await http.get(Uri.parse('http://10.0.2.2:8000/all_users/'));
@@ -38,15 +132,11 @@ class _UserListPageState extends State<UserListPage> {
         final responseBody = response.body;
         if (responseBody.isNotEmpty) {
           final List<dynamic> usersData = json.decode(responseBody);
-          String? currentUserId =
-              await getCurrentUserId(); // Fetch current user id
           if (currentUserId != null) {
-            usersData.removeWhere((user) =>
-                user['id'] == currentUserId); // Filter out current user
+            usersData.removeWhere((user) => user['id'] == currentUserId);
           }
-          setState(() {
-            _users = usersData;
-          });
+          users.value = usersData;
+          filteredUsers.value = usersData;
         }
       } else {
         throw Exception('Failed to fetch users');
@@ -56,87 +146,12 @@ class _UserListPageState extends State<UserListPage> {
     }
   }
 
-  void _navigateToChatPage(String userId, String username) {
+  void _navigateToChatPage(
+      BuildContext context, String userId, String username) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChatPage(userId: userId, username: username),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'User List',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 2,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
-      body: FutureBuilder<String?>(
-        future: getCurrentUserId(),
-        builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            String? currentUserId = snapshot.data;
-            if (currentUserId == null) {
-              return Center(child: Text('User not logged in'));
-            }
-            return ListView.builder(
-              itemCount: _users.length,
-              itemBuilder: (context, index) {
-                final userData = _users[index];
-
-                if (userData['id'] == currentUserId) {
-                  return Container(); // Do not display the current user
-                }
-
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    child: Text(
-                      userData['username']?[0].toUpperCase() ?? '',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    userData['username'] ?? '',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text(
-                    userData['email'] ?? '',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.grey,
-                  ),
-                  onTap: () {
-                    _navigateToChatPage(
-                        userData['id'] ?? '', userData['username'] ?? '');
-                  },
-                );
-              },
-            );
-          }
-        },
       ),
     );
   }
