@@ -14,6 +14,10 @@ final chatServiceProvider = Provider<ChatService>((ref) => ChatService());
 
 final authRegisProvider = Provider<AuthRegis>((ref) => AuthRegis());
 
+final authStateChangesProvider = StreamProvider<User?>((ref) {
+  return FirebaseAuth.instance.authStateChanges();
+});
+
 class AuthRegis extends ChangeNotifier {
   static const String API_ENDPOINT = "http://10.0.2.2:8000/register/";
 
@@ -49,6 +53,7 @@ class AuthRegis extends ChangeNotifier {
 }
 
 class UserDetailsProvider with ChangeNotifier {
+  String? _email;
   String? _username;
   String? _firstname;
   String? _lastname;
@@ -56,6 +61,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool _isManager = false;
   String? _teamName;
 
+  String? get email => _email;
   String? get username => _username;
   String? get firstname => _firstname;
   String? get lastname => _lastname;
@@ -63,14 +69,26 @@ class UserDetailsProvider with ChangeNotifier {
   bool get isManager => _isManager;
   String? get teamName => _teamName;
 
-  Future<void> fetchUserDetails() async {
+  void updateUser(User? user) async {
+    if (user != null) {
+      await fetchUserDetails(user);
+      print(
+          'User is logged in: ${user.email}'); // prints user's email on the console
+    } else {
+      print('No user logged in');
+    }
+  }
+
+  Future<void> fetchUserDetails(User user) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         print('No user logged in');
         return;
+      } else {
+        print(
+            'User Logged in: ${user.email}'); // prints user's email on the console
       }
-
       final token = await user.getIdToken();
 
       final response = await http.get(
@@ -82,6 +100,7 @@ class UserDetailsProvider with ChangeNotifier {
         final data = json.decode(response.body);
         _username = data['username'];
         _firstname = data['firstname'];
+        _email = data['email'];
         _lastname = data['lastname'];
         _localId = data['localId'];
         _isManager = data['is_manager'] ?? false;
@@ -97,13 +116,13 @@ class UserDetailsProvider with ChangeNotifier {
   }
 
   Future<String?> loginWithEmailAPI({
-    required String username,
+    required String email,
     required String password,
   }) async {
     String url = 'http://10.0.2.2:8000/login/';
 
     Map<String, String> data = {
-      'username': username,
+      'email': email,
       'password': password,
     };
 
@@ -119,26 +138,42 @@ class UserDetailsProvider with ChangeNotifier {
         _username = responseData['username'];
         _localId = responseData['localId'];
         _firstname = responseData['firstname'];
+        _email = responseData['email'];
         _lastname = responseData['lastname'];
         _isManager = responseData['is_manager'] ?? false;
 
+        print('EMAIL: $_email');
         print('Local ID: $_localId');
         print('Username: $_username');
         print('First Name: $_firstname');
         print('Last Name: $_lastname');
         print('isManager: $_isManager');
 
+        // Notify listeners that user details have been updated
         notifyListeners();
+
+        // Return null to indicate no error
         return null;
       } else {
         var responseBody = json.decode(response.body);
         var errorMessage = responseBody['error_message'];
+
+        // Return the error message to indicate there was an error
         return errorMessage;
       }
     } catch (error) {
       print('Error occurred while logging in: $error');
       return 'An error occurred. Please try again.';
     }
+  }
+}
+
+void checkUserLoggedIn() {
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    print('No user is currently logged in.');
+  } else {
+    print('User is logged in. User id: ${user.uid}, email: ${user.email}');
   }
 }
 

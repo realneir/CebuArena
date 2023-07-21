@@ -1,7 +1,12 @@
 import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+Future<String?> getCurrentUserId() async {
+  return FirebaseAuth.instance.currentUser?.uid;
+}
 
 class UserListPage extends StatefulWidget {
   const UserListPage({Key? key}) : super(key: key);
@@ -12,10 +17,16 @@ class UserListPage extends StatefulWidget {
 
 class _UserListPageState extends State<UserListPage> {
   List<dynamic> _users = [];
+  String? currentUserId;
 
   @override
   void initState() {
     super.initState();
+    getCurrentUserId().then((userId) {
+      setState(() {
+        currentUserId = userId;
+      });
+    });
     _fetchUsers();
   }
 
@@ -25,8 +36,14 @@ class _UserListPageState extends State<UserListPage> {
           await http.get(Uri.parse('http://10.0.2.2:8000/all_users/'));
       if (response.statusCode == 200) {
         final responseBody = response.body;
-        if (responseBody != null && responseBody.isNotEmpty) {
+        if (responseBody.isNotEmpty) {
           final List<dynamic> usersData = json.decode(responseBody);
+          String? currentUserId =
+              await getCurrentUserId(); // Fetch current user id
+          if (currentUserId != null) {
+            usersData.removeWhere((user) =>
+                user['id'] == currentUserId); // Filter out current user
+          }
           setState(() {
             _users = usersData;
           });
@@ -63,42 +80,62 @@ class _UserListPageState extends State<UserListPage> {
         elevation: 2,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: ListView.builder(
-        itemCount: _users.length,
-        itemBuilder: (context, index) {
-          final userData = _users[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.grey[300],
-              child: Text(
-                userData['username']?[0].toUpperCase() ?? '',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            title: Text(
-              userData['username'] ?? '',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            subtitle: Text(
-              userData['email'] ?? '',
-              style: const TextStyle(
-                color: Colors.grey,
-              ),
-            ),
-            trailing: const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.grey,
-            ),
-            onTap: () {
-              _navigateToChatPage(
-                  userData['id'] ?? '', userData['username'] ?? '');
-            },
-          );
+      body: FutureBuilder<String?>(
+        future: getCurrentUserId(),
+        builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            String? currentUserId = snapshot.data;
+            if (currentUserId == null) {
+              return Center(child: Text('User not logged in'));
+            }
+            return ListView.builder(
+              itemCount: _users.length,
+              itemBuilder: (context, index) {
+                final userData = _users[index];
+
+                if (userData['id'] == currentUserId) {
+                  return Container(); // Do not display the current user
+                }
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.grey[300],
+                    child: Text(
+                      userData['username']?[0].toUpperCase() ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    userData['username'] ?? '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    userData['email'] ?? '',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey,
+                  ),
+                  onTap: () {
+                    _navigateToChatPage(
+                        userData['id'] ?? '', userData['username'] ?? '');
+                  },
+                );
+              },
+            );
+          }
         },
       ),
     );

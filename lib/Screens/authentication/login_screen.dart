@@ -3,7 +3,9 @@
 import 'package:captsone_ui/Screens/authentication/signup_screen.dart';
 import 'package:captsone_ui/Screens/navbar/homepage.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/firebase_auth_methods.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -13,24 +15,52 @@ class EmailPasswordLogin extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userDetails = ref.watch(userDetailsProvider);
-    final usernameController = useTextEditingController();
+    final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
 
     void handleLogin(BuildContext context) async {
-      if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
         showSnackBar(context, 'Please enter username and password');
         return;
       }
 
-      String? errorMessage = await userDetails.loginWithEmailAPI(
-        username: usernameController.text,
+      String email =
+          emailController.text.trim(); // Trim any leading/trailing spaces
+
+      print("Email: $email"); // Check if the email is correct
+
+      final authMethods = ref.read(firebaseAuthMethodsProvider);
+      final userDetails = ref.read(userDetailsProvider);
+
+      // Log in with Firebase first
+      UserCredential? userCredential;
+      String? firebaseErrorMessage;
+      try {
+        userCredential = await authMethods.loginWithEmail(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+      } catch (e) {
+        print('Firebase Login Error: $e');
+        firebaseErrorMessage = e.toString(); // Capture the error message
+      }
+
+      // If Firebase login was unsuccessful, show the error message
+      if (userCredential == null) {
+        showSnackBar(
+            context, firebaseErrorMessage ?? 'Failed to log in with Firebase');
+        return;
+      }
+
+      // If Firebase login was successful, log in with your API
+      String? apiErrorMessage = await userDetails.loginWithEmailAPI(
+        email: userCredential.user?.email ?? '',
         password: passwordController.text,
       );
 
-      if (errorMessage == null) {
-        await userDetails.fetchUserDetails();
-
+      if (apiErrorMessage == null) {
+        // User details have been updated in the UserDetailsProvider
+        // Continue with your navigation or other logic here
         if (userDetails.username != null) {
           Navigator.pushReplacement(
             context,
@@ -40,7 +70,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
           showSnackBar(context, 'Failed to fetch user details');
         }
       } else {
-        showSnackBar(context, errorMessage);
+        showSnackBar(context, apiErrorMessage);
       }
     }
 
@@ -72,7 +102,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 25),
                   TextField(
-                    controller: usernameController,
+                    controller: emailController,
                     decoration: InputDecoration(
                       hintText: 'Username',
                       filled: true,

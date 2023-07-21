@@ -63,46 +63,47 @@ def register(request):
 
 
 
-
 @api_view(['POST'])
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
-        username = request.data.get('username')
+        email_from_request = request.data.get('email')  # Use a different variable name here
 
-        # Fetch the email, firstname, and lastname associated with this username from the database
+        # Fetch the email, firstname, lastname, and username associated with this email from the database
         users = database.child('users').get()
         email = None
         firstname = None
         lastname = None
         local_id = None
         is_manager = False
+        username = None  # Initialize the username variable
 
         for user in users.each():
-            if user.val()['username'] == username:
-                email = user.val()['email']
+            if user.val()['email'] == email_from_request:  # Use the new variable here
                 firstname = user.val().get('firstname', '')
                 lastname = user.val().get('lastname', '')
                 is_manager = user.val().get('is_manager', False)
+                username = user.val().get('username', '')  # Get the username from the database
                 local_id = user.key()
                 break
-                
-        if email is None:
-            return Response({'error_message': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if email_from_request is None:
+            return Response({'error_message': 'Invalid email'}, status=status.HTTP_400_BAD_REQUEST)
 
         password = request.data.get('password')
 
         try:
             # Perform the login process
-            user = authe.sign_in_with_email_and_password(email, password)
+            user = authe.sign_in_with_email_and_password(email_from_request, password)
 
-            # Return the username, localId, firstname, and lastname along with the success response
+            # Return the username, localId, firstname, lastname, and is_manager along with the success response
             return Response({
                 'message': 'Login successful',
-                'username': username,
+                'email': email_from_request,
                 'localId': local_id,
                 'firstname': firstname,
-                'lastname': lastname,  # Add comma here
+                'lastname': lastname,
+                'username': username,  # Include the username in the response
                 'is_manager': is_manager
             })
         except Exception as e:
@@ -111,6 +112,8 @@ def login(request):
             return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @api_view(['GET'])

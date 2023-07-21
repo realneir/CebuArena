@@ -10,6 +10,7 @@ import 'package:captsone_ui/widgets/Homepage/drawer.dart';
 import 'package:captsone_ui/widgets/Homepage/events_leaderboards_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:captsone_ui/Screens/navbar/teamlist.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final currentIndexProvider = ChangeNotifierProvider<CurrentIndexNotifier>(
   (ref) => CurrentIndexNotifier(),
@@ -26,17 +27,16 @@ class CurrentIndexNotifier extends ChangeNotifier {
   }
 }
 
-class Homepage extends ConsumerWidget {
+class Homepage extends HookConsumerWidget {
   const Homepage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    checkUserLoggedIn();
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final currentIndex = ref.watch(currentIndexProvider);
-    final username =
-        ref.watch(userDetailsProvider).username ?? 'username is not passed';
+    final username = ref.watch(userDetailsProvider).username;
 
-    debugPrint('Username: $username');
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(

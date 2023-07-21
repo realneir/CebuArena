@@ -3,8 +3,8 @@ import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserSyncService {
   final DatabaseReference _userRef =
@@ -28,69 +28,60 @@ class UserSyncService {
   }
 }
 
-class FirebaseAuthMethods extends ChangeNotifier {
-  final FirebaseAuth auth = FirebaseAuth.instance;
+final firebaseAuthMethodsProvider = Provider<FirebaseAuthMethods>(
+    (ref) => FirebaseAuthMethods(FirebaseAuth.instance));
 
+class FirebaseAuthMethods {
   final FirebaseAuth _auth;
+
   FirebaseAuthMethods(this._auth);
 
-  User get user => _auth.currentUser!;
-
-  Stream<User?> get authState => FirebaseAuth.instance.authStateChanges();
-
-  Future<void> signUpWithEmail({
+  Future<UserCredential?> loginWithEmail({
     required String email,
     required String password,
-    required String firstname,
-    required String lastname,
-    required BuildContext context,
   }) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      await UserSyncService().syncUserData(_auth.currentUser!.uid);
-
-      await sendEmailVerification(context);
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!);
-    }
-  }
-
-  Future<void> loginWithEmail({
-    required String email,
-    required String password,
-    required BuildContext context,
-  }) async {
-    try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      await UserSyncService().syncUserData(_auth.currentUser!.uid);
-      if (!_auth.currentUser!.emailVerified) {
-        await sendEmailVerification(context);
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      await UserSyncService().syncUserData(userCredential.user!.uid);
+      if (!userCredential.user!.emailVerified) {
+        await sendEmailVerification();
       }
-      await Provider.of<UserDetailsProvider>(context, listen: false)
-          .fetchUserDetails();
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!);
+      return userCredential;
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 
-  Future<void> sendEmailVerification(BuildContext context) async {
-    try {
-      _auth.currentUser!.sendEmailVerification();
-      showSnackBar(context, 'NA SEND NA ANG EMAIL VERIFICATION!');
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!);
+  Future<void> sendEmailVerification() async {
+    User? user = _auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
     }
   }
 
-  Future<void> signOut(BuildContext context) async {
+  Future<UserCredential?> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
     try {
-      await auth.signOut();
-      Navigator.pushReplacementNamed(context, '/login');
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!);
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await UserSyncService().syncUserData(userCredential.user!.uid);
+      await sendEmailVerification();
+      return userCredential;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      print(e);
     }
   }
 }
