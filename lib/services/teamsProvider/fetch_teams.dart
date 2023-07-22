@@ -52,3 +52,34 @@ Future<List<Team>> fetchTeams() async {
 final teamsProvider = FutureProvider<List<Team>>((ref) async {
   return fetchTeams();
 });
+
+class joinProvider {
+  static Future<void> joinTeam(String teamId, String localId) async {
+    final url = Uri.parse(
+        'http://10.0.2.2:8000/join_team/'); // URL to your API endpoint
+
+    try {
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'team_id': teamId,
+          'localId': localId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Successfully sent the request
+        print('Request sent successfully.');
+      } else {
+        // If the server returns an unexpected status code
+        throw Exception('Failed to join team');
+      }
+    } catch (e) {
+      // There was an error sending the request
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
+}

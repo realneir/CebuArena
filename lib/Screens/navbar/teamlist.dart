@@ -2,6 +2,7 @@
 
 import 'package:captsone_ui/services/teamsProvider/fetch_teams.dart';
 import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
+import 'package:captsone_ui/widgets/View%20Teams/profileTeam.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,46 +68,57 @@ class TeamsList extends ConsumerWidget {
   }
 }
 
-class TeamDetailCard extends StatelessWidget {
+class TeamDetailCard extends ConsumerWidget {
   final Team team;
 
   const TeamDetailCard({required this.team});
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Row(
-            children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage('assets/Slider1.jpg'),
-                // Set the path to your team logo image
-                radius: 25,
-              ),
-              SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    team.teamName,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () {
+        // Add your redirection logic here
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ViewTeam(team: team), // Replace this with your ViewTeam class
+          ),
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  backgroundImage: AssetImage('assets/Slider1.jpg'),
+                  radius: 25,
+                ),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      team.teamName,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Manager: ${team.manager['username'] ?? ''}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      'Manager: ${team.manager['username'] ?? ''}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
