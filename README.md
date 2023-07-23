@@ -1,6 +1,6 @@
-# captsone_ui
+# CebuArena
 
-A new Flutter project.
+Capstone
 
 ## Getting Started
 
