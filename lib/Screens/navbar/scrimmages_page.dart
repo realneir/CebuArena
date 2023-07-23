@@ -1,6 +1,5 @@
 // ignore_for_file: sort_child_properties_last
-
-import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
+import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
 import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -101,7 +100,6 @@ class ScrimDetailCard extends StatelessWidget {
           children: [
             CircleAvatar(
               backgroundImage: AssetImage('assets/teamProfile.jpg'),
-              // Use the correct path to your team logo image
               radius: 25,
             ),
             const SizedBox(width: 20),
@@ -109,15 +107,32 @@ class ScrimDetailCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Team: ${scrim['team_name']}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  FutureBuilder(
+                    future: fetchTeamName(scrim['manager_id']),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text(
+                          'Team: Loading...',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Team: Error: ${snapshot.error}');
+                      } else {
+                        final teamName = snapshot.data as String? ?? 'N/A';
+                        return Text(
+                          '$teamName',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }
+                    },
                   ),
-                  const SizedBox(
-                      height: 8), // Add some spacing between the Text widgets
+                  const SizedBox(height: 8),
                   Text(
                     'Date: ${scrim['date']}',
                     style: const TextStyle(fontSize: 16),

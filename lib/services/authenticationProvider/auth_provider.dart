@@ -103,6 +103,7 @@ class UserDetailsProvider with ChangeNotifier {
         _email = data['email'];
         _lastname = data['lastname'];
         _localId = data['localId'];
+        _teamName = data['team_name'];
         _isManager = data['is_manager'] ?? false;
 
         notifyListeners();

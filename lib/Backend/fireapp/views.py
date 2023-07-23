@@ -461,38 +461,42 @@ def get_team_info(request, manager_id):
     return Response({'error_message': 'Invalid request'}, status=400)
 
 @api_view(['POST'])
+@csrf_exempt
 def create_scrim(request):
     if request.method == 'POST':
-        
-        manager_id = request.data.get('manager_id')  
-        # team_name = request.data.get('team_name')  # <-- Add this line
+        manager_id = request.data.get('manager_id')
+        team_name = request.data.get('team_name')
         game = request.data.get('game')
         date = request.data.get('date')
         time = request.data.get('time')
         preferences = request.data.get('preferences')
         contact = request.data.get('contact')
 
-        data = {
-            'manager_id': manager_id,  
-            # 'team_name': team_name,  # <-- Add this line
-            'game' : game,
-            'date': date,
-            'time': time,
-            'preferences': preferences,
-            'contact': contact
-        }
-
         try:
-            new_scrim = database.child('scrims').child(game).push(data)
-            scrim_id = new_scrim["name"]  
-            data["scrim_id"] = scrim_id  
+            user_data = database.child('users').child(manager_id).get().val()
+            if user_data:
+                username = user_data.get('username')
+            else:
+                return Response({'error_message': 'Invalid manager_id'}, status=400)
 
-            return Response(data, status=201)
+            data = {
+                'manager_id': manager_id,
+                'manager_username': username,
+                'team_name': team_name,
+                'game': game,
+                'date': date,
+                'time': time,
+                'preferences': preferences,
+                'contact': contact,
+            }
+
+            scrim_ref = database.child('scrims').child(game).push(data)
+
+            return Response({'message': 'Scrim created successfully.'})
         except Exception as e:
-            return Response({'error_message': str(e)}, status=500)
+            return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
-
 
 @api_view(['GET'])
 @csrf_exempt
@@ -506,12 +510,6 @@ def get_scrim_details(request, game, scrim_id):
                 # Fetch the team name based on the manager_id from the scrimmage details
                 manager_id = scrim.get('manager_id')
                 team = database.child('teams').child(manager_id).get().val()
-                if team:
-                    # Include the team_name in the scrim details
-                    scrim['team_name'] = team.get('teamName')
-                else:
-                    # If team is not found, set team_name to None or any other default value
-                    scrim['team_name'] = 'Team Not Found'
 
                 return Response(scrim)
             else:

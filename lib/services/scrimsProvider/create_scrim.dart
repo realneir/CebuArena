@@ -15,19 +15,11 @@ final createScrimProvider =
     final userDetails = ref.watch(userDetailsProvider);
     final managerId = userDetails.localId;
 
-    print('ManagerId: $managerId'); // Print managerId
+    print('ManagerId: $managerId');
 
-    final teamResponse = await http.get(
+    await http.get(
       Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
     );
-
-    print('TeamResponse: ${teamResponse.body}'); // Print the response body
-    print('StatusCode: ${teamResponse.statusCode}'); // Print the status code
-
-    final teamData = jsonDecode(teamResponse.body);
-    final teamName = teamData['team_name'] ?? 'Default team name';
-
-    print('Team name: $teamName'); // Print teamName
 
     final url = Uri.parse('http://10.0.2.2:8000/create_scrim/');
 
@@ -35,7 +27,6 @@ final createScrimProvider =
       url,
       body: {
         'manager_id': managerId,
-        'team_name': teamName, // Add this line
         'game': params.dropdownValue,
         'date': DateFormat('yyyy-MM-dd').format(params.selectedDate),
         'time': formatTimeOfDay(params.selectedTime),
@@ -75,7 +66,7 @@ class CreateScrimParams {
   final DateTime selectedDate;
   final TimeOfDay selectedTime;
   final String preferences;
-  final String contactDetails;
+  final String? contactDetails;
 
   CreateScrimParams(
     this.dropdownValue,
@@ -86,93 +77,9 @@ class CreateScrimParams {
   );
 }
 
-Future<List<Map<String, dynamic>>> getAllScrimsByGame(
-    String game, WidgetRef ref) async {
-  print('Fetching scrims for game: $game');
-  final response = await http.get(
-    Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
-  );
-
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-
-    if (data is List<dynamic>) {
-      final List<Map<String, dynamic>> scrims = [];
-      final userDetails = ref.watch(userDetailsProvider);
-      final managerId = userDetails.localId;
-      final managerUsername = userDetails.username;
-
-      print('ManagerId: $managerId'); // Print managerId
-
-      await Future.forEach(data, (entry) async {
-        if (entry is Map<String, dynamic>) {
-          final scrimId = entry.keys.first;
-          final scrimDetails = entry.values.first;
-
-          // Fetch the team name based on the manager_id from the scrimmage details
-          final teamResponse = await http.get(
-            Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
-          );
-
-          print('TeamResponse: ${teamResponse.body}');
-          final teamData = jsonDecode(teamResponse.body);
-          print('Team data: $teamData');
-          final teamName = teamData['team_name'] ?? 'Default team name';
-          print('Team name: $teamName');
-
-          scrims.add({
-            'manager_id': managerId,
-            'id': scrimId,
-            'team_name': teamName,
-            'manager_username': managerUsername,
-            ...scrimDetails, // Include all scrimmage details in the result
-          });
-        } else {
-          print('Invalid scrimmage details for entry: $entry');
-        }
-      });
-
-      return scrims;
-    } else {
-      print('Invalid response data: $data');
-      return []; // Return an empty list if the response data is not in the expected format
-    }
-  } else {
-    print('Server error: ${response.body}');
-    throw Exception(
-        'Failed to fetch scrims. Server returned status code ${response.statusCode}');
-  }
-}
-
-Future<Map<String, dynamic>> getScrimDetails(
-    String game, String scrimId) async {
-  final response = await http.get(
-    Uri.parse('http://10.0.2.2:8000/get_scrim_details/$game/$scrimId/'),
-  );
-
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return data;
-  } else {
-    throw Exception(
-        'Failed to fetch scrim details. Server returned status code ${response.statusCode}');
-  }
-}
-
-final getScrimDetailsProvider =
-    FutureProvider.family<Map<String, dynamic>, ScrimDetailsParams>(
-        (ref, params) => getScrimDetails(params.game, params.scrimId));
-
-class ScrimDetailsParams {
-  final String game;
-  final String scrimId;
-
-  ScrimDetailsParams(this.game, this.scrimId);
-}
-
 String formatTimeOfDay(TimeOfDay tod) {
   final now = DateTime.now();
   final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
-  final format = DateFormat.jm(); //"6:00 AM"
+  final format = DateFormat.jm();
   return format.format(dt);
 }
