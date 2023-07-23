@@ -238,23 +238,32 @@ def join_team(request):
             if not user_data:
                 return Response({'error_message': 'Invalid localId'}, status=400)
 
-            team_data = database.child('teams').child(team_id).get().val()
-            if not team_data:
-                return Response({'error_message': 'Invalid team_id'}, status=400)
-
-            # Retrieve the username and email from the user data
+            # Retrieve the username, email, firstname and lastname from the user data
             username = user_data.get('username')
             email = user_data.get('email')
+            firstname = user_data.get('firstname')
+            lastname = user_data.get('lastname')
 
-            # Add the player's username and email to the pending_requests list
-            pending_requests = team_data.get('pending_requests', [])
-            pending_requests.append({'team_id': team_id, 'localId': localId, 'username': username, 'email': email})
+            # Retrieve all the game categories data from Firebase
+            all_games = database.child('teams').get().val()
+            
+            if all_games:
+                # Loop through each game category
+                for game, teams in all_games.items():
+                    # Check if team with the given team_id exists
+                    if team_id in teams:
+                        team_data = teams[team_id]
+                        # Add the player's details to the pending_requests list
+                        pending_requests = team_data.get('pending_requests', [])
+                        pending_requests.append({'team_id': team_id, 'localId': localId, 'username': username, 'email': email, 'firstname': firstname, 'lastname': lastname})
+                        
+                        # Update the pending_requests field in the database
+                        database.child('teams').child(game).child(team_id).update({'pending_requests': pending_requests})
 
-            # Update the pending_requests field
-            pending_requests_path = team_id + '/pending_requests'
-            database.child('teams').child(pending_requests_path).set(pending_requests)
+                        return Response({'message': 'Request sent successfully.'})
 
-            return Response({'message': 'Request sent successfully.'})
+            return Response({'error_message': 'Invalid team_id'}, status=400)
+
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
@@ -265,13 +274,14 @@ def join_team(request):
 @csrf_exempt
 def respond_to_request(request):
     if request.method == 'POST':
+        game = request.data.get('game')  # This is needed to specify the game under which the team falls
         team_id = request.data.get('team_id')
         localId = request.data.get('localId')
         accept = request.data.get('accept')  # This should be a boolean
         manager_id = request.data.get('manager_id')  # This should be the id of the manager making the request
 
         try:
-            team_data = database.child('teams').child(team_id).get().val()
+            team_data = database.child('teams').child(game).child(team_id).get().val()
             if not team_data:
                 return Response({'error_message': 'Invalid team_id'}, status=400)
 
@@ -295,12 +305,10 @@ def respond_to_request(request):
                     pending_requests.pop(request_index)
 
                     # Update the pending_requests field with the modified list
-                    pending_requests_path = team_id + '/pending_requests'
-                    database.child('teams').child(pending_requests_path).set(pending_requests)
+                    database.child('teams').child(game).child(team_id).update({'pending_requests': pending_requests})
 
                     # Get the player's details
                     player_data = database.child('users').child(localId).get().val()
-                    print(player_data)
                     if not player_data:
                         return Response({'error_message': 'Invalid localId'}, status=400)
 
@@ -316,8 +324,7 @@ def respond_to_request(request):
                     members.append(player_details)
 
                     # Update the members field
-                    members_path = team_id + '/members'
-                    database.child('teams').child(members_path).set(members)
+                    database.child('teams').child(game).child(team_id).update({'members': members})
 
                 else:
                     return Response({'error_message': 'Invalid localId'}, status=400)
@@ -327,6 +334,7 @@ def respond_to_request(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 

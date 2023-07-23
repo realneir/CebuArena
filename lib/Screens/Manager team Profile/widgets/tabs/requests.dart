@@ -59,14 +59,16 @@ Widget buildPendingRequestsSection(
                     SizedBox(width: 10),
                     IconButton(
                       onPressed: () {
-                        _showConfirmationDialog(context, ref, request, true);
+                        _showConfirmationDialog(context, ref, request, true,
+                            teamData); // Add teamData here
                       },
                       icon: Icon(Icons.check),
                       color: Colors.green,
                     ),
                     IconButton(
                       onPressed: () {
-                        _showConfirmationDialog(context, ref, request, false);
+                        _showConfirmationDialog(context, ref, request, false,
+                            teamData); // Add teamData here
                       },
                       icon: Icon(Icons.clear),
                       color: Colors.red,
@@ -86,6 +88,7 @@ Future<void> _showConfirmationDialog(
   WidgetRef ref,
   Map<String, dynamic> request,
   bool accept,
+  Map<String, dynamic>? teamData, // add teamData parameter here
 ) async {
   return showDialog<void>(
     context: context,
@@ -105,7 +108,8 @@ Future<void> _showConfirmationDialog(
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop(); // Close the dialog
-              await _respondToRequest(request, accept, ref);
+              await _respondToRequest(request, accept, ref,
+                  teamData?['game']); // pass teamData here
             },
             child: Text('Confirm'),
           ),
@@ -119,6 +123,7 @@ Future<void> _respondToRequest(
   Map<String, dynamic> request,
   bool accept,
   WidgetRef ref,
+  String? game, // change game parameter type here
 ) async {
   final managerId = ref.watch(userDetailsProvider).localId;
   final url = Uri.parse('http://10.0.2.2:8000/respond_to_request/');
@@ -130,7 +135,8 @@ Future<void> _respondToRequest(
   print(localId);
   print(managerId);
 
-  if (teamId == null || localId == null || managerId == null) {
+  if (teamId == null || localId == null || managerId == null || game == null) {
+    // check if game is null
     print('Invalid parameters');
     return;
   }
@@ -138,12 +144,16 @@ Future<void> _respondToRequest(
   try {
     final response = await http.post(
       url,
-      body: {
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
         'team_id': teamId,
         'localId': localId,
         'accept': accept.toString(),
         'manager_id': managerId,
-      },
+        'game': game, // Include the game data
+      }),
     );
 
     if (response.statusCode == 200) {
