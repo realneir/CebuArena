@@ -77,6 +77,7 @@ def login(request):
         lastname = None
         local_id = None
         is_manager = False
+        is_organizer = False
         username = None  # Initialize the username variable
 
         for user in users.each():
@@ -84,6 +85,7 @@ def login(request):
                 firstname = user.val().get('firstname', '')
                 lastname = user.val().get('lastname', '')
                 is_manager = user.val().get('is_manager', False)
+                is_organizer = user.val().get('is_organizer', False)
                 username = user.val().get('username', '')  # Get the username from the database
                 local_id = user.key()
                 break
@@ -105,7 +107,8 @@ def login(request):
                 'firstname': firstname,
                 'lastname': lastname,
                 'username': username,  # Include the username in the response
-                'is_manager': is_manager
+                'is_manager': is_manager,
+                'is_organizer': is_organizer,
             })
         except Exception as e:
             # Handle login errors and return an appropriate response
