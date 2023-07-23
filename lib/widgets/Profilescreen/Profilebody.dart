@@ -77,12 +77,12 @@ class ProfileBody extends ConsumerWidget {
                   // Column 3 - View Org Button
                   Padding(
                     padding:
-                        EdgeInsets.only(left: 45.0), // Add left padding here
+                        EdgeInsets.only(left: 20.0), // Add left padding here
                     child: Column(
                       children: [
                         ElevatedButton(
                           onPressed: () {},
-                          child: const Text('View Org'),
+                          child: const Text('Create Org'),
                           style: ElevatedButton.styleFrom(
                             primary: Colors.black,
                           ),

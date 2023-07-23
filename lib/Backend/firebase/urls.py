@@ -22,7 +22,11 @@ urlpatterns = [
     path('create_scrim/', views.create_scrim, name='create_scrim'),
     path('get_scrim_details/<str:game>/<str:scrim_id>/', views.get_scrim_details, name='get_scrim_details'),
     path('get_all_scrims/<str:game>/', views.get_all_scrims, name='get_all_scrinms'),
-
+    path('create_organization/', views.create_organization, name='create_organization'),
+    path('approve_organization/', views.approve_organization, name='approve_organization'),
+    path('all_organizations/', views.get_all_organizations, name='get_all_organizations'),
+    path('approve_member/', views.approve_member, name='approve_member'),
+    path('join_organization/', views.join_organization, name='join_organization'),
 
     
 
