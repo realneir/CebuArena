@@ -213,7 +213,7 @@ def create_team(request):
                 'game': game
             }
 
-            team_ref = database.child('teams').push(data)
+            team_ref = database.child('teams').child(game).push(data)
 
             # Update the user's data to set 'role' to 'manager: true'
             user_ref = database.child('users').child(manager_id)
@@ -335,25 +335,27 @@ def respond_to_request(request):
 def get_all_teams(request):
     if request.method == 'GET':
         try:
-            teams_data = database.child('teams').get().val()
-            if not teams_data:
+            games_data = database.child('teams').get().val()
+            if not games_data:
                 return Response({'error_message': 'No teams found'}, status=404)
 
             teams_list = []
-            for team_id, team in teams_data.items():
-                team_info = {
-                    'team_id': team_id,  # This is the key of the team in the 'teams' node
-                    'team_name': team.get('team_name'),
-                    'manager': {
-                        'username': team.get('manager_username'),
-                        'firstname': team.get('manager_firstname'),
-                        'lastname': team.get('manager_lastname')
-                    },
-                    'members': team.get('members'),
-                    'game': team.get('game')
-                }
-                teams_list.append(team_info)
-                print(team_info)
+            for game, teams in games_data.items():
+                for team_id, team in teams.items():
+                    team_info = {
+                        'team_id': team_id,  # This is the key of the team in the 'teams' node
+                        'team_name': team.get('team_name'),
+                        'manager': {
+                            'username': team.get('manager_username'),
+                            'firstname': team.get('manager_firstname'),
+                            'lastname': team.get('manager_lastname'),
+                            'id': team.get('manager_id'),
+                        },
+                        'members': team.get('members'),
+                        'game': game
+                    }
+                    teams_list.append(team_info)
+                    print(team_info)
 
             return Response({'teams': teams_list}, status=200)
         except Exception as e:
@@ -431,20 +433,21 @@ def get_all_teams(request):
 
 #     return Response({'error_message': 'Invalid request'}, status=400)
 
-
 @api_view(['GET'])
 @csrf_exempt
 def get_team_info(request, manager_id):
     if request.method == 'GET':
         try:
-            # Retrieve all the team data from Firebase
-            all_teams = database.child('teams').get().val()
+            # Retrieve all the game categories data from Firebase
+            all_games = database.child('teams').get().val()
             
-            if all_teams:
-                # Find the team that has the given manager_id
-                for team_id, team_info in all_teams.items():
-                    if team_info.get('manager_id') == manager_id:
-                        return Response(team_info)
+            if all_games:
+                # Loop through each game category
+                for game, teams in all_games.items():
+                    # Find the team that has the given manager_id
+                    for team_id, team_info in teams.items():
+                        if team_info.get('manager_id') == manager_id:
+                            return Response(team_info)
                 
                 # If no team is found with the given manager_id
                 return Response({'error_message': 'No team found for the given manager_id'}, status=400)
@@ -489,8 +492,6 @@ def create_scrim(request):
             return Response({'error_message': str(e)}, status=500)
 
     return Response({'error_message': 'Invalid request'}, status=400)
-
-
 
 
 @api_view(['GET'])
