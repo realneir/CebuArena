@@ -1,4 +1,5 @@
 import 'package:captsone_ui/services/EventsProvider/eventsProvider.dart';
+import 'package:captsone_ui/services/EventsProvider/fetchEvents.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,10 +158,12 @@ class EventCreationScreen extends ConsumerWidget {
                     },
                     child: const Text('Pick Time'),
                   ),
+
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () async {
                       final container = ref.read(createEventProvider);
+
                       // Get the event data from the input fields
                       final result = await container.createEvent(
                         eventName: eventNameController.text,
@@ -173,6 +176,12 @@ class EventCreationScreen extends ConsumerWidget {
                         selectedDate: selectedDate!,
                         selectedTime: selectedTime!,
                       );
+
+                      // If the creation is successful
+                      if (result == 'Event created successfully') {
+                        // Refresh the events
+                        ref.read(eventsProvider.notifier).refreshEvents();
+                      }
 
                       // Handle the result as per your requirement (e.g., show a snackbar)
                       ScaffoldMessenger.of(context).showSnackBar(
