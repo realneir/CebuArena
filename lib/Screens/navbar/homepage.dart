@@ -1,9 +1,7 @@
-import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
+import 'package:captsone_ui/Screens/navbar/event_screen.dart';
 import 'package:captsone_ui/Screens/navbar/messages/user_list.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
-import 'package:captsone_ui/models/user_model.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
-import 'package:captsone_ui/widgets/Eventscreen/Eventsdetail.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
@@ -130,7 +128,7 @@ class Homepage extends HookConsumerWidget {
       case 2:
         return TeamsList();
       case 3:
-      // return EventCreationPage();
+        return EventsPage();
       case 4:
         return UserListPage();
 

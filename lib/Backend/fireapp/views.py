@@ -79,6 +79,7 @@ def login(request):
         is_manager = False
         is_organizer = False
         username = None  # Initialize the username variable
+        org_name = None  # Initialize the org_name variable
 
         for user in users.each():
             if user.val()['email'] == email_from_request:  # Use the new variable here
@@ -88,6 +89,14 @@ def login(request):
                 is_organizer = user.val().get('is_organizer', False)
                 username = user.val().get('username', '')  # Get the username from the database
                 local_id = user.key()
+
+                # Check if the user is an organizer and has an associated organization
+                if is_organizer and 'organizations' in user.val():
+                    org_id = next(iter(user.val()['organizations']), None)
+                    if org_id:
+                        org_data = database.child('organizations').child(org_id).get().val()
+                        if org_data:
+                            org_name = org_data.get('org_name', '')
                 break
 
         if email_from_request is None:
@@ -99,7 +108,7 @@ def login(request):
             # Perform the login process
             user = authe.sign_in_with_email_and_password(email_from_request, password)
 
-            # Return the username, localId, firstname, lastname, and is_manager along with the success response
+            # Return the username, localId, firstname, lastname, is_manager, is_organizer, and org_name in the response
             return Response({
                 'message': 'Login successful',
                 'email': email_from_request,
@@ -109,6 +118,7 @@ def login(request):
                 'username': username,  # Include the username in the response
                 'is_manager': is_manager,
                 'is_organizer': is_organizer,
+                'org_name': org_name,  # Include the org_name in the response
             })
         except Exception as e:
             # Handle login errors and return an appropriate response
@@ -116,6 +126,7 @@ def login(request):
             return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -592,6 +603,7 @@ def create_organization(request):
                     'localId': localId  # Optionally store the localId of the owner
                 },
                 'members': [],  # Set members to None for now
+                'pending_requests': [],  # Set pending_requests to None for now
                 'org_description': org_description,
                 'is_approved': False  # The org needs to be approved by the admin first
             }
@@ -685,32 +697,33 @@ def join_organization(request):
             if not org_data:
                 return Response({'error_message': 'Invalid org_id'}, status=400)
 
-            # Check if the organization is approved by the admin
-            if org_data.get('is_approved', False):
-                # Fetch the user data from the database
-                user_data = database.child('users').child(localId).get().val()
-                if not user_data:
-                    return Response({'error_message': 'Invalid localId'}, status=400)
+            # Fetch the user data from the database
+            user_data = database.child('users').child(localId).get().val()
+            if not user_data:
+                return Response({'error_message': 'Invalid localId'}, status=400)
 
-                # Update the user data to be a member of the organization and mark them as an organizer
-                if 'organizations' not in user_data:
-                    user_data['organizations'] = {}
+            # If the organization is not approved, add the user's request to the pending_requests section
+            if 'pending_requests' not in org_data:
+                org_data['pending_requests'] = {}  # Initialize the pending_requests field as a dictionary
 
-                user_data['organizations'][org_id] = {'isOrganizer': False}
-                if 'is_organizer' in user_data and user_data['is_organizer']:
-                    user_data['organizations'][org_id]['isOrganizer'] = True
+            # Add the user's request details to the pending_requests
+            org_data['pending_requests'][localId] = {
+                'firstname': user_data.get('firstname', ''),
+                'lastname': user_data.get('lastname', ''),
+                'username': user_data.get('username', ''),
+                'isOrganizer': user_data.get('is_organizer', False),
+            }
 
-                # Save the updated user data in the database
-                database.child('users').child(localId).update(user_data)
+            # Save the updated organization data in the database
+            database.child('organizations').child(org_id).update(org_data)
 
-                return Response({'message': 'You have joined the organization as a member.'})
-            else:
-                return Response({'error_message': 'The organization is not approved yet. Please wait for approval.'}, status=403)
+            return Response({'message': 'Your request to join the organization is pending approval.'}, status=202)
 
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 @api_view(['POST'])
@@ -746,6 +759,10 @@ def approve_member(request):
                 member_data['organizations'][org_id] = {'isOrganizer': True}
                 member_data['is_organizer'] = True
 
+                # Add the organization ID and name to the user data
+                member_data['organizations'][org_id]['org_name'] = org_data['org_name']
+                member_data['organizations'][org_id]['org_id'] = org_id
+
                 # Save the updated member data in the database
                 database.child('users').child(member_localId).update(member_data)
 
@@ -768,6 +785,96 @@ def approve_member(request):
                 return Response({'message': 'Member approved successfully.'})
             else:
                 return Response({'error_message': 'The organization is not approved yet. Please wait for approval.'}, status=403)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['POST'])
+@csrf_exempt
+def create_event(request):
+    if request.method == 'POST':
+        localId = request.data.get('localId')
+        event_name = request.data.get('event_name')
+        selected_game = request.data.get('selected_game')
+        event_description = request.data.get('event_description')
+        rules = request.data.get('rules')
+        prizes = request.data.get('prizes')
+        maximum_teams = request.data.get('maximum_teams')
+        event_date = request.data.get('event_date')  # this should be passed as a string in ISO format
+        event_time = request.data.get('event_time')  # this should be passed as a string in 24h format
+
+        # Check if the user is an organizer
+        user = database.child('users').child(localId).get().val()
+
+        try:
+            # Get the organization details of the user
+            org_id = next(iter(user.get('organizations', {})), None)
+            if not org_id:
+                return Response({'error_message': 'User is not part of any organization'}, status=400)
+
+            org_details = database.child('organizations').child(org_id).get().val()
+            if not org_details:
+                return Response({'error_message': 'Invalid organization ID'}, status=400)
+
+            org_name = org_details.get('org_name', '')
+            username = user.get('username', '')
+
+            # Create the event with the provided data and organization details
+            data = {
+                'event_name': event_name,
+                'selected_game': selected_game,
+                'event_description': event_description,
+                'rules': rules,
+                'prizes': prizes,
+                'maximum_teams': maximum_teams,
+                'event_date': event_date,
+                'event_time': event_time,
+                'organization_name': org_name,
+                'creator_username': username,  # Include the username of the event creator
+            }
+
+            # First push the event to get a unique ID
+            event = database.child('events').child(selected_game).push(data)
+
+            # Add the event_id to the event data
+            event_id = event['name']
+            data['event_id'] = event_id
+
+            # Save the event data again, now with the event_id included
+            database.child('events').child(selected_game).child(event_id).set(data)
+
+            # Return a success response
+            return Response({'message': 'Event creation successful'})
+        except Exception as e:
+            # Handle event creation errors and return an appropriate response
+            error_message = str(e)
+            return Response({'error_message': error_message}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['GET'])
+@csrf_exempt
+def get_all_events(request):
+    if request.method == 'GET':
+        try:
+            # Retrieve all events from Firebase
+            all_events = database.child('events').get().val()
+
+            if all_events:
+                # Prepare the list of events
+                event_list = []
+                for game, events in all_events.items():
+                    for event_id, event_data in events.items():
+                        # Add the event_id and the selected_game to the event data
+                        event_data['event_id'] = event_id
+                        event_data['selected_game'] = game
+                        event_list.append(event_data)
+
+                return Response(event_list)
+            else:
+                return Response({'error_message': 'No events found'}, status=400)
 
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)

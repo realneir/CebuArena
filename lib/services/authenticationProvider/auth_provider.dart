@@ -61,6 +61,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool _isManager = false;
   String? _teamName;
   bool _isOrganizer = false;
+  String? _organizationName;
 
   String? get email => _email;
   String? get username => _username;
@@ -70,6 +71,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool get isManager => _isManager;
   bool get isOrganizer => _isOrganizer;
   String? get teamName => _teamName;
+  String? get organizationName => _organizationName;
 
   void updateUser(User? user) async {
     if (user != null) {
@@ -88,8 +90,7 @@ class UserDetailsProvider with ChangeNotifier {
         print('No user logged in');
         return;
       } else {
-        print(
-            'User Logged in: ${user.email}'); // prints user's email on the console
+        print('User Logged in: ${user.email}');
       }
       final token = await user.getIdToken();
 
@@ -108,6 +109,14 @@ class UserDetailsProvider with ChangeNotifier {
         _teamName = data['team_name'];
         _isManager = data['is_manager'] ?? false;
         _isOrganizer = data['is_organizer'] ?? false;
+
+        // Extract the organization name from the nested data
+        final organizationsData = data['organizations'];
+        if (organizationsData != null && organizationsData is Map) {
+          final orgId = organizationsData.keys.first;
+          final orgDetails = organizationsData[orgId];
+          _organizationName = orgDetails['org_name'];
+        }
 
         notifyListeners();
       } else {
@@ -146,6 +155,7 @@ class UserDetailsProvider with ChangeNotifier {
         _lastname = responseData['lastname'];
         _isManager = responseData['is_manager'] ?? false;
         _isOrganizer = responseData['is_organizer'] ?? false;
+        _organizationName = responseData['org_name'];
 
         print('EMAIL: $_email');
         print('Local ID: $_localId');
@@ -154,6 +164,7 @@ class UserDetailsProvider with ChangeNotifier {
         print('Last Name: $_lastname');
         print('isManager: $_isManager');
         print('isOrganizer: $_isOrganizer');
+        print('Organization Name: $_organizationName');
 
         // Notify listeners that user details have been updated
         notifyListeners();
