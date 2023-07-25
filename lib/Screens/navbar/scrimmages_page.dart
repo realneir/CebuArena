@@ -1,5 +1,6 @@
 // ignore_for_file: sort_child_properties_last
 import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
+import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
 import 'package:captsone_ui/widgets/Scrimmage/scrimmage_details.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ class ScrimmagesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userDetails = ref.watch(userDetailsProvider);
+
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
@@ -70,16 +73,18 @@ class ScrimmagesPage extends ConsumerWidget {
             );
           }).toList(),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push<Map<String, dynamic>>(
-              context,
-              MaterialPageRoute(builder: (context) => Scrimmagedetails()),
-            );
-          },
-          child: const Icon(Icons.add),
-          backgroundColor: Colors.black26,
-        ),
+        floatingActionButton: userDetails.isManager
+            ? FloatingActionButton(
+                onPressed: () async {
+                  await Navigator.push<Map<String, dynamic>>(
+                    context,
+                    MaterialPageRoute(builder: (context) => Scrimmagedetails()),
+                  );
+                },
+                child: const Icon(Icons.add),
+                backgroundColor: Colors.black26,
+              )
+            : null, // Hide the FloatingActionButton if not a manager
       ),
     );
   }
