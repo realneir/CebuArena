@@ -25,9 +25,9 @@ class Scrimmagedetails extends ConsumerWidget {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return Scaffold(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: Colors.grey[300],
+            backgroundColor: Colors.white,
             elevation: 0,
             title: Text(
               'Create Scrim',
@@ -39,67 +39,61 @@ class Scrimmagedetails extends ConsumerWidget {
               ),
             ),
             centerTitle: true,
+            iconTheme: IconThemeData(
+              color: Colors.black, // Change the color of the back button
+            ),
           ),
           body: SingleChildScrollView(
+            padding: EdgeInsets.all(20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 100.0),
-                  child: Material(
-                    color: Colors.grey,
-                    child: DropdownButton<String>(
-                      value: selectedGame,
-                      hint: const Text('Select a game'),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedGame = newValue;
-                        });
-                      },
-                      items: games.map<DropdownMenuItem<String>>(
-                        (String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        },
-                      ).toList(),
-                    ),
+                DropdownButton<String>(
+                  value: selectedGame,
+                  hint: const Text('Select a game'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedGame = newValue;
+                    });
+                  },
+                  items: games.map<DropdownMenuItem<String>>(
+                    (String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    },
+                  ).toList(),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  onChanged: (value) {
+                    contactDetails = value;
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Contact Details',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(),
                   ),
                 ),
                 SizedBox(height: 20),
-                Material(
-                  color: Colors.grey,
-                  child: TextField(
-                    onChanged: (value) {
-                      contactDetails = value;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Contact Details',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Material(
-                  color: Colors.grey,
-                  child: TextField(
-                    onChanged: (value) {
-                      preferences = value;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Preferences',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(),
-                    ),
+                TextField(
+                  onChanged: (value) {
+                    preferences = value;
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Preferences',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(),
                   ),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.black26, // button's fill color
+                    primary: Colors.grey[300], // button's fill color
+                    onPrimary: Colors.black, // text color
                   ),
                   onPressed: () async {
                     selectedDate = await showDatePicker(
@@ -114,7 +108,8 @@ class Scrimmagedetails extends ConsumerWidget {
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.black26, // button's fill color
+                    primary: Colors.grey[300], // button's fill color
+                    onPrimary: Colors.black, // text color
                   ),
                   onPressed: () async {
                     selectedTime = await showTimePicker(
@@ -126,7 +121,6 @@ class Scrimmagedetails extends ConsumerWidget {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.black26),
                   onPressed: () {
                     if (selectedGame != null &&
                         contactDetails != null &&
@@ -147,8 +141,8 @@ class Scrimmagedetails extends ConsumerWidget {
                         var scrimId =
                             result['scrim_id']; // assuming this is the format
                         getScrimDetails(selectedGame!, scrimId).then((scrim) {
-                          // scrim contains the details of the scrim that was just created.
-                          // You can now display this scrim on your scrimmages page.
+                          // scrim contains the details of the scrimmage that was just created.
+                          // You can now display this scrimmage on your scrimmages page.
                         });
                       }).catchError((error) {
                         print('Failed to create scrimmage: $error');
@@ -158,6 +152,10 @@ class Scrimmagedetails extends ConsumerWidget {
                     }
                     Navigator.of(context).pop();
                   },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.black, // button's fill color
+                    onPrimary: Colors.white, // text color
+                  ),
                   child: const Text('Create Scrimmage'),
                 ),
               ],
