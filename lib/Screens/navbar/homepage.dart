@@ -41,7 +41,7 @@ class Homepage extends HookConsumerWidget {
       appBar: AppBar(
         key: UniqueKey(),
         leading: IconButton(
-          color: Colors.blue[300],
+          color: Colors.black,
           icon: const Icon(Icons.menu),
           onPressed: () {
             scaffoldKey.currentState?.openDrawer();
@@ -64,7 +64,7 @@ class Homepage extends HookConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            color: Colors.blue[300],
+            color: Colors.black,
             icon: const Icon(Icons.notifications_none),
             onPressed: () {},
           ),

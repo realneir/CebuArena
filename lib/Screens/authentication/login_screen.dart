@@ -88,7 +88,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                 children: [
                   SizedBox(height: screenWidth * 0.05),
                   Image.asset(
-                    'assets/blackLogo.png',
+                    'assets/cebuarena.png',
                     width: screenWidth * 0.5,
                     height: screenWidth * 0.5,
                   ),
@@ -157,7 +157,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            'R T K',
+                            'Or continue with',
                             style: TextStyle(color: Colors.grey[700]),
                           ),
                         ),

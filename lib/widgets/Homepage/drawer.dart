@@ -28,7 +28,7 @@ class SidebarMenu extends ConsumerWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Colors.deepPurpleAccent, Colors.blueAccent],
+                colors: [Colors.black, Colors.grey],
               ),
             ),
             accountName: Text(
@@ -48,7 +48,7 @@ class SidebarMenu extends ConsumerWidget {
               )),
             ),
             currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.deepPurpleAccent,
+              backgroundColor: Colors.black,
               child: Text(
                 (username != null && username.isNotEmpty)
                     ? username[0].toUpperCase()
@@ -62,8 +62,8 @@ class SidebarMenu extends ConsumerWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.account_circle_outlined,
-                color: Colors.deepPurpleAccent),
+            leading:
+                const Icon(Icons.account_circle_outlined, color: Colors.black),
             title: Text(
               'Profile',
               style: GoogleFonts.openSans(
@@ -81,8 +81,7 @@ class SidebarMenu extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.verified_outlined,
-                color: Colors.deepPurpleAccent),
+            leading: const Icon(Icons.verified_outlined, color: Colors.black),
             title: Text(
               'Get Verified',
               style: GoogleFonts.openSans(
@@ -97,8 +96,8 @@ class SidebarMenu extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.leaderboard_outlined,
-                color: Colors.deepPurpleAccent),
+            leading:
+                const Icon(Icons.leaderboard_outlined, color: Colors.black),
             title: Text(
               'Leaderboards',
               style: GoogleFonts.openSans(
