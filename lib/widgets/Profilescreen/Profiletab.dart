@@ -1,5 +1,5 @@
-import 'dart:async';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:captsone_ui/services/teamsProvider/create_team.dart';
 import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildTeamsSection.dart';
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProfileTab extends ConsumerStatefulWidget {
+  const ProfileTab({super.key});
+
   @override
   _ProfileTabState createState() => _ProfileTabState();
 }
@@ -41,8 +43,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
             indicatorColor: Colors.white,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
-            labelStyle: TextStyle(fontFamily: 'Montserrat', fontSize: 16),
-            tabs: [
+            labelStyle: const TextStyle(fontFamily: 'Montserrat', fontSize: 16),
+            tabs: const [
               Tab(text: 'About'),
               Tab(text: 'Teams'),
               Tab(text: 'Album'),
@@ -50,15 +52,13 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
           ),
         ),
         Expanded(
-          child: Container(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                buildAboutSection(),
-                TeamsSection(), // Now you don't need to pass the StreamController
-                buildAlbumSection(),
-              ],
-            ),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              buildAboutSection(),
+              TeamsSection(),
+              buildAlbumSection(),
+            ],
           ),
         ),
       ],

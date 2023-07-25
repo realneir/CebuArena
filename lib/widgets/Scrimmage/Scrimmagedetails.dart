@@ -1,4 +1,5 @@
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+// ignore_for_file: avoid_print
+
 import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
 import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Scrimmagedetails extends ConsumerWidget {
+  const Scrimmagedetails({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String? selectedGame;
@@ -25,9 +28,9 @@ class Scrimmagedetails extends ConsumerWidget {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.grey[300],
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.grey[300],
             elevation: 0,
             title: Text(
               'Create Scrim',
@@ -39,77 +42,82 @@ class Scrimmagedetails extends ConsumerWidget {
               ),
             ),
             centerTitle: true,
-            iconTheme: IconThemeData(
-              color: Colors.black, // Change the color of the back button
-            ),
           ),
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                DropdownButton<String>(
-                  value: selectedGame,
-                  hint: const Text('Select a game'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedGame = newValue;
-                    });
-                  },
-                  items: games.map<DropdownMenuItem<String>>(
-                    (String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
+                Padding(
+                  padding: const EdgeInsets.only(top: 100.0),
+                  child: Material(
+                    color: Colors.grey,
+                    child: DropdownButton<String>(
+                      value: selectedGame,
+                      hint: const Text('Select a game'),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedGame = newValue;
+                        });
+                      },
+                      items: games.map<DropdownMenuItem<String>>(
+                        (String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        },
+                      ).toList(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Material(
+                  color: Colors.grey,
+                  child: TextField(
+                    onChanged: (value) {
+                      contactDetails = value;
                     },
-                  ).toList(),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  onChanged: (value) {
-                    contactDetails = value;
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Contact Details',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: 'Contact Details',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: const OutlineInputBorder(),
+                    ),
                   ),
                 ),
-                SizedBox(height: 20),
-                TextField(
-                  onChanged: (value) {
-                    preferences = value;
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Preferences',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
+                const SizedBox(height: 20),
+                Material(
+                  color: Colors.grey,
+                  child: TextField(
+                    onChanged: (value) {
+                      preferences = value;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Preferences',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: const OutlineInputBorder(),
+                    ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.grey[300], // button's fill color
-                    onPrimary: Colors.black, // text color
+                    primary: Colors.black26,
                   ),
                   onPressed: () async {
                     selectedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
                   },
                   child: const Text('Pick Date'),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.grey[300], // button's fill color
-                    onPrimary: Colors.black, // text color
+                    backgroundColor: Colors.black26,
                   ),
                   onPressed: () async {
                     selectedTime = await showTimePicker(
@@ -119,8 +127,10 @@ class Scrimmagedetails extends ConsumerWidget {
                   },
                   child: const Text('Pick Time'),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black26),
                   onPressed: () {
                     if (selectedGame != null &&
                         contactDetails != null &&
@@ -138,12 +148,9 @@ class Scrimmagedetails extends ConsumerWidget {
                           .read(createScrimProvider(params).future)
                           .then((result) {
                         print('Scrimmage created successfully: $result');
-                        var scrimId =
-                            result['scrim_id']; // assuming this is the format
-                        getScrimDetails(selectedGame!, scrimId).then((scrim) {
-                          // scrim contains the details of the scrimmage that was just created.
-                          // You can now display this scrimmage on your scrimmages page.
-                        });
+                        var scrimId = result['scrim_id'];
+                        getScrimDetails(selectedGame!, scrimId)
+                            .then((scrim) {});
                       }).catchError((error) {
                         print('Failed to create scrimmage: $error');
                       });
@@ -152,10 +159,6 @@ class Scrimmagedetails extends ConsumerWidget {
                     }
                     Navigator.of(context).pop();
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.black, // button's fill color
-                    onPrimary: Colors.white, // text color
-                  ),
                   child: const Text('Create Scrimmage'),
                 ),
               ],

@@ -114,22 +114,22 @@ class SidebarMenu extends ConsumerWidget {
               );
             },
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings_outlined,
-                color: Colors.deepPurpleAccent),
-            title: Text(
-              'Settings',
-              style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              )),
-            ),
-            onTap: () {
-              // Add your Settings page navigation logic here
-            },
-          ),
+          // const Divider(),
+          // ListTile(
+          //   leading: const Icon(Icons.settings_outlined,
+          //       color: Colors.deepPurpleAccent),
+          //   title: Text(
+          //     'Settings',
+          //     style: GoogleFonts.openSans(
+          //         textStyle: const TextStyle(
+          //       color: Colors.black,
+          //       fontSize: 16,
+          //     )),
+          //   ),
+          //   onTap: () {
+          //     // Add your Settings page navigation logic here
+          //   },
+          // ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent),

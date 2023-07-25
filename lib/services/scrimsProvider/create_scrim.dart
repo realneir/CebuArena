@@ -35,7 +35,7 @@ final createScrimProvider =
       },
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final responseBody = jsonDecode(response.body);
       final scrimId = responseBody['scrim_id'];
 
@@ -56,7 +56,7 @@ final createScrimProvider =
             'Failed to fetch scrimmage info: ${scrimmageResponse.body}');
       }
     } else {
-      throw Exception('Failed to create scrimmage: ${response.body}');
+      throw Exception(response.body);
     }
   },
 );

@@ -2,7 +2,7 @@
 import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
-import 'package:captsone_ui/widgets/Scrimmage/scrimmage_details.dart';
+import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:captsone_ui/widgets/Homepage/tab_data.dart';

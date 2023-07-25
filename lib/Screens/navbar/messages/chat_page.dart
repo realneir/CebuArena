@@ -20,13 +20,13 @@ class ChatPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with $username'),
-        backgroundColor: Colors.blueAccent,
+        title: Text('Chat with $username',
+            style: const TextStyle(color: Colors.black)),
+        backgroundColor: Colors.grey[300],
       ),
       body: Column(
         children: [
           Flexible(
-            // Add this
             child: StreamBuilder<QuerySnapshot>(
               stream: userDetails.localId != null
                   ? chatService.getMessageStream(userDetails.localId!, userId)
@@ -37,7 +37,7 @@ class ChatPage extends ConsumerWidget {
                   Future.delayed(Duration.zero, () {
                     _scrollController.animateTo(
                       _scrollController.position.maxScrollExtent,
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.easeOut,
                     );
                   });
@@ -60,7 +60,7 @@ class ChatPage extends ConsumerWidget {
                     String timeText = DateFormat('hh:mm a').format(date);
 
                     return Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Align(
                         alignment: (sentByName == firstname
                             ? Alignment.topRight
@@ -69,10 +69,10 @@ class ChatPage extends ConsumerWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: (sentByName == firstname
-                                ? Colors.blue[200]
+                                ? Colors.blueAccent
                                 : Colors.grey[300]),
                           ),
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -85,7 +85,7 @@ class ChatPage extends ConsumerWidget {
                                       : Colors.black,
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Text(
                                 data['message'],
                                 style: TextStyle(
@@ -94,7 +94,7 @@ class ChatPage extends ConsumerWidget {
                                       : Colors.black,
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Text(
                                 timeText,
                                 style: TextStyle(
@@ -115,7 +115,7 @@ class ChatPage extends ConsumerWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.only(left: 10, bottom: 10, right: 10),
+            padding: const EdgeInsets.only(left: 10, bottom: 10, right: 10),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -123,7 +123,7 @@ class ChatPage extends ConsumerWidget {
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: "Write message...",
-                      hintStyle: TextStyle(color: Colors.black54),
+                      hintStyle: const TextStyle(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
                         borderSide: BorderSide.none,
@@ -133,7 +133,7 @@ class ChatPage extends ConsumerWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 15),
+                const SizedBox(width: 15),
                 FloatingActionButton(
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
@@ -150,13 +150,13 @@ class ChatPage extends ConsumerWidget {
                         _controller.clear();
                         _scrollController.animateTo(
                           _scrollController.position.maxScrollExtent,
-                          duration: Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 500),
                           curve: Curves.easeOut,
                         );
                       }
                     }
                   },
-                  child: Icon(Icons.send, color: Colors.white),
+                  child: const Icon(Icons.send, color: Colors.white),
                   backgroundColor: Colors.blueAccent,
                 ),
               ],

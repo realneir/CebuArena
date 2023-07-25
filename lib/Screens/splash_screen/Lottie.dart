@@ -18,13 +18,13 @@ class _CoverPageState extends State<CoverPage>
     super.initState();
 
     _controller =
-        AnimationController(duration: Duration(seconds: 2), vsync: this);
+        AnimationController(duration: const Duration(seconds: 2), vsync: this);
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => EmailPasswordLogin()),
+          MaterialPageRoute(builder: (context) => const EmailPasswordLogin()),
         );
       }
     });
@@ -42,25 +42,53 @@ class _CoverPageState extends State<CoverPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey,
-        body: Center(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                // you need to wrap your state changes in setState method
-                if (bookmarked == false) {
-                  bookmarked = true;
-                  _controller.forward();
-                } else {
-                  bookmarked = false;
-                  _controller.reverse();
-                }
-              });
-            },
-            child: Lottie.network(
-                'https://assets4.lottiefiles.com/packages/lf20_xvqam5qh.json',
-                controller: _controller),
+      backgroundColor: Colors.grey,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [Colors.blue, Colors.red],
           ),
-        ));
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (bookmarked == false) {
+                      bookmarked = true;
+                      _controller.forward();
+                    } else {
+                      bookmarked = false;
+                      _controller.reverse();
+                    }
+                  });
+                },
+                child: Lottie.network(
+                  'https://assets4.lottiefiles.com/packages/lf20_xvqam5qh.json',
+                  controller: _controller,
+                  width: 400,
+                  height: 400,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 30),
+                child: Text(
+                  'CebuArena',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 50.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
