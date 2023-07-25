@@ -1,6 +1,6 @@
 // ignore_for_file: sort_child_properties_last
 import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
-import 'package:captsone_ui/widgets/Scrimmage/Scrimmagedetails.dart';
+import 'package:captsone_ui/widgets/Scrimmage/scrimmage_details.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:captsone_ui/widgets/Homepage/tab_data.dart';

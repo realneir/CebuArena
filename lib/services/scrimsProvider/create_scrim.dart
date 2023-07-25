@@ -80,6 +80,6 @@ class CreateScrimParams {
 String formatTimeOfDay(TimeOfDay tod) {
   final now = DateTime.now();
   final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
-  final format = DateFormat.jm();
+  final format = DateFormat('hh:mm a');
   return format.format(dt);
 }

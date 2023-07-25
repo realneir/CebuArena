@@ -499,8 +499,16 @@ def create_scrim(request):
             user_data = database.child('users').child(manager_id).get().val()
             if user_data:
                 username = user_data.get('username')
+                is_manager = user_data.get('is_manager', False)
             else:
                 return Response({'error_message': 'Invalid manager_id'}, status=400)
+
+            # Check if the user is a manager
+            if not is_manager:
+                # If not a manager, check if the user has created a team
+                teams = database.child('teams').child(game).get().val()
+                if not any(team.get('manager_id') == manager_id for team in teams.values()):
+                    return Response({'error_message': 'Only managers can create a scrim'}, status=400)
 
             data = {
                 'manager_id': manager_id,
@@ -520,6 +528,8 @@ def create_scrim(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
 
 @api_view(['GET'])
 @csrf_exempt
