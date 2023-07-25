@@ -13,7 +13,7 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage> {
   final ChatService _chatService = ChatService();
-  late Future<List<DocumentSnapshot>> interactedUsersFuture =
+  late Future<List<Map<String, dynamic>>> interactedUsersFuture =
       Future.value([]); //initialize with a dummy value
   String userId = "";
 
@@ -48,7 +48,7 @@ class _InboxPageState extends State<InboxPage> {
           backgroundColor: Colors.blue[400],
           elevation: 0,
         ),
-        body: FutureBuilder<List<DocumentSnapshot>>(
+        body: FutureBuilder<List<Map<String, dynamic>>>(
           future: interactedUsersFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -59,7 +59,10 @@ class _InboxPageState extends State<InboxPage> {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  final chat = snapshot.data![index];
+                  final chatInfo = snapshot.data![index];
+                  final chatDoc = chatInfo['chatDoc'];
+                  final receiverName = chatInfo['receiverName'];
+
                   return Card(
                     child: ListTile(
                       leading: const CircleAvatar(
@@ -67,14 +70,14 @@ class _InboxPageState extends State<InboxPage> {
                         radius: 25,
                       ),
                       title: Text(
-                        chat.get('lastMessageSentByName'),
+                        '$receiverName',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            chat.get('lastMessage'),
+                            chatDoc['lastMessage'],
                             style: const TextStyle(fontSize: 12),
                           ),
                         ],
@@ -84,8 +87,8 @@ class _InboxPageState extends State<InboxPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ChatPage(
-                              userId: chat.get('lastMessageSentTo'),
-                              username: chat.get('lastMessageSentByName'),
+                              userId: chatDoc['lastMessageSentTo'],
+                              username: receiverName,
                             ),
                           ),
                         );

@@ -9,8 +9,8 @@ class ChatService {
       String senderId,
       String receiverId,
       String message,
-      String firstname,
-      String username) async {
+      String senderFirstname,
+      String receiverFirstname) async {
     String chatId = senderId.compareTo(receiverId) > 0
         ? '$senderId-$receiverId'
         : '$receiverId-$senderId';
@@ -19,16 +19,19 @@ class ChatService {
         await chatCollection.doc(chatId).collection('messages').add({
       'message': message,
       'sentBy': senderId,
-      'sentByName': firstname,
+      'sentByName': senderFirstname,
       'sentTo': receiverId,
+      'sentToName': receiverFirstname, // Add the receiver's name here
       'sentAt': Timestamp.now(),
     });
 
     await chatCollection.doc(chatId).set({
       'lastMessage': message,
       'lastMessageSentBy': senderId,
-      'lastMessageSentByName': firstname,
+      'lastMessageSentByName': senderFirstname,
       'lastMessageSentTo': receiverId,
+      'lastMessageSentToName':
+          receiverFirstname, // Add the receiver's name here
       'lastMessageSentAt': Timestamp.now(),
     }, SetOptions(merge: true));
 
@@ -47,29 +50,43 @@ class ChatService {
         .snapshots();
   }
 
-  Future<List<DocumentSnapshot>> getInteractedUsers(String userId) async {
-    print('Getting interacted users for: $userId'); // add this
+  Future<List<Map<String, dynamic>>> getInteractedUsers(String userId) async {
+    print('Getting interacted users for: $userId');
 
-    final QuerySnapshot chatDocs = await chatCollection
+    final QuerySnapshot sentChats = await chatCollection
         .where('lastMessageSentBy', isEqualTo: userId)
         .get();
-    print('Chat documents retrieved: ${chatDocs.docs.length}'); // add this
 
     final QuerySnapshot receivedChats = await chatCollection
         .where('lastMessageSentTo', isEqualTo: userId)
         .get();
-    print('Received chats retrieved: ${receivedChats.docs.length}'); // add this
 
-    final allInteractedChatDocs = {...chatDocs.docs, ...receivedChats.docs};
-    print(
-        'All interacted chat documents: ${allInteractedChatDocs.length}'); // add this
+    final allInteractedChatDocs = [...sentChats.docs, ...receivedChats.docs];
 
-    List<DocumentSnapshot> interactedUsers = [];
+    List<Map<String, dynamic>> interactedUsers = [];
     for (var chatDoc in allInteractedChatDocs) {
-      interactedUsers.add(chatDoc);
+      String lastMessageSentToId = chatDoc['lastMessageSentTo'];
+      String receiverId = lastMessageSentToId == userId
+          ? chatDoc['lastMessageSentBy']
+          : lastMessageSentToId;
+
+      String receiverName = await getReceiverName(receiverId);
+
+      interactedUsers.add({
+        'chatDoc': chatDoc,
+        'receiverName': receiverName,
+      });
     }
 
-    print('Interacted users retrieved: ${interactedUsers.length}'); // add this
+    print('Interacted users retrieved: ${interactedUsers.length}');
     return interactedUsers;
+  }
+
+  Future<String> getReceiverName(String receiverId) async {
+    final receiverDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiverId)
+        .get();
+    return receiverDoc['firstname'] ?? '';
   }
 }
