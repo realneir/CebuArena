@@ -1,10 +1,8 @@
 import 'package:captsone_ui/services/chatProvider/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InboxPage extends StatefulWidget {
   @override
@@ -14,7 +12,7 @@ class InboxPage extends StatefulWidget {
 class _InboxPageState extends State<InboxPage> {
   final ChatService _chatService = ChatService();
   late Future<List<Map<String, dynamic>>> interactedUsersFuture =
-      Future.value([]); //initialize with a dummy value
+      Future.value([]);
   String userId = "";
 
   @override
@@ -44,9 +42,17 @@ class _InboxPageState extends State<InboxPage> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Inbox', style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.blue[400],
-          elevation: 0,
+          backgroundColor: Colors.grey[300],
+          title: Text(
+            'Messages',
+            style: GoogleFonts.orbitron(
+              color: Colors.black,
+              fontSize: 24,
+              letterSpacing: 1.5,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
         ),
         body: FutureBuilder<List<Map<String, dynamic>>>(
           future: interactedUsersFuture,

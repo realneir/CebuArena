@@ -3,11 +3,11 @@
 import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
 import 'package:captsone_ui/Screens/sidebar/profile_screen.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
-import 'package:captsone_ui/services/authenticationProvider/firebase_auth_methods.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SidebarMenu extends ConsumerWidget {
   final String? username;
@@ -24,35 +24,54 @@ class SidebarMenu extends ConsumerWidget {
         padding: const EdgeInsets.all(10.0),
         children: <Widget>[
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.black.withOpacity(0.7),
-                  Colors.black12.withOpacity(0.7)
-                ],
+                colors: [Colors.deepPurpleAccent, Colors.blueAccent],
               ),
             ),
-            accountName: Text(username ?? '',
-                style: const TextStyle(color: Colors.white)),
+            accountName: Text(
+              username ?? '',
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600)),
+            ),
             accountEmail: Text(
               'Followers: 10 | Following: 20',
-              style: TextStyle(color: Colors.white.withOpacity(0.7)),
+              style: GoogleFonts.openSans(
+                  textStyle: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
+              )),
             ),
             currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.black,
+              backgroundColor: Colors.deepPurpleAccent,
               child: Text(
                 (username != null && username.isNotEmpty)
                     ? username[0].toUpperCase()
                     : '?',
-                style: const TextStyle(fontSize: 40.0),
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 40.0,
+                )),
               ),
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.account_circle, color: Colors.black),
-            title: const Text('Profile', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.account_circle_outlined,
+                color: Colors.deepPurpleAccent),
+            title: Text(
+              'Profile',
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              )),
+            ),
             onTap: () {
               Navigator.push(
                 context,
@@ -62,18 +81,32 @@ class SidebarMenu extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.verified_user, color: Colors.black),
-            title: const Text('Get Verified',
-                style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.verified_outlined,
+                color: Colors.deepPurpleAccent),
+            title: Text(
+              'Get Verified',
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              )),
+            ),
             onTap: () {
-              // Add your Get Verified page navigation logic here
+              //Verification logic
             },
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.leaderboard, color: Colors.black),
-            title: const Text('Leaderboards',
-                style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.leaderboard_outlined,
+                color: Colors.deepPurpleAccent),
+            title: Text(
+              'Leaderboards',
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              )),
+            ),
             onTap: () {
               Navigator.push(
                 context,
@@ -83,17 +116,31 @@ class SidebarMenu extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.settings, color: Colors.black),
-            title:
-                const Text('Settings', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.settings_outlined,
+                color: Colors.deepPurpleAccent),
+            title: Text(
+              'Settings',
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              )),
+            ),
             onTap: () {
               // Add your Settings page navigation logic here
             },
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('Logout', style: TextStyle(color: Colors.red)),
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: Text(
+              'Logout',
+              style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 16,
+              )),
+            ),
             onTap: () {
               _showLogoutConfirmationDialog(context);
             },

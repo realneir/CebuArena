@@ -18,7 +18,7 @@ class ProfileScreen extends ConsumerWidget {
           scaffoldBackgroundColor: Colors.white,
           appBarTheme: AppBarTheme(
             color: Colors.white,
-            iconTheme: IconThemeData(color: Colors.black),
+            iconTheme: IconThemeData(color: Colors.deepPurpleAccent),
             elevation: 0,
             toolbarTextStyle: TextStyle(
               color: Colors.black,
@@ -31,8 +31,8 @@ class ProfileScreen extends ConsumerWidget {
               fontFamily: GoogleFonts.metalMania().fontFamily,
             ),
           ),
-          colorScheme:
-              ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
+          colorScheme: ColorScheme.fromSwatch()
+              .copyWith(secondary: Colors.deepPurpleAccent),
         ),
         child: Scaffold(
           appBar: AppBar(

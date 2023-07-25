@@ -20,7 +20,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
 
     void handleLogin(BuildContext context) async {
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-        showSnackBar(context, 'Please enter username and password');
+        showSnackBar(context, 'Please enter email and password');
         return;
       }
 
@@ -104,7 +104,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
-                      hintText: 'Username',
+                      hintText: 'Email',
                       filled: true,
                       fillColor: Colors.grey[200],
                       border: OutlineInputBorder(),
@@ -157,7 +157,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            'Or continue with',
+                            'R T K',
                             style: TextStyle(color: Colors.grey[700]),
                           ),
                         ),

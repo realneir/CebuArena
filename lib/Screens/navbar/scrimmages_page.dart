@@ -24,6 +24,7 @@ class ScrimmagesPage extends ConsumerWidget {
           title: Text(
             'Scrimmages',
             style: GoogleFonts.orbitron(
+              color: Colors.black,
               fontSize: 24,
               letterSpacing: 1.5,
               fontWeight: FontWeight.bold,

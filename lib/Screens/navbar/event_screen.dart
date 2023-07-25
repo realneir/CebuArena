@@ -19,6 +19,7 @@ class EventsPage extends ConsumerWidget {
           title: Text(
             'Events',
             style: GoogleFonts.orbitron(
+              color: Colors.black,
               fontSize: 24,
               letterSpacing: 1.5,
               fontWeight: FontWeight.bold,
