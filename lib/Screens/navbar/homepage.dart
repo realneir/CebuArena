@@ -1,4 +1,5 @@
 import 'package:captsone_ui/Screens/navbar/event_screen.dart';
+import 'package:captsone_ui/Screens/navbar/messages/inbox_page.dart';
 import 'package:captsone_ui/Screens/navbar/messages/user_list.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
@@ -130,7 +131,7 @@ class Homepage extends HookConsumerWidget {
       case 3:
         return EventsPage();
       case 4:
-        return UserListPage();
+        return InboxPage();
 
       default:
         return Container();

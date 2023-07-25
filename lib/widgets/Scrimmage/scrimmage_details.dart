@@ -25,9 +25,9 @@ class Scrimmagedetails extends ConsumerWidget {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.grey[300],
           appBar: AppBar(
-            backgroundColor: Colors.blue[800],
+            backgroundColor: Colors.grey[300],
             elevation: 0,
             title: Text(
               'Create Scrim',
@@ -35,66 +35,72 @@ class Scrimmagedetails extends ConsumerWidget {
                 fontSize: 24,
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
             centerTitle: true,
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ListView(
+          body: SingleChildScrollView(
+            child: Column(
               children: [
-                SizedBox(height: 50),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey[200],
-                  ),
-                  child: DropdownButtonHideUnderline(
+                Padding(
+                  padding: const EdgeInsets.only(top: 100.0),
+                  child: Material(
+                    color: Colors.grey,
                     child: DropdownButton<String>(
                       value: selectedGame,
-                      hint: Text('Select a game'),
+                      hint: const Text('Select a game'),
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedGame = newValue;
                         });
                       },
-                      items:
-                          games.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: games.map<DropdownMenuItem<String>>(
+                        (String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        },
+                      ).toList(),
                     ),
                   ),
                 ),
                 SizedBox(height: 20),
-                TextField(
-                  onChanged: (value) {
-                    contactDetails = value;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Contact Details',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                Material(
+                  color: Colors.grey,
+                  child: TextField(
+                    onChanged: (value) {
+                      contactDetails = value;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Contact Details',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
                 SizedBox(height: 20),
-                TextField(
-                  onChanged: (value) {
-                    preferences = value;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Preferences',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                Material(
+                  color: Colors.grey,
+                  child: TextField(
+                    onChanged: (value) {
+                      preferences = value;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Preferences',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.blue[800]),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.black26, // button's fill color
+                  ),
                   onPressed: () async {
                     selectedDate = await showDatePicker(
                       context: context,
@@ -103,22 +109,24 @@ class Scrimmagedetails extends ConsumerWidget {
                       lastDate: DateTime.now().add(Duration(days: 365)),
                     );
                   },
-                  child: Text('Pick Date'),
+                  child: const Text('Pick Date'),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.blue[800]),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.black26, // button's fill color
+                  ),
                   onPressed: () async {
                     selectedTime = await showTimePicker(
                       context: context,
                       initialTime: TimeOfDay.now(),
                     );
                   },
-                  child: Text('Pick Time'),
+                  child: const Text('Pick Time'),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.blue[800]),
+                  style: ElevatedButton.styleFrom(primary: Colors.black26),
                   onPressed: () {
                     if (selectedGame != null &&
                         contactDetails != null &&
@@ -150,7 +158,7 @@ class Scrimmagedetails extends ConsumerWidget {
                     }
                     Navigator.of(context).pop();
                   },
-                  child: Text('Create Scrimmage'),
+                  child: const Text('Create Scrimmage'),
                 ),
               ],
             ),

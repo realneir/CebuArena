@@ -1,4 +1,5 @@
 // ignore_for_file: sort_child_properties_last
+import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
 import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
 import 'package:captsone_ui/widgets/Scrimmage/scrimmage_details.dart';
 import 'package:flutter/material.dart';
@@ -91,74 +92,110 @@ class ScrimDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/teamProfile.jpg'),
-              radius: 25,
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FutureBuilder(
-                    future: fetchTeamName(scrim['manager_id']),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text(
-                          'Team: Loading...',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text('Team: Error: ${snapshot.error}');
-                      } else {
-                        final teamName = snapshot.data as String? ?? 'N/A';
-                        return Text(
-                          '$teamName',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Date: ${scrim['date']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Time: ${scrim['time']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Preferences: ${scrim['preferences']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Contact: ${scrim['contact']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Manager: ${scrim['manager_username']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
+    return InkWell(
+      onTap: () => _showDetailsDialog(context),
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: AssetImage('assets/teamProfile.jpg'),
+                radius: 25,
               ),
-            ),
-          ],
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FutureBuilder(
+                      future: fetchTeamName(scrim['manager_id']),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text(
+                            'Team: Loading...',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Team: Error: ${snapshot.error}');
+                        } else {
+                          final teamName = snapshot.data as String? ?? 'N/A';
+                          return Text(
+                            'Team: $teamName',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    Text(
+                      'Manager: ${scrim['manager_username']}',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  void _navigateToChat(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+          userId: scrim['manager_id'],
+          username: scrim['manager_username'],
+        ),
+      ),
+    );
+  }
+
+  _showDetailsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Scrimmage Details'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Date: ${scrim['date']}'),
+                Text('Time: ${scrim['time']}'),
+                Text('Preferences: ${scrim['preferences']}'),
+                Text('Contact: ${scrim['contact']}'),
+                Text('Manager: ${scrim['manager_username']}'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Contact'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _navigateToChat(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

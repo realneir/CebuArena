@@ -28,11 +28,12 @@ class ChatPage extends ConsumerWidget {
           Flexible(
             // Add this
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  chatService.getMessageStream(userDetails.localId!, userId),
+              stream: userDetails.localId != null
+                  ? chatService.getMessageStream(userDetails.localId!, userId)
+                  : null,
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasData) {
+                if (snapshot.hasData && snapshot.data != null) {
                   Future.delayed(Duration.zero, () {
                     _scrollController.animateTo(
                       _scrollController.position.maxScrollExtent,
@@ -45,7 +46,7 @@ class ChatPage extends ConsumerWidget {
                 return ListView.builder(
                   controller: _scrollController,
                   reverse: false,
-                  itemCount: snapshot.data!.docs.length,
+                  itemCount: snapshot.data?.docs.length ?? 0,
                   itemBuilder: (BuildContext context, int index) {
                     DocumentSnapshot document = snapshot.data!.docs[index];
                     Map<String, dynamic> data =
