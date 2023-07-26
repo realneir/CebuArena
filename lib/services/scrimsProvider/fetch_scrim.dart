@@ -17,66 +17,65 @@ Future<String?> fetchTeamName(String managerId) async {
   return null;
 }
 
-Future<List<Map<String, dynamic>>> getAllScrimsByGame(
-    String game, WidgetRef ref) async {
-  print('Fetching scrims for game: $game');
-  final response = await http.get(
-    Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
-  );
+Stream<List<Map<String, dynamic>>> getAllScrimsByGame(
+    String game, WidgetRef ref) {
+  return (() async* {
+    print('Fetching scrims for game: $game');
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
+    while (true) {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
+      );
 
-    if (data is List<dynamic>) {
-      final List<Map<String, dynamic>> scrims = [];
-      final userDetails = ref.watch(userDetailsProvider);
-      final managerId = userDetails.localId;
-      final managerUsername = userDetails.username;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
 
-      print('ManagerId: $managerId');
+        if (data is List<dynamic>) {
+          final List<Map<String, dynamic>> scrims = <Map<String, dynamic>>[];
+          final userDetails = ref.watch(userDetailsProvider);
+          final managerId = userDetails.localId;
+          final managerUsername = userDetails.username;
 
-      for (final entry in data) {
-        if (entry is Map<String, dynamic>) {
-          final scrimId = entry.keys.first;
-          final scrimDetails = entry.values.first;
-          final scrimManagerId = scrimDetails['manager_id'];
-          print('ScrimManagerId: $scrimManagerId');
-          // Fetch the team name based on the manager_id from the scrimmage details
-          final teamResponse = await http.get(
-            Uri.parse('http://10.0.2.2:8000/get_team_info/$scrimManagerId/'),
-          );
+          print('ManagerId: $managerId');
 
-          print('TeamResponse: ${teamResponse.body}');
-          final teamData = jsonDecode(teamResponse.body);
-          print('Team data: $teamData');
+          for (final entry in data) {
+            if (entry is Map<String, dynamic>) {
+              final scrimId = entry.keys.first;
+              final scrimDetails = entry.values.first;
+              final scrimManagerId = scrimDetails['manager_id'];
+              print('ScrimManagerId: $scrimManagerId');
+              // Fetch the team name based on the manager_id from the scrimmage details
+              final teamName = await fetchTeamName(scrimManagerId);
 
-          String? teamName;
-          if (teamData.containsKey('team_name')) {
-            teamName = teamData['team_name'];
+              print('Team name check: $teamName');
+
+              scrims.add({
+                'manager_id': scrimManagerId,
+                'id': scrimId,
+                'team_name': teamName,
+                'manager_username': managerUsername ?? '',
+                ...scrimDetails,
+              });
+            } else {
+              print('Invalid scrimmage details for entry: $entry');
+            }
           }
-          print('Team name check: $teamName');
 
-          scrims.add({
-            'manager_id': scrimManagerId,
-            'id': scrimId,
-            'team_name': teamName,
-            'manager_username': managerUsername ?? '',
-            ...scrimDetails,
-          });
+          yield scrims;
         } else {
-          print('Invalid scrimmage details for entry: $entry');
+          print('Invalid response data: $data');
+          yield <Map<String, dynamic>>[];
         }
+      } else {
+        print('Server error: ${response.body}');
+        yield <Map<String, dynamic>>[];
       }
 
-      return scrims;
-    } else {
-      print('Invalid response data: $data');
-      return [];
+      // Pause for a few seconds before the next request
+      await Future.delayed(Duration(seconds: 5));
     }
-  } else {
-    print('Server error: ${response.body}');
-    return [];
-  }
+  })()
+      .asBroadcastStream();
 }
 
 Future<Map<String, dynamic>> getScrimDetails(

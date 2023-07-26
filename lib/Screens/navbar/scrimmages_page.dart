@@ -47,8 +47,8 @@ class ScrimmagesPage extends ConsumerWidget {
         ),
         body: TabBarView(
           children: tabs.map((tab) {
-            return FutureBuilder(
-              future: getAllScrimsByGame(tab.label, ref),
+            return StreamBuilder(
+              stream: getAllScrimsByGame(tab.label, ref),
               builder: (BuildContext context,
                   AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {

@@ -2,6 +2,7 @@ import 'package:captsone_ui/Screens/navbar/event_screen.dart';
 import 'package:captsone_ui/Screens/navbar/messages/inbox_page.dart';
 import 'package:captsone_ui/Screens/navbar/messages/user_list.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
+import 'package:captsone_ui/services/EventsProvider/fetchEvents.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -89,6 +90,9 @@ class Homepage extends HookConsumerWidget {
         currentIndex: currentIndex.currentIndex,
         onTap: (index) {
           currentIndex.setCurrentIndex(index);
+          if (index == 3) {
+            ref.read(eventsProvider.notifier).refreshEvents();
+          }
         },
         items: const [
           BottomNavigationBarItem(

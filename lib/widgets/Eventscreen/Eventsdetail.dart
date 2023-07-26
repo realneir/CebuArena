@@ -187,6 +187,7 @@ class EventCreationScreen extends ConsumerWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(result)),
                       );
+                      Navigator.of(context).pop();
                     },
                     child: Text('Create Event'),
                   ),
