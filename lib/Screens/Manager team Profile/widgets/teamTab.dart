@@ -69,8 +69,9 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
 
   Widget buildMembersSection(Map<String, dynamic>? teamData) {
     final List<dynamic> membersData = teamData?['members'] ?? [];
-    final List<Map<String, dynamic>> members =
-        membersData.cast<Map<String, dynamic>>();
+    final Iterable<Map<String, dynamic>> members = membersData
+        .where((m) => m != null && m is Map<String, dynamic>)
+        .cast<Map<String, dynamic>>();
 
     return Padding(
       padding: const EdgeInsets.all(10),

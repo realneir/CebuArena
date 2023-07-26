@@ -29,34 +29,52 @@ class Team {
   }
 }
 
-Future<List<Team>> fetchTeams() async {
-  final url = Uri.parse('http://10.0.2.2:8000/get_all_teams/');
+class TeamsState extends StateNotifier<AsyncValue<List<Team>>> {
+  TeamsState() : super(AsyncValue.loading()) {
+    fetchTeams();
+  }
 
-  try {
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      final List<dynamic> teamsData = responseData['teams'];
-      final List<Team> teams =
-          teamsData.map((json) => Team.fromJson(json)).toList();
-      print(teams);
-      return teams;
-    } else {
-      throw Exception('Failed to fetch teams');
+  Future<void> fetchTeams() async {
+    try {
+      state = AsyncValue.loading();
+      final teams = await _getTeams();
+      state = AsyncValue.data(teams);
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
     }
-  } catch (e) {
-    throw Exception('Failed to connect to the server: $e');
+  }
+
+  Future<List<Team>> _getTeams() async {
+    final url = Uri.parse('http://192.168.0.118:8000/get_all_teams/');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final List<dynamic> teamsData = responseData['teams'];
+        final List<Team> teams =
+            teamsData.map((json) => Team.fromJson(json)).toList();
+        return teams;
+      } else {
+        throw Exception('Failed to fetch teams');
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to the server: $e');
+    }
+  }
+
+  Future<void> refreshTeams() async {
+    await fetchTeams();
   }
 }
 
-final teamsProvider = FutureProvider<List<Team>>((ref) async {
-  return fetchTeams();
-});
+final teamsProvider = StateNotifierProvider<TeamsState, AsyncValue<List<Team>>>(
+    (ref) => TeamsState());
 
 class joinProvider {
   static Future<void> joinTeam(String teamId, String localId) async {
     final url = Uri.parse(
-        'http://10.0.2.2:8000/join_team/'); // URL to your API endpoint
+        'http://192.168.0.118:8000/join_team/'); // URL to your API endpoint
 
     try {
       final response = await http.post(

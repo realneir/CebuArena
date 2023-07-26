@@ -48,7 +48,7 @@ class ViewTeam extends ConsumerWidget {
             Expanded(
               child: viewTeamsTab(
                 team: team,
-              ), // Placeholder for TeamsTab()
+              ),
             ),
           ],
         ),

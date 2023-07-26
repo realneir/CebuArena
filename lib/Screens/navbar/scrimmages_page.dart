@@ -157,6 +157,8 @@ class ScrimDetailCard extends StatelessWidget {
   }
 
   void _navigateToChat(BuildContext context) {
+    print('Navigating to chat with user: ${scrim['manager_id']}');
+    print('User\'s username: ${scrim['manager_username']}');
     Navigator.push(
       context,
       MaterialPageRoute(

@@ -15,6 +15,8 @@ class ChatPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print('userId: $userId');
+    print('username: $username');
     final userDetails = ref.watch(userDetailsProvider);
     final chatService = ref.watch(chatServiceProvider);
 

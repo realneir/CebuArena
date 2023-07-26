@@ -86,14 +86,33 @@ class _viewTeamsTabState extends ConsumerState<viewTeamsTab>
           (idx == 0) ? "Manager: ${member['username']}" : member['username'];
 
       return Card(
+        elevation: 5, // to provide a shadow effect
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0), // to make corners rounded
+        ),
         child: ListTile(
-          leading: Icon(Icons.account_circle), // Use your preferred icon
-          title: Text(titleText),
+          leading: CircleAvatar(
+            child: Icon(
+              Icons.account_circle,
+              size: 40,
+            ), // you can replace with actual member image
+            radius: 20,
+            backgroundColor: Colors.blue, // replace with your preferred color
+          ),
+          title: Text(
+            titleText,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
         ),
       );
     }).toList();
 
     return ListView(
+      padding: EdgeInsets.all(10), // providing some space around your list
       children: memberCards,
     );
   }

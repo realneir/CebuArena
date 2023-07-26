@@ -45,7 +45,7 @@ class TeamProfileScreen extends ConsumerWidget {
             children: [
               Container(
                 height: MediaQuery.of(context).size.height *
-                    0.28, // Change this to your desired height as a percentage of the screen height
+                    0.20, // Change this to your desired height as a percentage of the screen height
                 child: teamData != null
                     ? TeamProfileBody(
                         coverHeight: coverHeight,

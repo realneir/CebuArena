@@ -4,6 +4,7 @@ import 'package:captsone_ui/Screens/navbar/messages/user_list.dart';
 import 'package:captsone_ui/Screens/navbar/scrimmages_page.dart';
 import 'package:captsone_ui/services/EventsProvider/fetchEvents.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/teamsProvider/fetch_teams.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:captsone_ui/widgets/Homepage/drawer.dart';
@@ -92,6 +93,9 @@ class Homepage extends HookConsumerWidget {
           currentIndex.setCurrentIndex(index);
           if (index == 3) {
             ref.read(eventsProvider.notifier).refreshEvents();
+          }
+          if (index == 2) {
+            ref.read(teamsProvider.notifier).refreshTeams();
           }
         },
         items: const [

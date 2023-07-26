@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ViewTeamBody extends ConsumerWidget {
   final Team team;
   ViewTeamBody({required this.team});
-  final double coverHeight = 160;
+  final double coverHeight = 130;
   final double profileHeight = 100;
 
   @override
