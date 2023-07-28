@@ -2,6 +2,7 @@
 
 import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
 import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
+import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -148,16 +149,23 @@ class Scrimmagedetails extends ConsumerWidget {
                           .read(createScrimProvider(params).future)
                           .then((result) {
                         print('Scrimmage created successfully: $result');
+                        showSnackBar(context, 'Scrimmage created successfully');
                         var scrimId = result['scrim_id'];
-                        getScrimDetails(selectedGame!, scrimId)
-                            .then((scrim) {});
+                        if (scrimId != null) {
+                          getScrimDetails(selectedGame!, scrimId)
+                              .then((scrim) {});
+                        } else {
+                          print('ScrimId is null');
+                        }
+                        Navigator.of(context).pop();
                       }).catchError((error) {
                         print('Failed to create scrimmage: $error');
                       });
                     } else {
                       print('Please fill in all the details');
+                      showSnackBar(context,
+                          'Please fill in all the details'); // Use your function here
                     }
-                    Navigator.of(context).pop();
                   },
                   child: const Text('Create Scrimmage'),
                 ),

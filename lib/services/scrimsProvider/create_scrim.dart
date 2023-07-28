@@ -18,10 +18,10 @@ final createScrimProvider =
     print('ManagerId: $managerId');
 
     await http.get(
-      Uri.parse('http://192.168.0.118:8000/get_team_info/$managerId/'),
+      Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
     );
 
-    final url = Uri.parse('http://192.168.0.118:8000/create_scrim/');
+    final url = Uri.parse('http://10.0.2.2:8000/create_scrim/');
 
     final response = await http.post(
       url,
@@ -37,15 +37,16 @@ final createScrimProvider =
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final responseBody = jsonDecode(response.body);
-      final scrimId = responseBody['scrim_id'];
+      print('Server response: $responseBody'); // <- added this line
 
-      if (scrimId == null || scrimId == "") {
-        throw Exception('Scrim ID is missing in the response');
+      final scrimId = responseBody['scrim_id'];
+      if (scrimId == null) {
+        throw Exception('MISSING KUNO ANG SCRIM ID');
       }
 
       final scrimmageResponse = await http.get(
         Uri.parse(
-            'http://192.168.0.118:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
+            'http://10.0.2.2:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
       );
 
       if (scrimmageResponse.statusCode == 200) {
@@ -62,10 +63,10 @@ final createScrimProvider =
 );
 
 class CreateScrimParams {
-  final String dropdownValue;
+  final String? dropdownValue;
   final DateTime selectedDate;
   final TimeOfDay selectedTime;
-  final String preferences;
+  final String? preferences;
   final String? contactDetails;
 
   CreateScrimParams(

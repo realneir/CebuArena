@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'package:captsone_ui/Screens/authentication/signup_screen.dart';
 import 'package:captsone_ui/Screens/navbar/homepage.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
@@ -17,10 +15,14 @@ class EmailPasswordLogin extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
+    final isLoading = useState(false); // Declare loading state
 
     void handleLogin(BuildContext context) async {
+      isLoading.value = true; // Start loading
+
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
         showSnackBar(context, 'Please enter email and password');
+        isLoading.value = false; // End loading if failed
         return;
       }
 
@@ -49,6 +51,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
       if (userCredential == null) {
         showSnackBar(
             context, firebaseErrorMessage ?? 'Failed to log in with Firebase');
+        isLoading.value = false; // End loading if failed
         return;
       }
 
@@ -57,6 +60,8 @@ class EmailPasswordLogin extends HookConsumerWidget {
         email: userCredential.user?.email ?? '',
         password: passwordController.text,
       );
+
+      isLoading.value = false; // End loading
 
       if (apiErrorMessage == null) {
         // User details have been updated in the UserDetailsProvider
@@ -79,126 +84,140 @@ class EmailPasswordLogin extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: screenWidth * 0.05),
-                  Image.asset(
-                    'assets/cebuarena.png',
-                    width: screenWidth * 0.5,
-                    height: screenWidth * 0.5,
-                  ),
-                  const SizedBox(height: 50),
-                  Text(
-                    'Welcome to CebuArena',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
-                    ),
-                    onPressed: () => handleLogin(context),
-                    child: Text('Sign in'),
-                  ),
-                  const SizedBox(height: 50),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            'Or continue with',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  Row(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Don\'t have an account?',
-                        style: TextStyle(color: Colors.grey[700]),
+                      SizedBox(height: screenWidth * 0.05),
+                      Image.asset(
+                        'assets/cebuarena.png',
+                        width: screenWidth * 0.5,
+                        height: screenWidth * 0.5,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(height: 50),
+                      Text(
+                        'Welcome to CebuArena',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: false,
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Forgot Password?',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 25),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           primary: Colors.black,
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EmailPasswordSignup(),
+                        onPressed: () => handleLogin(context),
+                        child: Text('Sign in'),
+                      ),
+                      const SizedBox(height: 50),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                              ),
                             ),
-                          );
-                        },
-                        child: Text('Register now'),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Or continue with',
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Don\'t have an account?',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          const SizedBox(width: 4),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.black,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EmailPasswordSignup(),
+                                ),
+                              );
+                            },
+                            child: Text('Register now'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            isLoading.value
+                ? Center(
+                    child: Image.network(
+                      'https://media.giphy.com/media/1a88wypaZjARiv0ggy/giphy.gif',
+                      width: 350,
+                      height: 350,
+                    ),
+                  )
+                : Container(),
+          ],
         ),
       ),
     );

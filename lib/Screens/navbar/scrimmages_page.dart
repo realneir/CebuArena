@@ -91,13 +91,15 @@ class ScrimmagesPage extends ConsumerWidget {
   }
 }
 
-class ScrimDetailCard extends StatelessWidget {
+class ScrimDetailCard extends ConsumerWidget {
+  // Changed to ConsumerWidget
   final Map<String, dynamic> scrim;
 
   const ScrimDetailCard({Key? key, required this.scrim}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // WidgetRef is added
     return InkWell(
       onTap: () => _showDetailsDialog(context),
       child: Card(
@@ -116,32 +118,25 @@ class ScrimDetailCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FutureBuilder(
-                      future: fetchTeamName(scrim['manager_id']),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Text(
+                    ref.watch(teamNameProvider(scrim['manager_id'])).when(
+                          data: (teamName) {
+                            return Text(
+                              'Team: $teamName',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          },
+                          loading: () => Text(
                             'Team: Loading...',
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text('Team: Error: ${snapshot.error}');
-                        } else {
-                          final teamName = snapshot.data as String? ?? 'N/A';
-                          return Text(
-                            'Team: $teamName',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                          ),
+                          error: (err, stack) => Text('Team: Error: $err'),
+                        ),
                     Text(
                       'Manager: ${scrim['manager_username']}',
                       style: const TextStyle(fontSize: 16),

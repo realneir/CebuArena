@@ -515,12 +515,14 @@ def create_scrim(request):
             }
 
             scrim_ref = database.child('scrims').child(game).push(data)
+            scrim_id = scrim_ref['name']  # get the ID of the newly created scrim
 
-            return Response({'message': 'Scrim created successfully.'})
+            return Response({'message': 'Scrim created successfully.', 'scrim_id': scrim_id})  # return the scrim ID
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 

@@ -3,9 +3,12 @@ import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+final teamNameProvider = FutureProvider.family<String?, String>(
+    (ref, managerId) => fetchTeamName(managerId));
+
 Future<String?> fetchTeamName(String managerId) async {
   final teamResponse = await http.get(
-    Uri.parse('http://192.168.0.118:8000/get_team_info/$managerId/'),
+    Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
   );
 
   if (teamResponse.statusCode == 200) {
@@ -22,9 +25,12 @@ Stream<List<Map<String, dynamic>>> getAllScrimsByGame(
   return (() async* {
     print('Fetching scrims for game: $game');
 
+    // Map to store manager_id to team_name mapping
+    Map<String, String> teamNameMap = {};
+
     while (true) {
       final response = await http.get(
-        Uri.parse('http://192.168.0.118:8000/get_all_scrims/$game/'),
+        Uri.parse('http://10.0.2.2:8000/get_all_scrims/$game/'),
       );
 
       if (response.statusCode == 200) {
@@ -33,22 +39,23 @@ Stream<List<Map<String, dynamic>>> getAllScrimsByGame(
         if (data is List<dynamic>) {
           final List<Map<String, dynamic>> scrims = <Map<String, dynamic>>[];
           final userDetails = ref.watch(userDetailsProvider);
-          final managerId = userDetails.localId;
           final managerUsername = userDetails.username;
-
-          print('ManagerId: $managerId');
 
           for (final entry in data) {
             if (entry is Map<String, dynamic>) {
               final scrimId = entry.keys.first;
               final scrimDetails = entry.values.first;
               final scrimManagerId = scrimDetails['manager_id'];
-              print('ScrimManagerId: $scrimManagerId');
-              // Fetch the team name based on the manager_id from the scrimmage details
-              final teamName = await fetchTeamName(scrimManagerId);
 
-              print('Team name check: $teamName');
-
+              String teamName;
+              // Check if the team name for this manager_id already exists in the map
+              if (teamNameMap.containsKey(scrimManagerId)) {
+                teamName = teamNameMap[scrimManagerId]!;
+              } else {
+                // If not, fetch the team name and add it to the map
+                teamName = await fetchTeamName(scrimManagerId) ?? 'N/A';
+                teamNameMap[scrimManagerId] = teamName;
+              }
               scrims.add({
                 'manager_id': scrimManagerId,
                 'id': scrimId,
@@ -81,7 +88,7 @@ Stream<List<Map<String, dynamic>>> getAllScrimsByGame(
 Future<Map<String, dynamic>> getScrimDetails(
     String game, String scrimId) async {
   final response = await http.get(
-    Uri.parse('http://192.168.0.118:8000/get_scrim_details/$game/$scrimId/'),
+    Uri.parse('http://10.0.2.2:8000/get_scrim_details/$game/$scrimId/'),
   );
 
   if (response.statusCode == 200) {

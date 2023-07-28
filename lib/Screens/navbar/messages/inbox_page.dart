@@ -93,7 +93,9 @@ class _InboxPageState extends State<InboxPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ChatPage(
-                              userId: chatDoc['lastMessageSentTo'],
+                              userId: (chatDoc['lastMessageSentBy'] == userId)
+                                  ? chatDoc['lastMessageSentTo']
+                                  : chatDoc['lastMessageSentBy'],
                               username: receiverName,
                             ),
                           ),
