@@ -4,6 +4,7 @@ import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
 import 'package:captsone_ui/Screens/sidebar/profile_screen.dart';
 import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
+import 'package:captsone_ui/widgets/Homepage/verification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,13 +86,17 @@ class SidebarMenu extends ConsumerWidget {
             title: Text(
               'Get Verified',
               style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              )),
+                textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
             ),
             onTap: () {
-              //Verification logic
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => VerificationScreen()),
+              );
             },
           ),
           const Divider(),
