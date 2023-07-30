@@ -1,4 +1,4 @@
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

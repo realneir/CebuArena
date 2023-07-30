@@ -1,4 +1,4 @@
-import 'package:captsone_ui/services/teamsProvider/fetch_teams.dart';
+import 'package:captsone_ui/services/teamsProvider/fetchTeams.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';

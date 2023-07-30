@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
-import 'package:captsone_ui/Screens/sidebar/profile_screen.dart';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/Screens/sidebar/profileScreen.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:captsone_ui/widgets/Homepage/verification.dart';
 import 'package:firebase_auth/firebase_auth.dart';

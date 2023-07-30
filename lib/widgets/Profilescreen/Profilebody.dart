@@ -1,7 +1,7 @@
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 
 class ProfileBody extends ConsumerWidget {
   final double coverHeight;

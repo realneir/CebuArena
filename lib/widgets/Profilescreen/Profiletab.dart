@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:captsone_ui/services/teamsProvider/create_team.dart';
+import 'package:captsone_ui/services/teamsProvider/createTeam.dart';
 import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildTeamsSection.dart';
 import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';

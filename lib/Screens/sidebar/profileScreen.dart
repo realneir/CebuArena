@@ -1,5 +1,5 @@
-import 'package:captsone_ui/widgets/Profilescreen/Profilebody.dart';
-import 'package:captsone_ui/widgets/Profilescreen/Profiletab.dart';
+import 'package:captsone_ui/widgets/Profilescreen/profileBody.dart';
+import 'package:captsone_ui/widgets/Profilescreen/profileTab.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // import ConsumerWidget and WidgetRef

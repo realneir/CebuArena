@@ -1,6 +1,6 @@
 import 'package:captsone_ui/services/EventsProvider/eventsProvider.dart';
 import 'package:captsone_ui/services/EventsProvider/fetchEvents.dart';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

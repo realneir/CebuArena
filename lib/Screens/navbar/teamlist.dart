@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
-import 'package:captsone_ui/services/teamsProvider/fetch_teams.dart';
-import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
+import 'package:captsone_ui/services/teamsProvider/fetchTeams.dart';
+import 'package:captsone_ui/widgets/Homepage/tabData.dart';
 import 'package:captsone_ui/widgets/View%20Teams/profileTeam.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

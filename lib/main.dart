@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:captsone_ui/Screens/authentication/login_screen.dart';
-import 'package:captsone_ui/Screens/splash_screen/Lottie.dart';
+import 'package:captsone_ui/Screens/authentication/loginScreen.dart';
+import 'package:captsone_ui/Screens/splash_screen/lottie.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

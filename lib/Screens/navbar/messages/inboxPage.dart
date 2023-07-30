@@ -1,7 +1,7 @@
-import 'package:captsone_ui/services/chatProvider/chat_service.dart';
+import 'package:captsone_ui/services/chatProvider/chatService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:captsone_ui/Screens/navbar/messages/chat_page.dart';
+import 'package:captsone_ui/Screens/navbar/messages/chatPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class InboxPage extends StatefulWidget {

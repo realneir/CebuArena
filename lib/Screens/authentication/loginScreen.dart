@@ -1,7 +1,7 @@
-import 'package:captsone_ui/Screens/authentication/signup_screen.dart';
+import 'package:captsone_ui/Screens/authentication/signupScreen.dart';
 import 'package:captsone_ui/Screens/navbar/homepage.dart';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
-import 'package:captsone_ui/services/authenticationProvider/firebase_auth_methods.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
+import 'package:captsone_ui/services/authenticationProvider/firebaseAuthMethods.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

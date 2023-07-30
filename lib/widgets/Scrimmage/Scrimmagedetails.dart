@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
-import 'package:captsone_ui/services/scrimsProvider/create_scrim.dart';
-import 'package:captsone_ui/services/scrimsProvider/fetch_scrim.dart';
+import 'package:captsone_ui/services/scrimsProvider/createScrim.dart';
+import 'package:captsone_ui/services/scrimsProvider/fetchScrim.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

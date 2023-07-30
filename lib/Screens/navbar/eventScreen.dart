@@ -1,7 +1,7 @@
 import 'package:captsone_ui/services/EventsProvider/fetchEvents.dart'; // Assuming this is the location of your eventsProvider
 import 'package:captsone_ui/widgets/Eventscreen/Events%20view/eventsView.dart';
-import 'package:captsone_ui/widgets/Eventscreen/Eventsdetail.dart';
-import 'package:captsone_ui/widgets/Homepage/tab_data.dart';
+import 'package:captsone_ui/widgets/Eventscreen/eventDetails.dart';
+import 'package:captsone_ui/widgets/Homepage/tabData.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';

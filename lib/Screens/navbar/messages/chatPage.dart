@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:captsone_ui/services/authenticationProvider/auth_provider.dart';
-import 'package:captsone_ui/services/chatProvider/chat_service.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
+import 'package:captsone_ui/services/chatProvider/chatService.dart';
 import 'package:intl/intl.dart';
 
 class ChatPage extends ConsumerWidget {
