@@ -62,6 +62,7 @@ class UserDetailsProvider with ChangeNotifier {
   String? _teamName;
   bool _isOrganizer = false;
   String? _organizationName;
+  bool _isMember = false;
 
   String? get email => _email;
   String? get username => _username;
@@ -72,6 +73,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool get isOrganizer => _isOrganizer;
   String? get teamName => _teamName;
   String? get organizationName => _organizationName;
+  bool get isMember => _isMember;
 
   void updateUser(User? user) async {
     if (user != null) {
@@ -109,6 +111,7 @@ class UserDetailsProvider with ChangeNotifier {
         _teamName = data['team_name'];
         _isManager = data['is_manager'] ?? false;
         _isOrganizer = data['is_organizer'] ?? false;
+        _isMember = data['isMember'] ?? false;
 
         // Extract the organization name from the nested data
         final organizationsData = data['organizations'];
@@ -156,6 +159,7 @@ class UserDetailsProvider with ChangeNotifier {
         _isManager = responseData['is_manager'] ?? false;
         _isOrganizer = responseData['is_organizer'] ?? false;
         _organizationName = responseData['org_name'];
+        _isMember = responseData['isMember'] ?? false;
 
         print('EMAIL: $_email');
         print('Local ID: $_localId');
@@ -165,6 +169,7 @@ class UserDetailsProvider with ChangeNotifier {
         print('isManager: $_isManager');
         print('isOrganizer: $_isOrganizer');
         print('Organization Name: $_organizationName');
+        print('isMember: $_isMember');
 
         // Notify listeners that user details have been updated
         notifyListeners();

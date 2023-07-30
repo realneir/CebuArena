@@ -12,13 +12,14 @@ class TeamsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userDetails = ref.watch(userDetailsProvider);
     final isManager = userDetails.isManager;
+    final isMember = userDetails.isMember;
 
     return Consumer(builder: (context, ref, _) {
       final teamList = ref.watch(teamProvider.notifier);
 
       // Check if the teamList is empty
       if (teamList.isEmpty) {
-        if (!isManager) {
+        if (!isManager && !isMember) {
           return Column(
             children: [
               Text('No team data available.'),

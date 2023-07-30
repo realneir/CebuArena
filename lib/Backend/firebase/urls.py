@@ -19,6 +19,7 @@ urlpatterns = [
     path('respond_to_request/', views.respond_to_request, name='respond_to_request'),
     path('get_all_teams/', views.get_all_teams, name='get_all_teams'),
     path('get_team_info/<str:manager_id>/', views.get_team_info, name='get_team_info'), 
+     path('get_team_info_member/<str:localId>/', views.get_team_info_member, name='get_team_info_member'),
     path('create_scrim/', views.create_scrim, name='create_scrim'),
     path('get_scrim_details/<str:game>/<str:scrim_id>/', views.get_scrim_details, name='get_scrim_details'),
     path('get_all_scrims/<str:game>/', views.get_all_scrims, name='get_all_scrinms'),

@@ -26,13 +26,13 @@ class TeamProfileBody extends ConsumerWidget {
             ),
             Positioned(
               left: 20,
-              top: coverHeight - (profileHeight / 2),
+              top: coverHeight - (profileHeight / 1.4),
               child: buildProfilePhoto(profileHeight),
             ),
             Positioned(
               left: 20,
               right: 20,
-              top: coverHeight + (profileHeight / 2),
+              top: coverHeight + (profileHeight / 5),
               bottom: 5,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

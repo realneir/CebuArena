@@ -68,14 +68,23 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>>
 
   Future<void> fetchTeams() async {
     try {
-      final managerId = userDetails.localId;
-      if (managerId == null) {
+      final localId = userDetails.localId;
+      final isManager = userDetails.isManager;
+
+      if (localId == null) {
         print('No user logged in');
         return;
       }
 
+      String url;
+      if (isManager) {
+        url = 'http://10.0.2.2:8000/get_team_info/$localId/';
+      } else {
+        url = 'http://10.0.2.2:8000/get_team_info_member/$localId/';
+      }
+
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+        Uri.parse(url),
       );
 
       if (response.statusCode == 200) {

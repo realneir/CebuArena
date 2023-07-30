@@ -78,6 +78,7 @@ def login(request):
         local_id = None
         is_manager = False
         is_organizer = False
+        isMember = False
         username = None  # Initialize the username variable
         org_name = None  # Initialize the org_name variable
 
@@ -87,6 +88,7 @@ def login(request):
                 lastname = user.val().get('lastname', '')
                 is_manager = user.val().get('is_manager', False)
                 is_organizer = user.val().get('is_organizer', False)
+                isMember = user.val().get('isMember', False)
                 username = user.val().get('username', '')  # Get the username from the database
                 local_id = user.key()
 
@@ -119,6 +121,7 @@ def login(request):
                 'is_manager': is_manager,
                 'is_organizer': is_organizer,
                 'org_name': org_name,  # Include the org_name in the response
+                'isMember': isMember,
             })
         except Exception as e:
             # Handle login errors and return an appropriate response
@@ -341,11 +344,15 @@ def respond_to_request(request):
                 members.append(player_details)
                 database.child('teams').child(game).child(team_id).update({'members': members})
 
+                # Update isMember attribute in the user's data
+                database.child('users').child(localId).update({'isMember': True})
+
             return Response({'message': 'Request processed successfully.'})
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 @api_view(['GET'])
 def get_all_teams(request):
@@ -475,6 +482,36 @@ def get_team_info(request, manager_id):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['GET'])
+@csrf_exempt
+def get_team_info_member(request, localId):
+    if request.method == 'GET':
+        try:
+            # Retrieve all the game categories data from Firebase
+            all_games = database.child('teams').get().val()
+            
+            if all_games:
+                # Loop through each game category
+                for game, teams in all_games.items():
+                    # Find the team that has the user with given localId in its members
+                    for team_id, team_info in teams.items():
+                        members = team_info.get('members', [])
+                        for member in members:
+                            if member.get('id') == localId:
+                                return Response(team_info)
+                
+                # If no team is found with the user having given localId
+                return Response({'error_message': 'No team found for the given localId'}, status=400)
+            
+            else:
+                return Response({'error_message': 'No teams found'}, status=400)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
 
 @api_view(['POST'])
 @csrf_exempt
