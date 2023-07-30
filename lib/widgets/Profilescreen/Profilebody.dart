@@ -18,9 +18,6 @@ class ProfileBody extends ConsumerWidget {
     final username = userDetails.username;
     final firstname = userDetails.firstname;
     final lastname = userDetails.lastname;
-    final isManager = userDetails.isManager;
-
-    final profileWidth = MediaQuery.of(context).size.width * 0.3;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -57,14 +54,15 @@ class ProfileBody extends ConsumerWidget {
                         bottom: 15.0, left: 40.0), // Add left padding here
                     child: Row(
                       children: [
-                        const CircleAvatar(
-                          radius:
-                              10, // Adjust the size of the circular background here
-                          backgroundColor: Colors.blue,
-                          child: Icon(Icons.check,
-                              color: Colors.white,
-                              size: 14), // Adjust the size of the icon here
-                        ),
+                        if (userDetails.isManager || userDetails.isMember)
+                          const CircleAvatar(
+                            radius:
+                                10, // Adjust the size of the circular background here
+                            backgroundColor: Colors.blue,
+                            child: Icon(Icons.check,
+                                color: Colors.white,
+                                size: 14), // Adjust the size of the icon here
+                          ),
                         const SizedBox(
                             width:
                                 8.0), // Add a space between the icon and text

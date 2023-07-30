@@ -77,7 +77,7 @@ class UserDetailsProvider with ChangeNotifier {
 
   void updateUser(User? user) async {
     if (user != null) {
-      await fetchUserDetails(user);
+      await fetchUserDetails();
       print(
           'User is logged in: ${user.email}'); // prints user's email on the console
     } else {
@@ -85,7 +85,7 @@ class UserDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchUserDetails(User user) async {
+  Future<void> fetchUserDetails() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -128,6 +128,13 @@ class UserDetailsProvider with ChangeNotifier {
     } catch (error) {
       print('Error occurred while fetching user details: $error');
       throw Exception('An error occurred while fetching user details');
+    }
+  }
+
+  Future<void> refreshFetchUserDetails() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await fetchUserDetails();
     }
   }
 

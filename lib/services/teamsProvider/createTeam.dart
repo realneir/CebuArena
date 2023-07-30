@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,6 +11,7 @@ final createTeamProvider =
   (ref, params) async {
     final userDetails = ref.watch(userDetailsProvider);
     final managerId = userDetails.localId;
+    final localId = userDetails.localId;
 
     if (managerId == null) {
       throw Exception('User is not signed in.');
@@ -29,12 +31,12 @@ final createTeamProvider =
 
     if (response.statusCode == 200) {
       final teamResponse = await http.get(
-        Uri.parse(
-            'http://10.0.2.2:8000/get_team_info/$managerId/${params.selectedGame ?? params.game}/'),
+        Uri.parse('http://10.0.2.2:8000/get_team_info/$localId/'),
       );
 
       if (teamResponse.statusCode == 200) {
         var completeTeamData = jsonDecode(teamResponse.body);
+
         return completeTeamData;
       } else {
         throw Exception('Failed to fetch team info: ${teamResponse.body}');
@@ -76,16 +78,14 @@ class TeamNotifier extends StateNotifier<List<Map<String, dynamic>>>
         return;
       }
 
-      String url;
-      if (isManager) {
-        url = 'http://10.0.2.2:8000/get_team_info/$localId/';
-      } else {
-        url = 'http://10.0.2.2:8000/get_team_info_member/$localId/';
-      }
+      String url = 'http://10.0.2.2:8000/get_team_info/$localId/';
 
-      final response = await http.get(
-        Uri.parse(url),
-      );
+      var response = await http.get(Uri.parse(url));
+
+      if (response.statusCode != 200) {
+        url = 'http://10.0.2.2:8000/get_team_info_member/$localId/';
+        response = await http.get(Uri.parse(url));
+      }
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

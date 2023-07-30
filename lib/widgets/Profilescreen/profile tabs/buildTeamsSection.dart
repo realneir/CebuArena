@@ -82,53 +82,80 @@ class TeamsSection extends ConsumerWidget {
                               ),
                               ElevatedButton(
                                 child: const Text('OK'),
-                                onPressed: () {
-                                  // Check if team name, game, and managerId are not null
+                                onPressed: () async {
                                   final managerId =
                                       ref.read(userDetailsProvider).localId;
-                                  final String game =
-                                      ""; // Add your game variable here
+                                  final String game = "";
 
                                   if (teamName != null &&
                                       teamName!.isNotEmpty &&
                                       selectedGame != null &&
                                       managerId != null) {
-                                    ref
-                                        .read(createTeamProvider(
-                                      CreateTeamParams(
-                                        teamName!,
-                                        game,
-                                        selectedGame!, // Pass the logo file
-                                      ),
-                                    ))
-                                        .when(
-                                      data: (newTeamData) {
-                                        // The team was created successfully
-                                        print("Team was created: $newTeamData");
-                                        ref
-                                            .read(teamProvider.notifier)
-                                            .fetchTeams();
-                                      },
-                                      loading: () {
-                                        // Optional loading state handling
-                                        showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Creating team...'),
-                                              content:
-                                                  CircularProgressIndicator(),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      error: (error, stackTrace) {
-                                        // There was an error creating the team
-                                        print("Error creating team: $error");
-                                      },
-                                    );
-                                    Navigator.of(context).pop();
+                                    try {
+                                      final newTeamData = await ref
+                                          .read(createTeamProvider(
+                                            CreateTeamParams(
+                                              teamName!,
+                                              game,
+                                              selectedGame!,
+                                            ),
+                                          ))
+                                          .whenData((data) => data);
+
+                                      // The team was created successfully
+                                      print("Team was created: $newTeamData");
+
+                                      // Update the teamProvider state with the latest team data
+                                      ref
+                                          .read(teamProvider.notifier)
+                                          .fetchTeams();
+
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                                'Team Created Successfully!'),
+                                            content: Text(
+                                                'Team was created successfully.'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: Text('OK'),
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // Pop the success dialog
+                                                  Navigator.of(context)
+                                                      .pop(); // Pop the create team dialog
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    } catch (error) {
+                                      // There was an error creating the team
+                                      print("Error creating team: $error");
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Error creating team'),
+                                            content: Text(
+                                                'An error occurred while creating the team.'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: Text('OK'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
                                   } else {
                                     // Show an error if the team name, game, or managerId is null
                                     print(
