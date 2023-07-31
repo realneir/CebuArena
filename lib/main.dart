@@ -11,10 +11,10 @@ void main() async {
   Platform.isAndroid
       ? await Firebase.initializeApp(
           options: const FirebaseOptions(
-            apiKey: "AIzaSyC3wDbB5HBRt2GppgpZcWT3hu8EzJuCKMo",
-            appId: "1:252862784800:android:ee9836ea1c5c3ceb9c6345",
-            messagingSenderId: "252862784800",
-            projectId: "tests-c91d0",
+            apiKey: "AIzaSyBtnQ4ekqXybSYuvPW2h_PaDCopMdKp8jM",
+            appId: "1:44015113924:web:e687208c82863db5d15b91",
+            messagingSenderId: "44015113924",
+            projectId: "cebuarena-database",
           ),
         )
       : await Firebase.initializeApp();

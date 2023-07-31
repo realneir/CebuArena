@@ -9,14 +9,14 @@ import pyrebase
 from django.conf import settings
 
 config = {
-    "apiKey": "AIzaSyDw9O_eTCyy-Poxm9OeatzVqeYDUFZAzDo",
-    "authDomain": "tests-c91d0.firebaseapp.com",
-     "databaseURL": "https://tests-c91d0-default-rtdb.firebaseio.com/",
-    "projectId": "tests-c91d0",
-    "storageBucket": "tests-c91d0.appspot.com",
-    "messagingSenderId": "252862784800",
-    "appId": "1:252862784800:web:b7de3c3653933bf39c6345",
-    "measurementId": "G-FXCE602VES"
+    "apiKey": "AIzaSyBtnQ4ekqXybSYuvPW2h_PaDCopMdKp8jM",
+    "authDomain": "cebuarena-database.firebaseapp.com",
+    "databaseURL": "https://cebuarena-database-default-rtdb.firebaseio.com/",
+    "projectId": "cebuarena-database",
+    "storageBucket": "cebuarena-database.appspot.com",
+    "messagingSenderId": "44015113924",
+    "appId": "1:44015113924:web:e687208c82863db5d15b91",
+    "measurementId": "G-MCHVKZT0ZF"
 }
 
 firebase=pyrebase.initialize_app(config)
