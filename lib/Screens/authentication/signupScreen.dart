@@ -18,7 +18,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   final lastnameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final usernameController = TextEditingController(); // New Username Controller
+  final usernameController = TextEditingController();
 
   void signUpUser() async {
     try {

@@ -19,6 +19,4 @@ class AuthenticationService {
       }
     });
   }
-
-  // other authentication related methods...
 }

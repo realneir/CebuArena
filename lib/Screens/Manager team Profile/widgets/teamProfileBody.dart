@@ -1,3 +1,4 @@
+import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,19 +40,21 @@ class TeamProfileBody extends ConsumerWidget {
                 children: [
                   Text(
                     teamName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: const EdgeInsets.only(left: 20),
                     child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Join Team'),
+                      onPressed: () {
+                        showSnackBar(context, "Request sent successfully");
+                      },
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
+                        backgroundColor: Colors.black,
                       ),
+                      child: const Text('Join Team'),
                     ),
                   ),
                 ],

@@ -163,8 +163,7 @@ class Scrimmagedetails extends ConsumerWidget {
                       });
                     } else {
                       print('Please fill in all the details');
-                      showSnackBar(context,
-                          'Please fill in all the details'); // Use your function here
+                      showSnackBar(context, 'Please fill in all the details');
                     }
                   },
                   child: const Text('Create Scrimmage'),

@@ -1,13 +1,13 @@
-import 'dart:io';
+// ignore_for_file: avoid_print, use_build_context_synchronously, await_only_futures, prefer_const_declarations, file_names
 import 'package:captsone_ui/Screens/Manager%20team%20Profile/teamProfile.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:captsone_ui/services/teamsProvider/createTeam.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class TeamsSection extends ConsumerWidget {
+  const TeamsSection({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userDetails = ref.watch(userDetailsProvider);
@@ -22,7 +22,7 @@ class TeamsSection extends ConsumerWidget {
         if (!isManager && !isMember) {
           return Column(
             children: [
-              Text('No team data available.'),
+              const Text('No team data available.'),
               FloatingActionButton(
                 onPressed: () {
                   showDialog(
@@ -115,13 +115,13 @@ class TeamsSection extends ConsumerWidget {
                                         barrierDismissible: false,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: Text(
+                                            title: const Text(
                                                 'Team Created Successfully!'),
-                                            content: Text(
+                                            content: const Text(
                                                 'Team was created successfully.'),
                                             actions: <Widget>[
                                               TextButton(
-                                                child: Text('OK'),
+                                                child: const Text('OK'),
                                                 onPressed: () {
                                                   Navigator.of(context)
                                                       .pop(); // Pop the success dialog
@@ -141,12 +141,13 @@ class TeamsSection extends ConsumerWidget {
                                         barrierDismissible: false,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: Text('Error creating team'),
-                                            content: Text(
+                                            title: const Text(
+                                                'Error creating team'),
+                                            content: const Text(
                                                 'An error occurred while creating the team.'),
                                             actions: <Widget>[
                                               TextButton(
-                                                child: Text('OK'),
+                                                child: const Text('OK'),
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                 },
@@ -170,13 +171,13 @@ class TeamsSection extends ConsumerWidget {
                     },
                   );
                 },
-                child: const Icon(Icons.add),
                 backgroundColor: Colors.black,
+                child: const Icon(Icons.add),
               ),
             ],
           );
         } else {
-          return Text('No team data available.');
+          return const Text('No team data available.');
         }
       }
 
@@ -214,20 +215,20 @@ class TeamsSection extends ConsumerWidget {
                                 'assets/Slider1.jpg'), // Set the path to your team logo image
                             radius: 25,
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 teamData['team_name'] ?? '',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Manager: ${teamData['manager_username'] ?? ''}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),

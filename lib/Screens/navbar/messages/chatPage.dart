@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
-import 'package:captsone_ui/services/chatProvider/chatService.dart';
 import 'package:intl/intl.dart';
 
 class ChatPage extends ConsumerWidget {
@@ -11,12 +10,12 @@ class ChatPage extends ConsumerWidget {
   final String username;
   final ScrollController _scrollController = ScrollController();
 
-  ChatPage({required this.userId, required this.username});
+  ChatPage({super.key, required this.userId, required this.username});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('userId: $userId');
-    print('username: $username');
+    // print('userId: $userId');
+    // print('username: $username');
     final userDetails = ref.watch(userDetailsProvider);
     final chatService = ref.watch(chatServiceProvider);
 
@@ -158,8 +157,8 @@ class ChatPage extends ConsumerWidget {
                       }
                     }
                   },
-                  child: const Icon(Icons.send, color: Colors.white),
                   backgroundColor: Colors.blueAccent,
+                  child: const Icon(Icons.send, color: Colors.white),
                 ),
               ],
             ),
