@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:captsone_ui/Screens/navbar/messages/chatPage.dart';
+import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
@@ -14,6 +16,7 @@ class ScrimRequestPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scrim Requests'),
+        backgroundColor: Colors.grey[300],
       ),
       body: FutureBuilder(
         future: _fetchScrimRequests(managerId!),
@@ -61,50 +64,98 @@ class RequestDetailCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      elevation: 4.0,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
           children: [
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/teamProfile.jpg'),
-              radius: 25,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/teamProfile.jpg'),
+                  radius: 40,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Team: ${request['requesting_team_name']}',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                      Text(
+                        'Game: ${request['game_name']}',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        'Manager: ${request['requesting_manager_username']}',
+                        style: TextStyle(fontSize: 19),
+                      ),
+                      Text(
+                        'Status: ${request['status']}',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _navigateToChat(context);
+                  },
+                  icon: Icon(Icons.message),
+                  color: Colors.blue,
+                ),
+              ],
             ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Scrim ID: ${request['scrim_id']}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    showSnackBar(context, "Accepted, added to calendar");
+                  },
+                  child: const Text('Accept'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green,
                   ),
-                  Text(
-                    'Team: ${request['team_name']}',
-                    style: const TextStyle(fontSize: 16),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    showSnackBar(context, "Declined Scrim Request");
+                  },
+                  child: const Text('Decline'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
                   ),
-                  Text(
-                    'Manager: ${request['manager_username']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Status: ${request['status']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-            TextButton(
-              child: const Text('Respond'),
-              onPressed: () {
-                // Handle responding to the request here
-              },
+                ),
+              ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToChat(BuildContext context) {
+    print('Navigating to chat with user: ${request['requesting_manager_id']}');
+    print('User\'s username: ${request['requesting_manager_username']}');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+          userId: request['requesting_manager_id'],
+          username: request['requesting_manager_username'],
         ),
       ),
     );

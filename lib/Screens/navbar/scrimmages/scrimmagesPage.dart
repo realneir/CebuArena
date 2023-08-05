@@ -1,6 +1,7 @@
 // ignore_for_file: sort_child_properties_last
 import 'dart:convert';
 import 'package:captsone_ui/Screens/navbar/scrimmages/scrimRequestPage.dart';
+import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:captsone_ui/Screens/navbar/messages/chatPage.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
@@ -237,7 +238,7 @@ class ScrimDetailCard extends ConsumerWidget {
                 child: Text('Request'),
                 onPressed: () {
                   Navigator.of(context).pop();
-
+                  showSnackBar(context, "Request sent successfully");
                   _requestScrim(ref);
                 })
           ],

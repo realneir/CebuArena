@@ -570,12 +570,9 @@ def request_scrim(request):
 
         try:
             # Get the requested scrim details
-            print(f"Received manager_id: {manager_id}, scrim_id: {scrim_id}, game: {game}")
             scrim_data = database.child('scrims').child(game).child(scrim_id).get().val()
-            print(f"Retrieved scrim data: {scrim_data}")
             if not scrim_data:
                 return Response({'error_message': 'Invalid scrim_id'}, status=400)
-            print(f"Scrim ID: {scrim_id}, Game: {game}")
 
             # Get the user details
             user_data = database.child('users').child(manager_id).get().val()
@@ -587,34 +584,28 @@ def request_scrim(request):
 
             # Get all teams for the game
             teams = database.child('teams').child(game).get().val()
-            print(f"Teams for game {game}: {teams}")
-
             team_name = None
             for team_id, team in teams.items():
                 if team.get('manager_id') == manager_id:
                     team_name = team.get('team_name')  # Assuming 'team_name' is the correct key for team name
                     break
 
-            # Check if the user is a manager
-            if is_manager or team_name is not None:
-                data = {
-                    'manager_id': manager_id,
-                    'manager_username': username,
-                    'team_name': team_name,  # Add the team name here
-                    'scrim_id': scrim_id,
-                    'status': 'pending',
-                }
-
-                # Send the request to the manager who created the scrim
-                request_ref = database.child('scrim_requests').child(scrim_id).push(data)
-                request_id = request_ref['name']  # get the ID of the request
-
-                # Add this request to the list of requests made to the team who created the scrim
-                database.child('teams').child(game).child(scrim_data['manager_id']).child('requests').child(request_id).set(data)
-
-                return Response({'message': 'Scrim request sent successfully.', 'request_id': request_id, 'manager_id': manager_id, 'manager_username': username, 'team_name': team_name})  # return the request ID, manager_id, manager_username, and team_name
-            else:
+            # Check if the user is a manager and if a team is associated with the manager
+            if not is_manager or not team_name:
                 return Response({'error_message': 'You are not authorized to make this request.'}, status=400)
+
+            data = {
+                'requesting_manager_id': manager_id,
+                'requesting_manager_username': username,
+                'game_name': game,
+                'requesting_team_name': team_name,
+                'status': 'pending',
+            }
+
+            # Send the request to the manager who created the scrim
+            database.child('scrims').child(game).child(scrim_id).child('scrim_requests').push(data)
+
+            return Response({'message': 'Scrim request sent successfully.'})
 
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
@@ -623,23 +614,34 @@ def request_scrim(request):
 
 
 
+
 @api_view(['GET'])
 @csrf_exempt
 def get_scrim_requests(request, manager_id):
     try:
-        # Get all the scrim requests
-        all_scrim_requests = database.child('scrim_requests').get().val()
+        # Get all the scrims
+        all_scrims = database.child('scrims').get().val()
         
-        if not all_scrim_requests:
-            print('No scrim requests found in database.')
-            return Response({'error_message': 'No scrim requests found'}, status=400)
+        if not all_scrims:
+            print('No scrims found in database.')
+            return Response({'error_message': 'No scrims found'}, status=400)
 
-        # Filter all the requests for the given manager
+        # Initialize the list of manager requests
         manager_requests = []
-        for scrim_id, scrim_requests in all_scrim_requests.items():
-            for request_id, request_data in scrim_requests.items():
-                if request_data.get('manager_id') == manager_id:
-                    manager_requests.append(request_data)
+
+        # Loop through all games
+        for game, scrims in all_scrims.items():
+            # Loop through all scrims in a game
+            for scrim_id, scrim_data in scrims.items():
+                # Check if the scrim has requests
+                scrim_requests = scrim_data.get('scrim_requests')
+                if scrim_requests:
+                    # Loop through all requests of a scrim
+                    for request_id, request_data in scrim_requests.items():
+                        # Check if the request is for the given manager
+                        if scrim_data.get('manager_id') == manager_id:
+                            # Add the request to the list of manager requests
+                            manager_requests.append(request_data)
 
         # If no manager requests are found, return an empty list
         if not manager_requests:
@@ -652,6 +654,7 @@ def get_scrim_requests(request, manager_id):
     except Exception as e:
         print(f'Error while fetching scrim requests for manager_id: {manager_id}. Error: {str(e)}')
         return Response({'error_message': str(e)}, status=400)
+
 
 
 
