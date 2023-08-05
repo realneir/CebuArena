@@ -22,8 +22,8 @@ class UserListPage extends HookWidget {
     useEffect(() {
       getCurrentUserId().then((userId) {
         currentUserId.value = userId;
+        _fetchUsers(currentUserId.value, _users, _filteredUsers);
       });
-      _fetchUsers(currentUserId.value, _users, _filteredUsers);
       return _searchController.dispose;
     }, []);
 
@@ -36,86 +36,77 @@ class UserListPage extends HookWidget {
     });
 
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search',
-                hintText: 'Search',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(25.0),
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: TextField(
+          textAlign: TextAlign.start,
+          controller: _searchController,
+          style: const TextStyle(color: Colors.black),
+          decoration: const InputDecoration(
+            hintText: 'Search',
+            hintStyle: TextStyle(color: Colors.black),
+            border: InputBorder.none,
+          ),
+          textAlignVertical: TextAlignVertical.center,
+        ),
+      ),
+      body: FutureBuilder<String?>(
+        future: getCurrentUserId(),
+        builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            if (currentUserId.value == null) {
+              return const Center(child: Text('User not logged in'));
+            }
+            return ListView.builder(
+              itemCount: _filteredUsers.value.length,
+              itemBuilder: (context, index) {
+                final userData = _filteredUsers.value[index];
+                return Container(
+                  margin: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(20.0),
                   ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<String?>(
-              future: getCurrentUserId(),
-              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  if (currentUserId.value == null) {
-                    return Center(child: Text('User not logged in'));
-                  }
-                  return ListView.builder(
-                    itemCount: _filteredUsers.value.length,
-                    itemBuilder: (context, index) {
-                      final userData = _filteredUsers.value[index];
-                      return Container(
-                        margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0,
-                            5.0), // Add left and right margin here
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(20.0),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.grey[300],
+                      child: Text(
+                        userData['username']?[0].toUpperCase() ?? '',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.grey[300],
-                            child: Text(
-                              userData['username']?[0].toUpperCase() ?? '',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          title: Text(
-                            userData['username'] ?? '',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Text(
-                            userData['email'] ?? '',
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          onTap: () {
-                            _navigateToChatPage(context, userData['id'] ?? '',
-                                userData['username'] ?? '');
-                          },
-                        ),
-                      );
+                      ),
+                    ),
+                    title: Text(
+                      userData['username'] ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      userData['email'] ?? '',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    onTap: () {
+                      _navigateToChatPage(context, userData['id'] ?? '',
+                          userData['username'] ?? '');
                     },
-                  );
-                }
+                  ),
+                );
               },
-            ),
-          ),
-        ],
+            );
+          }
+        },
       ),
     );
   }

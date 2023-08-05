@@ -89,4 +89,15 @@ class ChatService {
         .get();
     return receiverDoc['firstname'] ?? '';
   }
+
+  Stream<int> getUnreadMessagesCount(String? userId) {
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    return chatCollection
+        .where('sentTo', isEqualTo: userId)
+        .where('isRead', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
 }
