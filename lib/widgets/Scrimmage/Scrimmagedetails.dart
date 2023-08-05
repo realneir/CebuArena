@@ -151,6 +151,8 @@ class Scrimmagedetails extends ConsumerWidget {
                         print('Scrimmage created successfully: $result');
                         showSnackBar(context, 'Scrimmage created successfully');
                         var scrimId = result['scrim_id'];
+                        print('Scrim ID: $scrimId');
+
                         if (scrimId != null) {
                           getScrimDetails(selectedGame!, scrimId)
                               .then((scrim) {});

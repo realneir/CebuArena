@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously, await_only_futures, prefer_const_declarations, file_names
-import 'package:captsone_ui/Screens/Manager%20team%20Profile/teamProfile.dart';
+import 'package:captsone_ui/Screens/managerTeamProfile/teamProfile.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:captsone_ui/services/teamsProvider/createTeam.dart';
 import 'package:flutter/material.dart';

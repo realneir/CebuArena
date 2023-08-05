@@ -560,6 +560,170 @@ def create_scrim(request):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
+@api_view(['POST'])
+@csrf_exempt
+def request_scrim(request):
+    if request.method == 'POST':
+        manager_id = request.data.get('manager_id')
+        scrim_id = request.data.get('scrim_id')
+        game = request.data.get('game')
+
+        try:
+            # Get the requested scrim details
+            print(f"Received manager_id: {manager_id}, scrim_id: {scrim_id}, game: {game}")
+            scrim_data = database.child('scrims').child(game).child(scrim_id).get().val()
+            print(f"Retrieved scrim data: {scrim_data}")
+            if not scrim_data:
+                return Response({'error_message': 'Invalid scrim_id'}, status=400)
+            print(f"Scrim ID: {scrim_id}, Game: {game}")
+
+            # Get the user details
+            user_data = database.child('users').child(manager_id).get().val()
+            if user_data:
+                username = user_data.get('username')
+                is_manager = user_data.get('is_manager', False)
+            else:
+                return Response({'error_message': 'Invalid manager_id'}, status=400)
+
+            # Get all teams for the game
+            teams = database.child('teams').child(game).get().val()
+            print(f"Teams for game {game}: {teams}")
+
+            team_name = None
+            for team_id, team in teams.items():
+                if team.get('manager_id') == manager_id:
+                    team_name = team.get('team_name')  # Assuming 'team_name' is the correct key for team name
+                    break
+
+            # Check if the user is a manager
+            if is_manager or team_name is not None:
+                data = {
+                    'manager_id': manager_id,
+                    'manager_username': username,
+                    'team_name': team_name,  # Add the team name here
+                    'scrim_id': scrim_id,
+                    'status': 'pending',
+                }
+
+                # Send the request to the manager who created the scrim
+                request_ref = database.child('scrim_requests').child(scrim_id).push(data)
+                request_id = request_ref['name']  # get the ID of the request
+
+                # Add this request to the list of requests made to the team who created the scrim
+                database.child('teams').child(game).child(scrim_data['manager_id']).child('requests').child(request_id).set(data)
+
+                return Response({'message': 'Scrim request sent successfully.', 'request_id': request_id, 'manager_id': manager_id, 'manager_username': username, 'team_name': team_name})  # return the request ID, manager_id, manager_username, and team_name
+            else:
+                return Response({'error_message': 'You are not authorized to make this request.'}, status=400)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_scrim_requests(request, manager_id):
+    try:
+        # Get all the scrim requests
+        all_scrim_requests = database.child('scrim_requests').get().val()
+        
+        if not all_scrim_requests:
+            print('No scrim requests found in database.')
+            return Response({'error_message': 'No scrim requests found'}, status=400)
+
+        # Filter all the requests for the given manager
+        manager_requests = []
+        for scrim_id, scrim_requests in all_scrim_requests.items():
+            for request_id, request_data in scrim_requests.items():
+                if request_data.get('manager_id') == manager_id:
+                    manager_requests.append(request_data)
+
+        # If no manager requests are found, return an empty list
+        if not manager_requests:
+            print(f'No Scrim Requests for manager_id: {manager_id}')
+            return Response({'message': 'No Scrim Requests for the given manager', 'data': []})
+
+        print(f'Scrim requests fetched successfully for manager_id: {manager_id}')
+        return Response({'message': 'Scrim requests fetched successfully', 'data': manager_requests})
+
+    except Exception as e:
+        print(f'Error while fetching scrim requests for manager_id: {manager_id}. Error: {str(e)}')
+        return Response({'error_message': str(e)}, status=400)
+
+
+
+    
+@api_view(['POST'])
+@csrf_exempt
+def respond_scrim_request(request, manager_id):
+    if request.method == 'POST':
+        request_id = request.data.get('request_id')
+        response = request.data.get('response')
+
+        try:
+            # Check if the response is either 'accepted' or 'declined'
+            if response not in ['accepted', 'declined']:
+                return Response({'error_message': 'Invalid response. The response should be either "accepted" or "declined".'}, status=400)
+
+            # Get the request details
+            all_scrim_requests = database.child('scrim_requests').get().val()
+
+            if not all_scrim_requests:
+                return Response({'error_message': 'No scrim requests found'}, status=400)
+
+            for scrim_id, scrim_requests in all_scrim_requests.items():
+                if request_id in scrim_requests:
+                    # Update the request status
+                    database.child('scrim_requests').child(scrim_id).child(request_id).update({'status': response})
+
+                    # Also update the request status in the 'requests' node of the relevant team
+                    all_teams = database.child('teams').get().val()
+                    for game, teams in all_teams.items():
+                        for team_id, team_data in teams.items():
+                            if request_id in team_data.get('requests', {}):
+                                database.child('teams').child(game).child(team_id).child('requests').child(request_id).update({'status': response})
+
+                    return Response({'message': f'Scrim request {response} successfully.'})
+            
+            return Response({'error_message': 'Invalid request_id'}, status=400)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+@api_view(['POST'])
+@csrf_exempt
+def accept_scrim(request):
+    if request.method == 'POST':
+        request_id = request.data.get('request_id')
+        manager_id = request.data.get('manager_id')
+
+        try:
+            # Fetch the request from the database
+            request_data = database.child('teams').child(manager_id).child('requests').child(request_id).get().val()
+
+            print(f"Retrieved request data: {request_data}")
+
+            if not request_data:
+                return Response({request_data}, status=400)
+
+            # Update the status of the request to 'accepted'
+            database.child('teams').child(manager_id).child('requests').child(request_id).update({'status': 'accepted'})
+
+            # You might also want to update the scrim status or send notifications at this point
+
+            return Response({'message': 'Scrim request accepted successfully.'})
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=500)  # I changed this to a 500 error, because if there's an exception here, it likely indicates a server error, not a client error
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 
@@ -609,6 +773,7 @@ def get_all_scrims(request, game):
 
                     # Add the team name to the scrimmage data
                     scrim_data['team_name'] = team_name
+                    scrim_data['scrim_id'] = scrim_id
                     result_scrims.append({scrim_id: scrim_data})
 
                 return Response(result_scrims)

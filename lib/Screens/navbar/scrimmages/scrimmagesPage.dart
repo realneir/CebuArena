@@ -1,4 +1,7 @@
 // ignore_for_file: sort_child_properties_last
+import 'dart:convert';
+import 'package:captsone_ui/Screens/navbar/scrimmages/scrimRequestPage.dart';
+import 'package:http/http.dart' as http;
 import 'package:captsone_ui/Screens/navbar/messages/chatPage.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:captsone_ui/services/scrimsProvider/fetchScrim.dart';
@@ -14,6 +17,7 @@ class ScrimmagesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userDetails = ref.watch(userDetailsProvider);
+    final managerId = ref.watch(userDetailsProvider).localId;
 
     return DefaultTabController(
       length: tabs.length,
@@ -30,6 +34,20 @@ class ScrimmagesPage extends ConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          actions: [
+            userDetails.isManager // Check if the user is a manager
+                ? IconButton(
+                    icon: Icon(Icons.phone_android),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ScrimRequestPage()),
+                      );
+                    },
+                  )
+                : SizedBox.shrink(), // Show nothing if not a manager
+          ],
           centerTitle: true,
           bottom: TabBar(
             isScrollable: true,
@@ -101,7 +119,7 @@ class ScrimDetailCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // WidgetRef is added
     return InkWell(
-      onTap: () => _showDetailsDialog(context),
+      onTap: () => _showDetailsDialog(context, ref),
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Padding(
@@ -138,7 +156,7 @@ class ScrimDetailCard extends ConsumerWidget {
                           error: (err, stack) => Text('Team: Error: $err'),
                         ),
                     Text(
-                      'Manager: ${scrim['manager_username']}',
+                      'Manager: ${scrim['manager_username'] ?? 'default_value'}',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
@@ -149,6 +167,25 @@ class ScrimDetailCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _requestScrim(WidgetRef ref) async {
+    var url = Uri.parse('http://10.0.2.2:8000/request_scrim/');
+
+    final managerId = ref.read(userDetailsProvider).localId;
+    var response = await http.post(url, body: {
+      'manager_id': managerId,
+      'scrim_id': scrim['scrim_id'],
+      'game': scrim['game'],
+    });
+
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body);
+      print(
+          'Scrim request sent successfully. Request id: ${responseBody['request_id']}');
+    } else {
+      print('Error while requesting scrim: ${response.body}');
+    }
   }
 
   void _navigateToChat(BuildContext context) {
@@ -165,7 +202,7 @@ class ScrimDetailCard extends ConsumerWidget {
     );
   }
 
-  _showDetailsDialog(BuildContext context) {
+  _showDetailsDialog(BuildContext context, ref) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -196,6 +233,13 @@ class ScrimDetailCard extends ConsumerWidget {
                 _navigateToChat(context);
               },
             ),
+            TextButton(
+                child: Text('Request'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+
+                  _requestScrim(ref);
+                })
           ],
         );
       },

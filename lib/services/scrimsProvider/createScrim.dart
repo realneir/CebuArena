@@ -37,13 +37,15 @@ final createScrimProvider =
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final responseBody = jsonDecode(response.body);
-      print('Server response: $responseBody'); // <- added this line
+      print('Server response: $responseBody');
 
       final scrimId = responseBody['scrim_id'];
+
       if (scrimId == null) {
         throw Exception('MISSING KUNO ANG SCRIM ID');
       }
 
+      await Future.delayed(const Duration(seconds: 2));
       final scrimmageResponse = await http.get(
         Uri.parse(
             'http://10.0.2.2:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
@@ -51,6 +53,7 @@ final createScrimProvider =
 
       if (scrimmageResponse.statusCode == 200) {
         final completeScrimmageData = jsonDecode(scrimmageResponse.body);
+
         return completeScrimmageData;
       } else {
         throw Exception(

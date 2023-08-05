@@ -1,7 +1,7 @@
 import 'package:captsone_ui/Screens/navbar/eventScreen.dart';
 import 'package:captsone_ui/Screens/navbar/messages/inboxPage.dart';
 import 'package:captsone_ui/Screens/navbar/messages/userList.dart';
-import 'package:captsone_ui/Screens/navbar/scrimmagesPage.dart';
+import 'package:captsone_ui/Screens/navbar/scrimmages/scrimmagesPage.dart';
 import 'package:captsone_ui/services/EventsProvider/fetchEvents.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:captsone_ui/services/teamsProvider/fetchTeams.dart';

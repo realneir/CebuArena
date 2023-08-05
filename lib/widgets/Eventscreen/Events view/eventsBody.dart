@@ -1,4 +1,4 @@
-import 'package:captsone_ui/Screens/Manager%20team%20Profile/widgets/teamProfileBody.dart';
+import 'package:captsone_ui/Screens/managerTeamProfile/widgets/teamProfileBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -75,6 +75,8 @@ class UserDetailsProvider with ChangeNotifier {
   String? get organizationName => _organizationName;
   bool get isMember => _isMember;
 
+  get userId => null;
+
   void updateUser(User? user) async {
     if (user != null) {
       await fetchUserDetails();
