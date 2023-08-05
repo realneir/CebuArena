@@ -4,36 +4,27 @@ import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Import your createEventProvider
 final createEventProvider = Provider.autoDispose<CreateEvent>((ref) {
-  // Fetch the UserDetailsProvider instance from the provider container
   final userDetails = ref.read(userDetailsProvider);
-
-  // Provide the UserDetailsProvider to the CreateEvent provider
   return CreateEvent(userDetails);
 });
 
+// ignore: must_be_immutable
 class EventCreationScreen extends ConsumerWidget {
-  final TextEditingController eventNameController = TextEditingController();
-  final TextEditingController eventDescriptionController =
-      TextEditingController();
-  final TextEditingController rulesController = TextEditingController();
-  final TextEditingController prizesController = TextEditingController();
-  final TextEditingController maximumTeamsController = TextEditingController();
-  final TextEditingController eventTimeController = TextEditingController();
+  final eventNameController = TextEditingController();
+  final eventDescriptionController = TextEditingController();
+  final rulesController = TextEditingController();
+  final prizesController = TextEditingController();
+  final maximumTeamsController = TextEditingController();
+  final eventTimeController = TextEditingController();
 
-  String selectedGame = "Select Game"; // Store the selected game
+  String selectedGame = "Select Game";
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
-  final List<String> games = [
-    "MLBB",
-    "DOTA2",
-    "CODM",
-    "VALORANT",
-    "LOL",
-    "WILDRIFT",
-  ];
+  final games = ["MLBB", "DOTA2", "CODM", "VALORANT", "LOL", "WILDRIFT"];
+
+  EventCreationScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,6 +33,7 @@ class EventCreationScreen extends ConsumerWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text('Create Event'),
+            backgroundColor: Colors.grey,
           ),
           body: SingleChildScrollView(
             child: Padding(
@@ -49,154 +41,182 @@ class EventCreationScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Game selection dropdown
-                  DropdownButton<String>(
-                    value: selectedGame,
-                    onChanged: (String? newValue) {
-                      // Update the selected game when the user makes a selection
-                      setState(() {
-                        selectedGame = newValue!;
-                      });
-                    },
-                    items: [
-                      // Add a default dropdown item with the text "Select Game"
-                      DropdownMenuItem<String>(
-                        value: "Select Game",
-                        child: Text('Select Game'),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedGame,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedGame = newValue!;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Select Game',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20)),
                       ),
-                      // Add the actual games from the games list
-                      ...games.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  // Event name input
-                  TextFormField(
-                    controller: eventNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Event Name',
-                      border: OutlineInputBorder(),
+                      items: ["Select Game", ...games]
+                          .map((String value) => DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              ))
+                          .toList(),
                     ),
                   ),
                   SizedBox(height: 16),
-                  // Event description input
-                  TextFormField(
-                    controller: eventDescriptionController,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      labelText: 'Event Description',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
+                  _buildTextField(eventNameController, 'Event Name'),
                   SizedBox(height: 16),
-                  // Other event inputs (rules, prizes, maximum teams, date, time, etc.)
-                  TextFormField(
-                    controller: rulesController,
-                    decoration: InputDecoration(
-                      labelText: 'Rules',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
+                  _buildTextField(
+                      eventDescriptionController, 'Event Description',
+                      maxLines: 5),
                   SizedBox(height: 16),
-                  TextFormField(
-                    controller: prizesController,
-                    decoration: InputDecoration(
-                      labelText: 'Prizes',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
+                  _buildTextField(rulesController, 'Rules'),
                   SizedBox(height: 16),
-                  DropdownButtonFormField<int>(
-                    value: maximumTeamsController.text.isNotEmpty
-                        ? int.parse(maximumTeamsController.text)
-                        : 1,
-                    onChanged: (int? newValue) {
-                      setState(() {
-                        maximumTeamsController.text = newValue.toString();
-                      });
-                    },
-                    items: List.generate(
-                      30,
-                      (index) => DropdownMenuItem<int>(
-                        value: index + 1,
-                        child: Text((index + 1).toString()),
+                  _buildTextField(prizesController, 'Prizes'),
+                  SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: DropdownButtonFormField<int>(
+                      value: maximumTeamsController.text.isNotEmpty
+                          ? int.parse(maximumTeamsController.text)
+                          : 1,
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          maximumTeamsController.text = newValue.toString();
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Maximum Teams',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                      ),
+                      items: List.generate(
+                        30,
+                        (index) => DropdownMenuItem<int>(
+                          value: index + 1,
+                          child: Text((index + 1).toString()),
+                        ),
                       ),
                     ),
-                    decoration: InputDecoration(
-                      labelText: 'Maximum Teams',
-                      border: OutlineInputBorder(),
-                    ),
                   ),
                   SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      selectedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(Duration(days: 365)),
-                      );
-                      setState(
-                          () {}); // Update the UI after the date is selected
-                    },
-                    child: const Text('Pick Date'),
-                  ),
+                  _buildDatePicker(context, setState),
                   SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(),
-                    onPressed: () async {
-                      selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      setState(
-                          () {}); // Update the UI after the time is selected
-                    },
-                    child: const Text('Pick Time'),
-                  ),
-
+                  _buildTimePicker(context, setState),
                   SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final container = ref.read(createEventProvider);
-
-                      // Get the event data from the input fields
-                      final result = await container.createEvent(
-                        eventName: eventNameController.text,
-                        selectedGame:
-                            selectedGame == "Select Game" ? null : selectedGame,
-                        eventDescription: eventDescriptionController.text,
-                        rules: rulesController.text,
-                        prizes: prizesController.text,
-                        maximumTeams: int.parse(maximumTeamsController.text),
-                        selectedDate: selectedDate!,
-                        selectedTime: selectedTime!,
-                      );
-
-                      // If the creation is successful
-                      if (result == 'Event created successfully') {
-                        // Refresh the events
-                        ref.read(eventsProvider.notifier).refreshEvents();
-                      }
-
-                      // Handle the result as per your requirement (e.g., show a snackbar)
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(result)),
-                      );
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Create Event'),
-                  ),
+                  _buildCreateEventButton(context, ref),
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  TextField _buildTextField(TextEditingController controller, String label,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+    );
+  }
+
+  ElevatedButton _buildDatePicker(BuildContext context, StateSetter setState) {
+    return ElevatedButton(
+      onPressed: () async {
+        selectedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime.now(),
+          lastDate: DateTime.now().add(Duration(days: 365)),
+        );
+        setState(() {});
+      },
+      child: Text('Pick Date'),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.grey,
+        onPrimary: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 5,
+      ),
+    );
+  }
+
+  ElevatedButton _buildTimePicker(BuildContext context, StateSetter setState) {
+    return ElevatedButton(
+      onPressed: () async {
+        selectedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+        setState(() {});
+      },
+      child: Text('Pick Time'),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.grey,
+        onPrimary: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 5,
+      ),
+    );
+  }
+
+  ElevatedButton _buildCreateEventButton(BuildContext context, WidgetRef ref) {
+    return ElevatedButton(
+      onPressed: () async {
+        final container = ref.read(createEventProvider);
+        final result = await container.createEvent(
+          eventName: eventNameController.text,
+          selectedGame: selectedGame == "Select Game" ? null : selectedGame,
+          eventDescription: eventDescriptionController.text,
+          rules: rulesController.text,
+          prizes: prizesController.text,
+          maximumTeams: int.parse(maximumTeamsController.text),
+          selectedDate: selectedDate!,
+          selectedTime: selectedTime!,
+        );
+        if (result == 'Event created successfully') {
+          ref.read(eventsProvider.notifier).refreshEvents();
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result)),
+        );
+        Navigator.of(context).pop();
+      },
+      child: Text('Create Event'),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.grey,
+        onPrimary: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 5,
+      ),
     );
   }
 }

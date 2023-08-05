@@ -1,100 +1,125 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:io';
-
+import 'package:captsone_ui/services/Organization/org.dart';
+import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class VerificationScreen extends StatefulWidget {
-  const VerificationScreen({super.key});
-
-  @override
-  _VerificationScreenState createState() => _VerificationScreenState();
-}
-
-class _VerificationScreenState extends State<VerificationScreen> {
-  final _formKey = GlobalKey<FormState>();
+class VerificationScreen extends ConsumerWidget {
   final ImagePicker _picker = ImagePicker();
-  XFile? _image;
 
-  String organizationName = '';
-  String organizationDescription = '';
+  VerificationScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Verification')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Organization Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter organization name';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  organizationName = value!;
-                },
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Organization Description',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter organization description';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  organizationDescription = value!;
-                },
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                child: const Text('Upload Image'),
-                onPressed: () async {
-                  final pickedFile =
-                      await _picker.pickImage(source: ImageSource.gallery);
-                  if (pickedFile != null) {
-                    setState(() {
-                      _image = pickedFile;
-                    });
-                  }
-                },
-              ),
-              if (_image != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Image.file(File(_image!.path)),
-                ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final TextEditingController orgNameController = TextEditingController();
+    final TextEditingController orgDescriptionController =
+        TextEditingController();
+    XFile? _image;
 
-                    // TODO: Send organizationName, organizationDescription and _image to server for verification
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Sending data for verification')),
-                    );
-                  }
-                },
-                child: const Text('Submit'),
-              ),
-            ],
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Verification Screen'),
+            backgroundColor: Colors.grey,
           ),
-        ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildTextField(orgNameController, 'Organization Name'),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                      orgDescriptionController, 'Organization Description',
+                      maxLines: 8),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    child: Text('Upload Image'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      elevation: 5,
+                    ),
+                    onPressed: () async {
+                      final pickedFile =
+                          await _picker.pickImage(source: ImageSource.gallery);
+                      if (pickedFile != null) {
+                        setState(() {
+                          _image = pickedFile;
+                        });
+                      }
+                    },
+                  ),
+                  if (_image != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Image.file(File(_image!.path)),
+                    ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    child: Text('Submit'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      elevation: 5,
+                    ),
+                    onPressed: () async {
+                      String orgName = orgNameController.text;
+                      String orgDescription = orgDescriptionController.text;
+
+                      if (orgName.isNotEmpty &&
+                          orgDescription.isNotEmpty &&
+                          _image != null) {
+                        // TODO: Process the Image and send it along with orgName and orgDescription
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Success'),
+                            content: const Text(
+                                'Request for Creating organization sent successfully'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                        orgNameController.clear();
+                        orgDescriptionController.clear();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Please fill all fields')),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  TextField _buildTextField(TextEditingController controller, String label,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
   }
