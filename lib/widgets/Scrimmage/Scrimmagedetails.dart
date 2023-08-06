@@ -48,7 +48,7 @@ class Scrimmagedetails extends ConsumerWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 100.0),
+                  padding: const EdgeInsets.only(top: 20.0, right: 200),
                   child: Material(
                     color: Colors.grey,
                     child: DropdownButton<String>(
@@ -70,65 +70,94 @@ class Scrimmagedetails extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 Material(
-                  color: Colors.grey,
-                  child: TextField(
-                    onChanged: (value) {
-                      contactDetails = value;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Contact Details',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: const OutlineInputBorder(),
+                  color: Colors.grey[300],
+                  child: Center(
+                    child: SizedBox(
+                      height: 60.0,
+                      width: 350.0,
+                      child: TextField(
+                        onChanged: (value) {
+                          contactDetails = value;
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Contact Details',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Material(
-                  color: Colors.grey,
-                  child: TextField(
-                    onChanged: (value) {
-                      preferences = value;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Preferences',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: const OutlineInputBorder(),
+                  color: Colors.grey[300],
+                  child: Center(
+                    child: SizedBox(
+                      height: 60.0,
+                      width: 350.0,
+                      child: TextField(
+                        onChanged: (value) {
+                          preferences = value;
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Preferences',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.black26,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black26,
+                      ),
+                      onPressed: () async {
+                        selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
+                        );
+                        setState(() {});
+                      },
+                      child: Text(
+                          'Pick Date: ${selectedDate?.toLocal().toString().split(' ')[0] ?? 'Not selected'}'),
+                    ),
                   ),
-                  onPressed: () async {
-                    selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                  },
-                  child: const Text('Pick Date'),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black26,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black26,
+                      ),
+                      onPressed: () async {
+                        selectedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        setState(() {});
+                      },
+                      child: Text(
+                          'Pick Time: ${selectedTime?.format(context) ?? 'Not selected'}'),
+                    ),
                   ),
-                  onPressed: () async {
-                    selectedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                    );
-                  },
-                  child: const Text('Pick Time'),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 ElevatedButton(
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.black26),
@@ -168,7 +197,7 @@ class Scrimmagedetails extends ConsumerWidget {
                       showSnackBar(context, 'Please fill in all the details');
                     }
                   },
-                  child: const Text('Create Scrimmage'),
+                  child: const Text('Create Scrim'),
                 ),
               ],
             ),
