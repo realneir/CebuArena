@@ -18,10 +18,10 @@ final createScrimProvider =
     print('ManagerId: $managerId');
 
     await http.get(
-      Uri.parse('http://10.0.2.2:8000/get_team_info/$managerId/'),
+      Uri.parse('http://192.168.1.5:8000/get_team_info/$managerId/'),
     );
 
-    final url = Uri.parse('http://10.0.2.2:8000/create_scrim/');
+    final url = Uri.parse('http://192.168.1.5:8000/create_scrim/');
 
     final response = await http.post(
       url,
@@ -48,7 +48,7 @@ final createScrimProvider =
       await Future.delayed(const Duration(seconds: 2));
       final scrimmageResponse = await http.get(
         Uri.parse(
-            'http://10.0.2.2:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
+            'http://192.168.1.5:8000/get_scrim_details/${params.dropdownValue}/$scrimId'),
       );
 
       if (scrimmageResponse.statusCode == 200) {

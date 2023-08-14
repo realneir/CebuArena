@@ -127,39 +127,45 @@ class EmailPasswordLogin extends HookConsumerWidget {
                       children: [
                         SizedBox(height: screenWidth * 0.05),
                         Image.asset(
-                          'assets/cebuarena.png',
+                          'assets/blackLogo.png',
                           width: screenWidth * 0.5,
                           height: screenWidth * 0.5,
                         ),
                         const SizedBox(height: 50),
-                        Text(
-                          'Welcome to CebuArena',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
+                        Container(
+                          height: 40,
+                          child: TextField(
+                            controller: emailController,
+                            decoration: InputDecoration(
+                              hintText: 'Email',
+                              hintStyle: TextStyle(
+                                // Apply a bottom padding to lower the hint text
+                                height: 3,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: false,
                           ),
-                        ),
-                        const SizedBox(height: 25),
-                        TextField(
-                          controller: emailController,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(),
-                          ),
-                          obscureText: false,
                         ),
                         const SizedBox(height: 20),
-                        TextField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(),
+                        Container(
+                          height: 40,
+                          child: TextField(
+                            controller: passwordController,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: TextStyle(
+                                // Apply a bottom padding to lower the hint text
+                                height: 3,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: true,
                           ),
-                          obscureText: true,
                         ),
                         const SizedBox(height: 10),
                         Padding(
@@ -169,7 +175,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                             children: [
                               Text(
                                 'Forgot Password?',
-                                style: TextStyle(color: Colors.grey[600]),
+                                style: TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
@@ -177,7 +183,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
                         const SizedBox(height: 25),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.black,
+                            primary: Colors.grey.shade600,
                           ),
                           onPressed: () => handleLogin(context),
                           child: Text('Sign in'),
@@ -265,7 +271,7 @@ class WavyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
+      ..color = Colors.grey.shade400
       ..style = PaintingStyle.fill;
 
     // Calculating the phase shift using animation value for each wave

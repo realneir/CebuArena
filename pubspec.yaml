@@ -42,9 +42,11 @@ dependencies:
   flutter_riverpod: ^2.3.6
   riverpod: ^2.3.6
   lottie: ^2.4.0
-  image_picker: ^0.8.4+4
+  image_picker: ^1.0.2
   permission_handler: ^10.4.3
   cloud_firestore: ^4.8.3
+  file_picker: ^5.3.3
+  firebase_storage: ^11.2.5
 
 dev_dependencies:
 
