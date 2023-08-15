@@ -49,46 +49,41 @@ class ProfileBody extends ConsumerWidget {
                   ),
 
                   // Column 2 - Manager Field
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: 15.0, left: 40.0), // Add left padding here
-                    child: Row(
-                      children: [
-                        if (userDetails.isManager || userDetails.isMember)
-                          const CircleAvatar(
-                            radius:
-                                10, // Adjust the size of the circular background here
-                            backgroundColor: Colors.blue,
-                            child: Icon(Icons.check,
-                                color: Colors.white,
-                                size: 14), // Adjust the size of the icon here
-                          ),
-                        const SizedBox(
-                            width:
-                                8.0), // Add a space between the icon and text
-                        if (userDetails.isManager)
-                          buildTextWithPadding('Manager', 14, FontWeight.bold),
-                        if (userDetails.isMember)
-                          buildTextWithPadding('Member', 14, FontWeight.bold),
-                      ],
-                    ),
-                  ),
-
-                  // Column 3 - View Org Button
-                  Padding(
-                    padding:
-                        EdgeInsets.only(left: 20.0), // Add left padding here
-                    child: Column(
-                      children: [
-                        ElevatedButton(
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 5, left: 40.0), // Add left padding here
+                        child: Row(
+                          children: [
+                            if (userDetails.isManager || userDetails.isMember)
+                              const CircleAvatar(
+                                radius: 10,
+                                backgroundColor: Colors.blue,
+                                child: Icon(Icons.check,
+                                    color: Colors.white,
+                                    size: 14), // Adjust the size of the icon here
+                              ),
+                            const SizedBox(width: 8.0),
+                            if (userDetails.isManager)
+                              buildTextWithPadding('Manager', 14, FontWeight.bold),
+                            if (userDetails.isMember)
+                              buildTextWithPadding('Member', 14, FontWeight.bold),
+                          ],
+                        ),
+                      ),
+                      // Create Org Button
+                      Padding(
+                        padding: EdgeInsets.only(left: 40.0), // Add left padding here
+                        child: ElevatedButton(
                           onPressed: () {},
                           child: const Text('Create Org'),
                           style: ElevatedButton.styleFrom(
                             primary: Colors.black,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
