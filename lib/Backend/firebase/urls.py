@@ -29,5 +29,5 @@ urlpatterns = [
     path('get_all_events/', views.get_all_events, name='get_all_events'),
     path('get_scrim_requests/<str:manager_id>/', views.get_scrim_requests, name='get_scrim_requests'),
     path('accept_scrim/', views.accept_scrim, name='accept_scrim'),
-
+   path('get_all_pending_approvals/', views.get_all_pending_approvals, name='get_all_pending_approvals'),
 ]
