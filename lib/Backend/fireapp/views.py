@@ -302,7 +302,7 @@ def respond_to_request(request):
         game = request.data.get('game') 
         team_id = request.data.get('team_id')
         localId = request.data.get('localId')
-        accept = request.data.get('accept') 
+        accept = request.data.get('accept').lower() == 'true'
         manager_id = request.data.get('manager_id')
 
         try:
@@ -837,6 +837,19 @@ def create_organization(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['GET'])
+@csrf_exempt
+def get_all_pending_approvals(request):
+    try:
+        # Fetch all the pending organization data from the database
+        pending_approvals = database.child('pending_approval').get().val()
+        if not pending_approvals:
+            return Response({'message': 'No pending approvals found.'}, status=200)
+        
+        return Response(pending_approvals)
+    except Exception as e:
+        return Response({'error_message': str(e)}, status=400)
 
 
 
