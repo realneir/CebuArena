@@ -189,7 +189,7 @@ class _HomeViewState extends State<HomeView> {
                       child: Container(
                         margin: EdgeInsets.only(top: 90, bottom: 20),
                         height: 200,
-                        color: Colors.grey[300],
+                        color: Color(0xFFDAC0A3),
                         child: PreviewLeaderboards(players),
                       ),
                     ),

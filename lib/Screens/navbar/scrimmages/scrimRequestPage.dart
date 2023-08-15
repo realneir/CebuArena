@@ -16,7 +16,7 @@ class ScrimRequestPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scrim Requests'),
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Color(0xFFDAC0A3),
       ),
       body: FutureBuilder(
         future: _fetchScrimRequests(managerId!),

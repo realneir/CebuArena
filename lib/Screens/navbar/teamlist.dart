@@ -16,7 +16,7 @@ class TeamsList extends ConsumerWidget {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Color(0xFFDAC0A3),
           elevation: 0,
           title: Text(
             'Teams',
@@ -50,12 +50,15 @@ class TeamsList extends ConsumerWidget {
                 final teamsForTab =
                     teams.where((team) => team.game == tab.label).toList();
 
-                return ListView.builder(
-                  itemCount: teamsForTab.length,
-                  itemBuilder: (context, index) {
-                    final team = teamsForTab[index];
-                    return TeamDetailCard(team: team);
-                  },
+                return Container(
+                  color: Color(0xFFEADBC8),
+                  child: ListView.builder(
+                    itemCount: teamsForTab.length,
+                    itemBuilder: (context, index) {
+                      final team = teamsForTab[index];
+                      return TeamDetailCard(team: team);
+                    },
+                  ),
                 );
               },
               loading: () => Center(child: CircularProgressIndicator()),
@@ -90,6 +93,7 @@ class TeamDetailCard extends ConsumerWidget {
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Container(
+          color:  Color(0xFFF8F0E5),
           padding: const EdgeInsets.all(20),
           child: Center(
             child: Row(

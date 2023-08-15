@@ -14,8 +14,9 @@ class EventsPage extends ConsumerWidget {
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
+        backgroundColor: Color(0xFFEADBC8), // Set background color for the entire page
         appBar: AppBar(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Color(0xFFDAC0A3),
           elevation: 0,
           title: Text(
             'Events',
@@ -50,13 +51,16 @@ class EventsPage extends ConsumerWidget {
                     .where((event) => event.selectedGame == tab.label)
                     .toList();
 
-                return ListView.builder(
-                  itemCount: eventsForTab.length,
-                  itemBuilder: (context, index) {
-                    final event = eventsForTab[index];
-                    return EventDetailCard(
-                        event: event); // Your EventDetailCard goes here
-                  },
+                return Container(
+                  color: Color(0xFFF8F0E5), // Set background color for the list of events
+                  child: ListView.builder(
+                    itemCount: eventsForTab.length,
+                    itemBuilder: (context, index) {
+                      final event = eventsForTab[index];
+                      return EventDetailCard(
+                          event: event); // Your EventDetailCard goes here
+                    },
+                  ),
                 );
               },
               loading: () => Center(child: CircularProgressIndicator()),

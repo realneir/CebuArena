@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:captsone_ui/Screens/navbar/eventScreen.dart';
 import 'package:captsone_ui/Screens/navbar/messages/inboxPage.dart';
 import 'package:captsone_ui/Screens/navbar/messages/userList.dart';
@@ -57,10 +59,17 @@ class Homepage extends HookConsumerWidget {
               height: 40,
             ),
             const SizedBox(width: 10),
-            Text(
-              'CebuArena',
-              style: GoogleFonts.metalMania(fontSize: 30, color: Colors.black),
-            ),
+            RichText(
+              text: TextSpan(
+                style: GoogleFonts.orbitron(fontSize: 25, color: Colors.black),
+                children: [
+                  TextSpan(text: 'C', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                  TextSpan(text: 'ebu'),
+                  TextSpan(text: 'A', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                  TextSpan(text: 'rena'),
+                ],
+              ),
+            )
           ],
         ),
         centerTitle: true,
@@ -74,7 +83,7 @@ class Homepage extends HookConsumerWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.white, Colors.white],
+              colors: [Colors.grey, Colors.white],
               begin: Alignment.bottomRight,
               end: Alignment.topLeft,
             ),
@@ -87,43 +96,52 @@ class Homepage extends HookConsumerWidget {
         username: username,
       ),
       body: _buildPage(ref, currentIndex.currentIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex.currentIndex,
-        onTap: (index) {
-          currentIndex.setCurrentIndex(index);
-          if (index == 3) {
-            ref.read(eventsProvider.notifier).refreshEvents();
-          }
-          if (index == 2) {
-            ref.read(teamsProvider.notifier).refreshTeams();
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.grey, Colors.white],
+            begin: Alignment.bottomRight,
+            end: Alignment.topLeft,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sports_soccer),
-            label: 'Scrimmages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Team',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
-        ],
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black.withOpacity(0.5),
-        selectedLabelStyle: GoogleFonts.montserrat(),
-        unselectedLabelStyle: GoogleFonts.montserrat(),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex.currentIndex,
+          onTap: (index) {
+            currentIndex.setCurrentIndex(index);
+            if (index == 3) {
+              ref.read(eventsProvider.notifier).refreshEvents();
+            }
+            if (index == 2) {
+              ref.read(teamsProvider.notifier).refreshTeams();
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.sports_soccer),
+              label: 'Scrimmages',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group),
+              label: 'Team',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event),
+              label: 'Events',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message),
+              label: 'Messages',
+            ),
+          ],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black.withOpacity(0.5),
+          selectedLabelStyle: GoogleFonts.montserrat(),
+          unselectedLabelStyle: GoogleFonts.montserrat(),
+        ),
       ),
     );
   }

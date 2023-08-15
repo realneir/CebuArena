@@ -63,6 +63,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool _isOrganizer = false;
   String? _organizationName;
   bool _isMember = false;
+  String? _contactNumber; 
 
   String? get email => _email;
   String? get username => _username;
@@ -74,6 +75,7 @@ class UserDetailsProvider with ChangeNotifier {
   String? get teamName => _teamName;
   String? get organizationName => _organizationName;
   bool get isMember => _isMember;
+  String? get contactNumber => _contactNumber;
 
   get userId => null;
 
@@ -140,6 +142,45 @@ class UserDetailsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateDetails({
+    required String firstname,
+    required String lastname,
+    required String email,
+    String? phone,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('No user logged in');
+      return;
+    }
+    final token = await user.getIdToken();
+
+    final response = await http.put(
+      Uri.parse('http://192.168.1.5:8000/update_user/'), // Replace with your endpoint
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'firstname': firstname,
+        'lastname': lastname,
+        'email': email,
+        'phone': phone,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      _firstname = firstname;
+      _lastname = lastname;
+      _email = email;
+      _contactNumber = phone;
+
+      notifyListeners();
+    } else {
+      throw Exception('Failed to update user details');
+    }
+  }
+
   Future<String?> loginWithEmailAPI({
     required String email,
     required String password,
@@ -169,6 +210,7 @@ class UserDetailsProvider with ChangeNotifier {
         _isOrganizer = responseData['is_organizer'] ?? false;
         _organizationName = responseData['org_name'];
         _isMember = responseData['isMember'] ?? false;
+         _contactNumber = data['contact_number'];
 
         print('EMAIL: $_email');
         print('Local ID: $_localId');
@@ -198,6 +240,8 @@ class UserDetailsProvider with ChangeNotifier {
     }
   }
 }
+
+
 
 void checkUserLoggedIn() {
   final User? user = FirebaseAuth.instance.currentUser;

@@ -24,7 +24,7 @@ class ScrimmagesPage extends ConsumerWidget {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Color(0xFFDAC0A3),
           elevation: 0,
           title: Text(
             'Scrimmages',
@@ -47,7 +47,7 @@ class ScrimmagesPage extends ConsumerWidget {
                       );
                     },
                   )
-                : SizedBox.shrink(), // Show nothing if not a manager
+                : SizedBox.shrink(), 
           ],
           centerTitle: true,
           bottom: TabBar(
@@ -62,6 +62,8 @@ class ScrimmagesPage extends ConsumerWidget {
               );
             }).toList(),
           ),
+        
+          
           titleSpacing: 20,
         ),
         body: TabBarView(
@@ -76,6 +78,7 @@ class ScrimmagesPage extends ConsumerWidget {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   return Container(
+                    color: Color(0xFFEADBC8),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: ListView.builder(
                       itemCount: snapshot.data!.length,
@@ -104,24 +107,23 @@ class ScrimmagesPage extends ConsumerWidget {
                 child: const Icon(Icons.add),
                 backgroundColor: Colors.black26,
               )
-            : null, // Hide the FloatingActionButton if not a manager
+            : null, 
       ),
     );
   }
 }
 
 class ScrimDetailCard extends ConsumerWidget {
-  // Changed to ConsumerWidget
   final Map<String, dynamic> scrim;
 
   const ScrimDetailCard({Key? key, required this.scrim}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // WidgetRef is added
     return InkWell(
       onTap: () => _showDetailsDialog(context, ref),
       child: Card(
+        color: Color(0xFFF8F0E5),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
