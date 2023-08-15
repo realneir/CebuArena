@@ -302,7 +302,7 @@ def respond_to_request(request):
         game = request.data.get('game') 
         team_id = request.data.get('team_id')
         localId = request.data.get('localId')
-        accept = request.data.get('accept') 
+        accept = request.data.get('accept').lower() == 'true'
         manager_id = request.data.get('manager_id')
 
         try:
