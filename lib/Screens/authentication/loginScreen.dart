@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:lottie/lottie.dart';
 
 class EmailPasswordLogin extends HookConsumerWidget {
   const EmailPasswordLogin({Key? key}) : super(key: key);
@@ -247,13 +248,13 @@ class EmailPasswordLogin extends HookConsumerWidget {
                 ),
               ),
               isLoading.value
-                  ? Center(
-                      child: Image.network(
-                        'https://media.giphy.com/media/1a88wypaZjARiv0ggy/giphy.gif',
-                        width: 350,
-                        height: 350,
-                      ),
-                    )
+                ? Center(
+                    child: Lottie.network(
+                      'https://lottie.host/32413dad-2e67-4020-8063-5ccaaa63fcc5/9UVqKYdixL.json',
+                      width: 350,
+                      height: 350,
+                    ),
+                  )
                   : Container(),
             ],
           ),
