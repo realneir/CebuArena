@@ -43,7 +43,7 @@ class ScrimRequestPage extends ConsumerWidget {
 
   Future<List<Map<String, dynamic>>> _fetchScrimRequests(
       String managerId) async {
-    var url = Uri.parse('http://192.168.1.5:8000/get_scrim_requests/$managerId');
+    var url = Uri.parse('http://172.30.9.52:8000/get_scrim_requests/$managerId');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {

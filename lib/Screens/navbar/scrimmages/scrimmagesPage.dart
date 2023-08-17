@@ -173,7 +173,7 @@ class ScrimDetailCard extends ConsumerWidget {
   }
 
   Future<void> _requestScrim(WidgetRef ref) async {
-    var url = Uri.parse('http://192.168.1.5:8000/request_scrim/');
+    var url = Uri.parse('http://172.30.9.52:8000/request_scrim/');
 
     final managerId = ref.read(userDetailsProvider).localId;
     var response = await http.post(url, body: {

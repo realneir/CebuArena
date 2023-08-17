@@ -28,7 +28,7 @@ class CreateOrganization {
       }
 
       const apiUrl =
-          'http://192.168.1.5:8000/create_organization/'; // Replace with your actual API URL
+          'http://172.30.9.52:8000/create_organization/'; // Replace with your actual API URL
 
       final response = await http.post(
         Uri.parse(apiUrl), // Parse the URL string to Uri
