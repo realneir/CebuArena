@@ -86,7 +86,9 @@ class TeamsSection extends ConsumerWidget {
                                   final managerId =
                                       ref.read(userDetailsProvider).localId;
                                   final String game = "";
-
+                                  // await ref
+                                  //     .read(userDetailsProvider.notifier)
+                                  //     .fetchUserDetails();
                                   if (teamName != null &&
                                       teamName!.isNotEmpty &&
                                       selectedGame != null &&

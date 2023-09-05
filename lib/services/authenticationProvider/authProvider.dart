@@ -19,7 +19,7 @@ final authStateChangesProvider = StreamProvider<User?>((ref) {
 });
 
 class AuthRegis extends ChangeNotifier {
-  static const String API_ENDPOINT = "http://172.30.9.52:8000/register/";
+  static const String API_ENDPOINT = "http://10.0.2.2:8000/register/";
 
   Future<String> signUpWithEmail(
     String firstname,
@@ -63,7 +63,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool _isOrganizer = false;
   String? _organizationName;
   bool _isMember = false;
-  String? _contactNumber; 
+  String? _contactNumber;
 
   String? get email => _email;
   String? get username => _username;
@@ -91,17 +91,14 @@ class UserDetailsProvider with ChangeNotifier {
 
   Future<void> fetchUserDetails() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        print('No user logged in');
-        return;
-      } else {
-        print('User Logged in: ${user.email}');
-      }
+      final user = FirebaseAuth.instance.currentUser!;
+      // Using the "!" mark will throw an error if user is null.
+      print('User Logged in: ${user.email}');
+
       final token = await user.getIdToken();
 
       final response = await http.get(
-        Uri.parse('http://172.30.9.52:8000/current_user/'),
+        Uri.parse('http://10.0.2.2:8000/current_user/'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -136,10 +133,7 @@ class UserDetailsProvider with ChangeNotifier {
   }
 
   Future<void> refreshFetchUserDetails() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await fetchUserDetails();
-    }
+    await fetchUserDetails();
   }
 
   Future<void> updateDetails({
@@ -156,7 +150,8 @@ class UserDetailsProvider with ChangeNotifier {
     final token = await user.getIdToken();
 
     final response = await http.put(
-      Uri.parse('http://172.30.9.52:8000/update_user/'), // Replace with your endpoint
+      Uri.parse(
+          'http://10.0.2.2:8000/update_user/'), // Replace with your endpoint
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -185,7 +180,7 @@ class UserDetailsProvider with ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    String url = 'http://172.30.9.52:8000/login/';
+    String url = 'http://10.0.2.2:8000/login/';
 
     Map<String, String> data = {
       'email': email,
@@ -210,7 +205,7 @@ class UserDetailsProvider with ChangeNotifier {
         _isOrganizer = responseData['is_organizer'] ?? false;
         _organizationName = responseData['org_name'];
         _isMember = responseData['isMember'] ?? false;
-         _contactNumber = data['contact_number'];
+        _contactNumber = data['contact_number'];
 
         print('EMAIL: $_email');
         print('Local ID: $_localId');
@@ -240,8 +235,6 @@ class UserDetailsProvider with ChangeNotifier {
     }
   }
 }
-
-
 
 void checkUserLoggedIn() {
   final User? user = FirebaseAuth.instance.currentUser;

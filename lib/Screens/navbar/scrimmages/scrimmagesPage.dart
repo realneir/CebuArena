@@ -47,7 +47,7 @@ class ScrimmagesPage extends ConsumerWidget {
                       );
                     },
                   )
-                : SizedBox.shrink(), 
+                : SizedBox.shrink(),
           ],
           centerTitle: true,
           bottom: TabBar(
@@ -62,8 +62,6 @@ class ScrimmagesPage extends ConsumerWidget {
               );
             }).toList(),
           ),
-        
-          
           titleSpacing: 20,
         ),
         body: TabBarView(
@@ -107,7 +105,7 @@ class ScrimmagesPage extends ConsumerWidget {
                 child: const Icon(Icons.add),
                 backgroundColor: Colors.black26,
               )
-            : null, 
+            : null,
       ),
     );
   }
@@ -173,7 +171,7 @@ class ScrimDetailCard extends ConsumerWidget {
   }
 
   Future<void> _requestScrim(WidgetRef ref) async {
-    var url = Uri.parse('http://172.30.9.52:8000/request_scrim/');
+    var url = Uri.parse('http://10.0.2.2:8000/request_scrim/');
 
     final managerId = ref.read(userDetailsProvider).localId;
     var response = await http.post(url, body: {

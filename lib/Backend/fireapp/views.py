@@ -137,40 +137,39 @@ def login(request):
 @api_view(['GET'])
 @csrf_exempt
 def current_user(request):
-    if request.method == 'GET':
-        # Get the user's token from the request headers
-        token = request.headers.get('Authorization')
+    localId = request.headers.get('LocalId')
 
-        if not token:
-            # Return an error response if the token is missing
-            return Response({'error_message': 'Authorization header missing'}, status=401)
+    if not localId:
+        return Response({'error_message': 'LocalId must be provided'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        user_data = database.child('users').child(localId).get().val()
 
-        try:
-            # Verify the token and get user information
-            user_info = authe.get_account_info(token)
+        if not user_data:
+            return Response({'error_message': 'User not found in the database'}, status=status.HTTP_404_NOT_FOUND)
 
-            # Get user ID
-            user_id = user_info['users'][0]['localId']
+        # You can expand this to include additional fields
+        firstname = user_data.get('firstname', '')
+        lastname = user_data.get('lastname', '')
+        username = user_data.get('username', '')
+        email = user_data.get('email', '')
+        is_manager = user_data.get('is_manager', False)
+        is_organizer = user_data.get('is_organizer', False)
+        is_member = user_data.get('isMember', False)  # Add this if you want
 
-            # Fetch the user's data from the database
-            user_data = database.child('users').child(user_id).get().val()
+        return Response({
+            'firstname': firstname,
+            'lastname': lastname,
+            'username': username,
+            'email': email,
+            'is_manager': is_manager,
+            'is_organizer': is_organizer,
+            'is_member': is_member  # Add this if you want
+        })
 
-            # If the user data is None, it means the user doesn't exist in the database
-            if not user_data:
-                return Response({'error_message': 'User not found in the database'}, status=404)
-
-            # Get the firstname and lastname
-            firstname = user_data.get('firstname', '')
-            lastname = user_data.get('lastname', '')
-
-            # Return the firstname and lastname
-            return Response({'firstname': firstname, 'lastname': lastname})
-        except Exception as e:
-            # Handle errors and return an appropriate response
-            error_message = str(e)
-            return Response({'error_message': error_message}, status=400)
-
-    return Response({'error_message': 'Invalid request'}, status=400)
+    except Exception as e:
+        error_message = str(e)
+        return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -256,33 +255,33 @@ def join_team(request):
             if not user_data:
                 return Response({'error_message': 'Invalid localId'}, status=400)
 
-            # Retrieve the username, email, firstname and lastname from the user data
+            # Retrieve the username, email, firstname, and lastname from the user data
             username = user_data.get('username')
             email = user_data.get('email')
             firstname = user_data.get('firstname')
             lastname = user_data.get('lastname')
+            isMember = user_data.get('isMember', False)
+            is_manager = user_data.get('is_manager', False)
 
-            # Retrieve all the game categories data from Firebase
-            all_games = database.child('teams').get().val()
+            # If user is a manager or already a member, reject the request
+            if isMember or is_manager:
+                return Response({'error_message': 'User cannot join a team'}, status=400)
 
-            if all_games:
-                # Check if user is already part of a team
-                for game, teams in all_games.items():
-                    for team_id_key, team in teams.items():
-                        if any(member.get('id') == localId for member_id, member in team.items() if isinstance(member, dict)):
-                            return Response({'error_message': 'User is already part of a team'}, status=400)
+            # Retrieve all the teams data from Firebase
+            all_teams = database.child('teams').get().val()
 
-                # Loop through each game category
-                for game, teams in all_games.items():
-                    # Check if team with the given team_id exists
+            if all_teams:
+                # Add the user to the new team if they are not already part of one
+                for game, teams in all_teams.items():
                     if team_id in teams:
                         team_data = teams[team_id]
-                        # Add the player's details to the pending_requests list
                         pending_requests = team_data.get('pending_requests', [])
                         pending_requests.append({'team_id': team_id, 'localId': localId, 'username': username, 'email': email, 'firstname': firstname, 'lastname': lastname})
 
-                        # Update the pending_requests field in the database
                         database.child('teams').child(game).child(team_id).update({'pending_requests': pending_requests})
+
+                        # Update the isMember status for the user
+                        database.child('users').child(localId).update({'isMember': True})
 
                         return Response({'message': 'Request sent successfully.'})
 
@@ -292,6 +291,7 @@ def join_team(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
 
 
 
@@ -388,73 +388,6 @@ def get_all_teams(request):
 
 
 
-# @api_view(['POST'])
-# @csrf_exempt
-# def join_team(request):
-#     if request.method == 'POST':
-#         user_id = request.data.get('user_id')
-#         team_id = request.data.get('team_id')
-
-#         try:
-#             user_data = database.child('users').child(user_id).get().val()
-#             if user_data:
-#                 request_data = {
-#                     'user_id': user_id,
-#                     'username': user_data.get('username'),
-#                     'firstname': user_data.get('firstname'),
-#                     'lastname': user_data.get('lastname'),
-#                 }
-#             else:
-#                 return Response({'error_message': 'Invalid user_id'}, status=400)
-            
-#             team_ref = database.child('teams').child(team_id)
-#             current_requests = team_ref.child('pending_requests').get().val() or []
-
-#             # Prevent duplicate requests
-#             if any(req['user_id'] == user_id for req in current_requests):
-#                 return Response({'error_message': 'Request already sent'}, status=400)
-
-#             current_requests.append(request_data)
-#             team_ref.update({'pending_requests': current_requests})
-
-#             return Response({'message': 'Request to join team sent successfully.'})
-#         except Exception as e:
-#             return Response({'error_message': str(e)}, status=400)
-
-#     return Response({'error_message': 'Invalid request'}, status=400)
-
-
-# @api_view(['POST'])
-# @csrf_exempt
-# def manage_team_request(request):
-#     if request.method == 'POST':
-#         user_id = request.data.get('user_id')
-#         team_id = request.data.get('team_id')
-#         action = request.data.get('action')  # 'accept' or 'decline'
-
-#         try:
-#             team_ref = database.child('teams').child(team_id)
-#             current_requests = team_ref.child('pending_requests').get().val() or []
-#             current_members = team_ref.child('members').get().val() or []
-
-#             # Find the request to be managed
-#             for i, req in enumerate(current_requests):
-#                 if req['user_id'] == user_id:
-#                     if action == 'accept':
-#                         current_members.append(req)
-#                     current_requests.pop(i)
-#                     break
-#             else:
-#                 return Response({'error_message': 'No pending request from this user'}, status=400)
-
-#             # Update the team's members and pending_requests
-#             team_ref.update({'members': current_members, 'pending_requests': current_requests})
-
-#             return Response({'message': f'Request to join team has been {action}ed.'})
-#         except Exception as e:
-#             return Response({'error_message': str(e)}, status=400)
-
-#     return Response({'error_message': 'Invalid request'}, status=400)
 
 @api_view(['GET'])
 @csrf_exempt
