@@ -899,7 +899,6 @@ def join_organization(request):
     return Response({'error_message': 'Invalid request'}, status=400)
 
 
-
 @api_view(['POST'])
 @csrf_exempt
 def approve_member(request):
@@ -909,24 +908,22 @@ def approve_member(request):
         member_localId = request.data.get('member_localId')
 
         try:
-            # Fetch the organization data from the database
             org_data = database.child('organizations').child(org_id).get().val()
             if not org_data:
+                print(f"Invalid org_id: {org_id}")  # Debugging line
                 return Response({'error_message': 'Invalid org_id'}, status=400)
 
-            # Check if the user making the request is the owner of the organization
             owner_data = database.child('users').child(owner_localId).get().val()
             if not owner_data or org_data['owner']['localId'] != owner_localId:
+                print(f"Invalid owner_localId: {owner_localId}")  # Debugging line
                 return Response({'error_message': 'You do not have permission to approve members.'}, status=403)
 
-            # Check if the organization is approved by the admin
             if org_data.get('is_approved', False):
-                # Fetch the member's data from the database
                 member_data = database.child('users').child(member_localId).get().val()
                 if not member_data:
+                    print(f"Invalid member_localId: {member_localId}")  # Debugging line
                     return Response({'error_message': 'Invalid member_localId'}, status=400)
-
-                # Update the user data to be a member of the organization and mark them as an organizer
+  # Update the user data to be a member of the organization and mark them as an organizer
                 if 'organizations' not in member_data:
                     member_data['organizations'] = {}
 
@@ -957,13 +954,89 @@ def approve_member(request):
                 database.child('organizations').child(org_id).update(org_data)
 
                 return Response({'message': 'Member approved successfully.'})
+               
+
             else:
                 return Response({'error_message': 'The organization is not approved yet. Please wait for approval.'}, status=403)
+
+        except Exception as e:
+            print(f"Exception: {e}")  # Debugging line
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def create_team_for_organization(request):
+    if request.method == 'POST':
+        owner_localId = request.data.get('owner_localId')
+        manager_localId = request.data.get('manager_localId')
+        team_name = request.data.get('team_name')
+        game = request.data.get('game')
+
+        try:
+            # Fetch all organizations to find the one owned by owner_localId
+            all_orgs = database.child('organizations').get().val()
+            print(f"All organizations: {all_orgs}")  # Debugging line
+
+            org_data = None
+            for org in all_orgs.values():
+                print(f"Checking org: {org}")  # Debugging line
+                if org['owner']['localId'] == owner_localId:
+                    org_data = org
+                    break
+
+            if not org_data:
+                return Response({'error_message': 'Invalid organization owner ID'}, status=400)
+# Check if the organization already has a team for the given game
+            existing_teams = org_data.get('teams', {})
+            if game in existing_teams:
+                return Response({'error_message': 'A team for this game already exists'}, status=400)
+
+            # Check if the organization has reached the maximum number of teams (6)
+            if len(existing_teams) >= 6:
+                return Response({'error_message': 'Maximum number of teams reached'}, status=400)
+
+            # Fetch the manager's data from the organization's members
+            manager_data = org_data['members'].get(manager_localId)
+            if not manager_data:
+                return Response({'error_message': 'Invalid manager ID'}, status=400)
+
+            # Create the team data
+            team_data = {
+                'owner_id': owner_localId,
+                'org_name': org_data['org_name'],  # Include the organization name in the team data
+                'manager_id': manager_localId,
+                'manager_username': manager_data['username'],
+                'manager_firstname': manager_data['firstname'],
+                'manager_lastname': manager_data['lastname'],
+                'team_name': team_name,
+                'members': [],
+                'pending_requests': [],
+                'captain_id': None,
+                'game': game
+            }
+
+            # Save the team data in the database
+            team_ref = database.child('teams').child(game).push(team_data)
+
+            # Update the organization's data to include the new team
+            existing_teams[game] = team_ref.get('name')  # Retrieve the key using 'name' attribute
+            database.child('organizations').child(owner_localId).update({'teams': existing_teams})
+
+            # Update the manager's data to set 'is_manager' to True
+            database.child('users').child(manager_localId).update({'is_manager': True})
+
+            return Response({'message': 'Team created successfully.'})
+        
 
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
 
 @api_view(['POST'])
 @csrf_exempt

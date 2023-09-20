@@ -25,6 +25,7 @@ urlpatterns = [
     path('all_organizations/', views.get_all_organizations, name='get_all_organizations'),
     path('approve_member/', views.approve_member, name='approve_member'),
     path('join_organization/', views.join_organization, name='join_organization'),
+    path('create_team_for_organization/', views.create_team_for_organization, name='create_team_for_organization'),
     path('create_event/', views.create_event, name='create_event'),
     path('get_all_events/', views.get_all_events, name='get_all_events'),
     path('get_scrim_requests/<str:manager_id>/', views.get_scrim_requests, name='get_scrim_requests'),
