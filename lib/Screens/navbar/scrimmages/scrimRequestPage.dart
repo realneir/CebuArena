@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:captsone_ui/Screens/managerTeamProfile/widgets/calendarState.dart';
 import 'package:captsone_ui/Screens/navbar/messages/chatPage.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +124,7 @@ class RequestDetailCard extends ConsumerWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
+                    ref.read(calendarProvider.notifier).addEvent(request);
                     showSnackBar(context, "Accepted, added to calendar");
                   },
                   child: const Text('Accept'),
