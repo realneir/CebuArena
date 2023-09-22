@@ -1,4 +1,5 @@
 import 'package:captsone_ui/utils/showSnackBar.dart';
+import 'package:captsone_ui/widgets/Profilescreen/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +17,7 @@ class TeamProfileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final teamName = teamData['team_name'] ?? '';
+    final managerName = teamData['manager_username'] ?? '';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -31,35 +33,25 @@ class TeamProfileBody extends ConsumerWidget {
               child: buildProfilePhoto(profileHeight),
             ),
             Positioned(
-              left: 20,
-              right: 20,
-              top: coverHeight + (profileHeight / 5),
-              bottom: 5,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    teamName,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showSnackBar(context, "Request sent successfully");
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                left: 20,
+                right: 20,
+                top: coverHeight + (profileHeight / 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildTextWithPadding(
+                              '$teamName', 20, FontWeight.bold),
+                          buildTextWithPadding(
+                              '@$managerName', 14, FontWeight.normal),
+                        ],
                       ),
-                      child: const Text('Join Team'),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                )),
           ],
         );
       },

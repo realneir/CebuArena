@@ -30,8 +30,8 @@ class _viewTeamsTabState extends ConsumerState<viewTeamsTab>
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(
-            top: 30.0), // Adjust the top padding value as needed
+        padding:
+            EdgeInsets.only(top: 5.0), // Adjust the top padding value as needed
         child: Column(
           children: [
             Container(

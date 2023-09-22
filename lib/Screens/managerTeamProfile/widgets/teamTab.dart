@@ -34,7 +34,7 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
   Widget build(BuildContext context) {
     final teamData = ref.watch(teamProvider).firstOrNull;
     return Padding(
-        padding: EdgeInsets.only(top: 30.0),
+        padding: EdgeInsets.only(top: 10.0),
         child: Column(
           children: [
             Container(

@@ -62,27 +62,31 @@ class ProfileBody extends ConsumerWidget {
                                 backgroundColor: Colors.blue,
                                 child: Icon(Icons.check,
                                     color: Colors.white,
-                                    size: 14), // Adjust the size of the icon here
+                                    size:
+                                        14), // Adjust the size of the icon here
                               ),
                             const SizedBox(width: 8.0),
                             if (userDetails.isManager)
-                              buildTextWithPadding('Manager', 14, FontWeight.bold),
+                              buildTextWithPadding(
+                                  'Manager', 14, FontWeight.bold),
                             if (userDetails.isMember)
-                              buildTextWithPadding('Member', 14, FontWeight.bold),
+                              buildTextWithPadding(
+                                  'Member', 14, FontWeight.bold),
                           ],
                         ),
                       ),
                       // Create Org Button
-                      Padding(
-                        padding: EdgeInsets.only(left: 40.0), // Add left padding here
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Create Org'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.black,
-                          ),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.only(
+                      //       left: 40.0), // Add left padding here
+                      //   child: ElevatedButton(
+                      //     onPressed: () {},
+                      //     child: const Text('Create Org'),
+                      //     style: ElevatedButton.styleFrom(
+                      //       primary: Colors.black,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class TeamProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    double coverHeight = 120.0;
+    double coverHeight = 100.0;
     double profileHeight = 75.0;
 
     final teamData = ref.watch(teamProvider).firstOrNull;
