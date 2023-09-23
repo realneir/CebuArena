@@ -1,4 +1,3 @@
-import 'package:captsone_ui/Screens/managerTeamProfile/widgets/calendarState.dart';
 import 'package:captsone_ui/Screens/managerTeamProfile/widgets/tabs/requests.dart';
 import 'package:captsone_ui/services/teamsProvider/createTeam.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +12,6 @@ class TeamsTab extends ConsumerStatefulWidget {
 class _TeamsTabState extends ConsumerState<TeamsTab>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
 
   @override
   void initState() {
@@ -135,45 +131,58 @@ class _TeamsTabState extends ConsumerState<TeamsTab>
   }
 
   Widget buildCalendarSection(WidgetRef ref) {
-    print("Building Calendar Section"); // Add this line
+    // You can fetch the list of scrims from your backend or state management solution
+    List<Scrim> scrims = [
+      // Example scrims
+      Scrim(date: DateTime.now(), details: 'Scrim 1 Details'),
+      Scrim(
+          date: DateTime.now().add(Duration(days: 2)),
+          details: 'Scrim 2 Details'),
+    ];
 
-    final events = ref.watch(calendarProvider);
-
-    // Convert the events to a format that TableCalendar understands
-    final Map<DateTime, List<Event>> eventMap = {};
-    for (var event in events) {
-      final DateTime eventDate = DateTime.parse(event['date'] ?? '2020-01-01');
-      final String title = event['contact'] ?? 'No Title';
-
-      eventMap.putIfAbsent(eventDate, () => []).add(Event(title: title));
+    Map<DateTime, List<Scrim>> scrimEvents = {};
+    for (var scrim in scrims) {
+      final date = DateTime(scrim.date.year, scrim.date.month, scrim.date.day);
+      if (scrimEvents[date] == null) scrimEvents[date] = [];
+      scrimEvents[date]!.add(scrim);
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TableCalendar(
-        firstDay: DateTime.utc(2020, 10, 16),
-        lastDay: DateTime.utc(2030, 3, 14),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
-        },
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        },
-        eventLoader: (day) {
-          return eventMap[day] ?? [];
-        },
-      ),
+    return TableCalendar(
+      firstDay: DateTime.utc(2020, 10, 16),
+      lastDay: DateTime.utc(2030, 3, 14),
+      focusedDay: DateTime.now(),
+      eventLoader: (day) {
+        return scrimEvents[day] ?? [];
+      },
+      calendarFormat: CalendarFormat.month,
+      onDaySelected: (selectedDay, focusedDay) {
+        // Show scrim details when a day with a scrim is selected
+        final scrims = scrimEvents[selectedDay];
+        if (scrims != null && scrims.isNotEmpty) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Scrim Details'),
+              content: Text(scrims.first
+                  .details), // Show details of the first scrim on that day
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 }
 
-class Event {
-  final String title;
+class Scrim {
+  final DateTime date;
+  final String details;
+  // Add other fields as needed
 
-  Event({required this.title});
+  Scrim({required this.date, required this.details});
 }

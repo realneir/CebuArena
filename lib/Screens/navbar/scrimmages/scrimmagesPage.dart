@@ -181,9 +181,10 @@ class ScrimDetailCard extends ConsumerWidget {
     });
 
     if (response.statusCode == 200) {
-      var responseBody = jsonDecode(response.body);
-      print(
-          'Scrim request sent successfully. Request id: ${responseBody['request_id']}');
+      final responseData = jsonDecode(response.body);
+      final requestId =
+          responseData['request_id']; // Get the returned request_id
+      // Store requestId appropriately for later use
     } else {
       print('Error while requesting scrim: ${response.body}');
     }

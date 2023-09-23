@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:captsone_ui/Screens/managerTeamProfile/widgets/calendarState.dart';
 import 'package:captsone_ui/Screens/navbar/messages/chatPage.dart';
 import 'package:captsone_ui/utils/showSnackBar.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,9 @@ class ScrimRequestPage extends ConsumerWidget {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 var request = snapshot.data![index];
-                return RequestDetailCard(request: request);
+                return RequestDetailCard(
+                    request: request,
+                    ref: ref); // Pass the WidgetRef to the card
               },
             );
           }
@@ -47,9 +48,16 @@ class ScrimRequestPage extends ConsumerWidget {
     var url = Uri.parse('http://10.0.2.2:8000/get_scrim_requests/$managerId');
     var response = await http.get(url);
 
+    print('Server Response: ${response.body}'); // Print the server response
+
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data['data']);
+      return List<Map<String, dynamic>>.from(data['data']).map((request) {
+        // Assuming that the response contains scrim_id and request_id
+        request['scrim_id'] = request['scrim_id']?.toString() ?? '';
+        request['request_id'] = request['request_id']?.toString() ?? '';
+        return request;
+      }).toList();
     } else {
       print('Error while fetching scrim requests: ${response.body}');
       throw Exception('Failed to load scrim requests');
@@ -59,8 +67,67 @@ class ScrimRequestPage extends ConsumerWidget {
 
 class RequestDetailCard extends ConsumerWidget {
   final Map<String, dynamic> request;
+  final WidgetRef ref; // Receive the WidgetRef
 
-  const RequestDetailCard({Key? key, required this.request}) : super(key: key);
+  const RequestDetailCard({Key? key, required this.request, required this.ref})
+      : super(key: key);
+
+  Future<void> _acceptScrimRequest(BuildContext context) async {
+    var url = Uri.parse('http://10.0.2.2:8000/accept_scrim_request/');
+
+    print('Request object: $request');
+
+    var gameName = request['game_name']?.toString();
+    var scrimId = request['scrim_id']
+        ?.toString(); // You need to get the correct scrim_id from the request object
+    var requestId = request['request_id']
+        ?.toString(); // You need to get the correct request_id from the request object
+
+    if (gameName == null || scrimId == null || requestId == null) {
+      print('Error: game_name, scrim_id, or request_id is null');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Invalid game name, scrim ID, or request ID'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    print(
+        'Sending game_name: $gameName, scrim_id: $scrimId, and request_id: $requestId');
+
+    try {
+      var response = await http.post(url, body: {
+        'game_name': gameName,
+        'scrim_id': scrimId,
+        'request_id': requestId,
+      });
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Scrim request accepted! Added to calendar.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // You might also want to refresh the list of scrim requests or navigate to another page here
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error accepting scrim request: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -123,11 +190,11 @@ class RequestDetailCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    ref.read(calendarProvider.notifier).addEvent(request);
-                    showSnackBar(context, "Accepted, added to calendar");
-                  },
+                  onPressed: () => _acceptScrimRequest(
+                      context), // Updated to call the new method
+
                   child: const Text('Accept'),
+
                   style: ElevatedButton.styleFrom(
                     primary: Colors.green,
                   ),

@@ -493,7 +493,8 @@ def create_scrim(request):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
-@api_view(['POST'])
+
+@api_view(['POST']) #REQUEST ID ANG E FIX KAY MANGAYO PA DAPAT NAA NAMAN NA DAAN MATOG SAKO
 @csrf_exempt
 def request_scrim(request):
     if request.method == 'POST':
@@ -505,7 +506,7 @@ def request_scrim(request):
             # Get the requested scrim details
             scrim_data = database.child('scrims').child(game).child(scrim_id).get().val()
             if not scrim_data:
-                return Response({'error_message': 'Invalid scrim_id'}, status=400)
+                return Response({'error_message': 'Invalid scrim_id'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Get the user details
             user_data = database.child('users').child(manager_id).get().val()
@@ -513,38 +514,38 @@ def request_scrim(request):
                 username = user_data.get('username')
                 is_manager = user_data.get('is_manager', False)
             else:
-                return Response({'error_message': 'Invalid manager_id'}, status=400)
+                return Response({'error_message': 'Invalid manager_id'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Get all teams for the game
             teams = database.child('teams').child(game).get().val()
             team_name = None
             for team_id, team in teams.items():
                 if team.get('manager_id') == manager_id:
-                    team_name = team.get('team_name')  # Assuming 'team_name' is the correct key for team name
+                    team_name = team.get('team_name')
                     break
 
             # Check if the user is a manager and if a team is associated with the manager
             if not is_manager or not team_name:
-                return Response({'error_message': 'You are not authorized to make this request.'}, status=400)
+                return Response({'error_message': 'You are not authorized to make this request.'}, status=status.HTTP_400_BAD_REQUEST)
 
             data = {
                 'requesting_manager_id': manager_id,
                 'requesting_manager_username': username,
                 'game_name': game,
                 'requesting_team_name': team_name,
+                'scrim_id': scrim_id,
                 'status': 'pending',
             }
 
             # Send the request to the manager who created the scrim
-            database.child('scrims').child(game).child(scrim_id).child('scrim_requests').push(data)
+            ref = database.child('scrims').child(game).child(scrim_id).child('scrim_requests').push(data)
 
-            return Response({'message': 'Scrim request sent successfully.'})
+            # Get the key of the newly created object
 
         except Exception as e:
-            return Response({'error_message': str(e)}, status=400)
+            return Response({'error_message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({'error_message': 'Invalid request'}, status=400)
-
+    return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -720,6 +721,35 @@ def get_all_scrims(request, game):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['POST'])
+@csrf_exempt
+def accept_scrim_request(request):
+    try:
+        game_name = request.data.get('game_name')
+        scrim_id = request.data.get('scrim_id')  # You need the scrim_id to access the correct scrim
+        request_id = request.data.get('request_id')
+        
+        if not game_name or not scrim_id or not request_id:
+            return Response({'error_message': 'game_name, scrim_id, and request_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Fetch the request from the database
+        request_data = database.child('scrims').child(game_name).child(scrim_id).child('scrim_requests').child(request_id).get().val()
+        
+        if not request_data:
+            return Response({'error_message': 'Request not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update the status of the request to 'accepted'
+        database.child('scrims').child(game_name).child(scrim_id).child('scrim_requests').child(request_id).update({'status': 'accepted'})
+        
+        # Here, you might also want to perform additional actions, such as updating other related data or sending notifications
+        
+        return Response({'message': 'Scrim request accepted successfully.'}, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        return Response({'error_message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 @api_view(['POST'])
 @csrf_exempt
@@ -1127,3 +1157,4 @@ def get_all_events(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
