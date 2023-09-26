@@ -1131,6 +1131,37 @@ def create_event(request):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def get_user_organization_info(request, user_id):
+    try:
+        # Retrieve the user data from Firebase
+        user_data = database.child('users').child(user_id).get().val()
+        
+        # Check if user_data is None or does not contain 'organizations'
+        if not user_data:
+            return Response({'error_message': 'User not found'}, status=404)
+        elif 'organizations' not in user_data:
+            return Response({'error_message': 'The user is not part of any organizations'}, status=400)
+        
+        # Directly get the organization ID and details, as each user can only be part of one organization
+        org_id, org_details = next(iter(user_data['organizations'].items()))
+        
+        # Retrieve the organization info using org_id
+        organization_info = database.child('organizations').child(org_id).get().val()
+        
+        # Return the organization info if found
+        if organization_info:
+            return Response(organization_info)
+        else:
+            return Response({'error_message': f'No organization found for the given org_id: {org_id}'}, status=404)
+                
+    except Exception as e:
+        return Response({'error_message': str(e)}, status=500)
+
+
 @api_view(['GET'])
 @csrf_exempt
 def get_all_events(request):
