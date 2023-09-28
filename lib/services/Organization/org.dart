@@ -59,3 +59,36 @@ class CreateOrganization {
     }
   }
 }
+
+class GetOrganizationInfo {
+  final UserDetailsProvider userDetailsProvider;
+
+  GetOrganizationInfo(this.userDetailsProvider);
+
+  Future<String> fetchOrganizationInfo() async {
+    try {
+      final localId = userDetailsProvider.localId;
+
+      if (localId == null) {
+        throw Exception('Error: Local ID not available');
+      }
+
+      final apiUrl =
+          'http://10.0.2.2:8000/get_user_organization_info/$localId/';
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        return 'Organization info retrieval successful';
+      } else {
+        final responseData = json.decode(response.body);
+        if (responseData.containsKey('error_message')) {
+          throw Exception(responseData['error_message']);
+        } else {
+          throw Exception('Unknown error occurred');
+        }
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+}

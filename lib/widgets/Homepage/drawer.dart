@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:captsone_ui/Screens/navbar/homepage.dart';
 import 'package:captsone_ui/Screens/sidebar/leaderboards.dart';
 import 'package:captsone_ui/Screens/sidebar/profileScreen.dart';
 import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
@@ -9,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../Screens/test.dart';
 
 class SidebarMenu extends ConsumerWidget {
   final String? username;

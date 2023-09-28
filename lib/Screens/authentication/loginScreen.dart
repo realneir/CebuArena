@@ -30,7 +30,7 @@ class EmailPasswordLogin extends HookConsumerWidget {
       ),
     );
 
-     animationController.repeat();
+    animationController.repeat();
 
     void handleLogin(BuildContext context) async {
       isLoading.value = true; // Start loading
@@ -104,15 +104,15 @@ class EmailPasswordLogin extends HookConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF1E1E1E), 
-              Color(0xFF3E3E3E), 
+              Color(0xFF1E1E1E),
+              Color(0xFF3E3E3E),
             ],
           ),
         ),
         child: SafeArea(
           child: Stack(
             children: [
-               CustomPaint(
+              CustomPaint(
                 painter: WavyPainter(animation: animationController.value),
                 child: Container(
                   height: MediaQuery.of(context).size.height,
@@ -122,7 +122,8 @@ class EmailPasswordLogin extends HookConsumerWidget {
               SingleChildScrollView(
                 child: Center(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -201,8 +202,8 @@ class EmailPasswordLogin extends HookConsumerWidget {
                                 ),
                               ),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 child: Text(
                                   'Or continue with',
                                   style: TextStyle(color: Colors.grey[700]),
@@ -248,13 +249,13 @@ class EmailPasswordLogin extends HookConsumerWidget {
                 ),
               ),
               isLoading.value
-                ? Center(
-                    child: Lottie.network(
-                      'https://lottie.host/32413dad-2e67-4020-8063-5ccaaa63fcc5/9UVqKYdixL.json',
-                      width: 350,
-                      height: 350,
-                    ),
-                  )
+                  ? Center(
+                      child: Lottie.network(
+                        'https://lottie.host/32413dad-2e67-4020-8063-5ccaaa63fcc5/9UVqKYdixL.json',
+                        width: 350,
+                        height: 350,
+                      ),
+                    )
                   : Container(),
             ],
           ),
@@ -281,8 +282,10 @@ class WavyPainter extends CustomPainter {
     // Top wave
     final pathTop = Path()
       ..moveTo(0, 10 * sin(phaseShift))
-      ..quadraticBezierTo(size.width / 4, 10 * sin(phaseShift + pi / 2), size.width / 2, 10 * sin(phaseShift))
-      ..quadraticBezierTo(size.width * 3 / 4, 10 * sin(phaseShift - pi / 2), size.width, 10 * sin(phaseShift))
+      ..quadraticBezierTo(size.width / 4, 10 * sin(phaseShift + pi / 2),
+          size.width / 2, 10 * sin(phaseShift))
+      ..quadraticBezierTo(size.width * 3 / 4, 10 * sin(phaseShift - pi / 2),
+          size.width, 10 * sin(phaseShift))
       ..lineTo(size.width, 0)
       ..lineTo(0, 0)
       ..close();
@@ -291,8 +294,16 @@ class WavyPainter extends CustomPainter {
     // Bottom wave (mirroring the top wave)
     final pathBottom = Path()
       ..moveTo(0, size.height - 10 * sin(phaseShift))
-      ..quadraticBezierTo(size.width / 4, size.height - 10 * sin(phaseShift + pi / 2), size.width / 2, size.height - 10 * sin(phaseShift))
-      ..quadraticBezierTo(size.width * 3 / 4, size.height - 10 * sin(phaseShift - pi / 2), size.width, size.height - 10 * sin(phaseShift))
+      ..quadraticBezierTo(
+          size.width / 4,
+          size.height - 10 * sin(phaseShift + pi / 2),
+          size.width / 2,
+          size.height - 10 * sin(phaseShift))
+      ..quadraticBezierTo(
+          size.width * 3 / 4,
+          size.height - 10 * sin(phaseShift - pi / 2),
+          size.width,
+          size.height - 10 * sin(phaseShift))
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
@@ -301,8 +312,10 @@ class WavyPainter extends CustomPainter {
     // Left wave
     final pathLeft = Path()
       ..moveTo(10 * sin(phaseShift), 0)
-      ..quadraticBezierTo(10 * sin(phaseShift + pi / 2), size.height / 4, 10 * sin(phaseShift), size.height / 2)
-      ..quadraticBezierTo(10 * sin(phaseShift - pi / 2), size.height * 3 / 4, 10 * sin(phaseShift), size.height)
+      ..quadraticBezierTo(10 * sin(phaseShift + pi / 2), size.height / 4,
+          10 * sin(phaseShift), size.height / 2)
+      ..quadraticBezierTo(10 * sin(phaseShift - pi / 2), size.height * 3 / 4,
+          10 * sin(phaseShift), size.height)
       ..lineTo(0, size.height)
       ..lineTo(0, 0)
       ..close();
@@ -311,8 +324,10 @@ class WavyPainter extends CustomPainter {
     // Right wave (mirroring the left wave)
     final pathRight = Path()
       ..moveTo(size.width - 10 * sin(phaseShift), 0)
-      ..quadraticBezierTo(size.width - 10 * sin(phaseShift + pi / 2), size.height / 4, size.width - 10 * sin(phaseShift), size.height / 2)
-      ..quadraticBezierTo(size.width - 10 * sin(phaseShift - pi / 2), size.height * 3 / 4, size.width - 10 * sin(phaseShift), size.height)
+      ..quadraticBezierTo(size.width - 10 * sin(phaseShift + pi / 2),
+          size.height / 4, size.width - 10 * sin(phaseShift), size.height / 2)
+      ..quadraticBezierTo(size.width - 10 * sin(phaseShift - pi / 2),
+          size.height * 3 / 4, size.width - 10 * sin(phaseShift), size.height)
       ..lineTo(size.width, size.height)
       ..lineTo(size.width, 0)
       ..close();
