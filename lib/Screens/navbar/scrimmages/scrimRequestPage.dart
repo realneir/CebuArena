@@ -77,17 +77,17 @@ class RequestDetailCard extends ConsumerWidget {
 
     print('Request object: $request');
 
-    var gameName = request['game_name']?.toString();
-    var scrimId = request['scrim_id']
-        ?.toString(); // You need to get the correct scrim_id from the request object
-    var requestId = request['request_id']
-        ?.toString(); // You need to get the correct request_id from the request object
+    var gameName = request['game']?.toString();
+    var scrimId = request['scrim_id']?.toString();
+    var requestId = request['request_id']?.toString();
 
     if (gameName == null || scrimId == null || requestId == null) {
-      print('Error: game_name, scrim_id, or request_id is null');
+      print('Error: game_name or scrim_id is null');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: Invalid game name, scrim ID, or request ID'),
+          content: Text(
+            'Error: Invalid game name or scrim ID',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -95,14 +95,20 @@ class RequestDetailCard extends ConsumerWidget {
     }
 
     print(
-        'Sending game_name: $gameName, scrim_id: $scrimId, and request_id: $requestId');
+        'Sending game_name: $gameName, scrim_id: $scrimId, request_id: $requestId');
 
     try {
-      var response = await http.post(url, body: {
-        'game_name': gameName,
-        'scrim_id': scrimId,
-        'request_id': requestId,
-      });
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'game': gameName,
+          'scrim_id': scrimId,
+        }),
+      );
+
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -161,7 +167,7 @@ class RequestDetailCard extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'Game: ${request['game_name']}',
+                        'Game: ${request['game']}',
                         style: TextStyle(fontSize: 20),
                       ),
                       Text(

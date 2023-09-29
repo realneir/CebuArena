@@ -531,7 +531,7 @@ def request_scrim(request):
             data = {
                 'requesting_manager_id': manager_id,
                 'requesting_manager_username': username,
-                'game_name': game,
+                'game': game,
                 'requesting_team_name': team_name,
                 'scrim_id': scrim_id,
                 'status': 'pending',
@@ -539,6 +539,8 @@ def request_scrim(request):
 
             # Send the request to the manager who created the scrim
             ref = database.child('scrims').child(game).child(scrim_id).child('scrim_requests').push(data)
+            return Response({'success_message': 'Scrim request sent successfully'}, status=status.HTTP_201_CREATED)
+
 
             # Get the key of the newly created object
 
@@ -588,78 +590,6 @@ def get_scrim_requests(request, manager_id):
     except Exception as e:
         print(f'Error while fetching scrim requests for manager_id: {manager_id}. Error: {str(e)}')
         return Response({'error_message': str(e)}, status=400)
-
-
-
-
-    
-@api_view(['POST'])
-@csrf_exempt
-def respond_scrim_request(request, manager_id):
-    if request.method == 'POST':
-        request_id = request.data.get('request_id')
-        response = request.data.get('response')
-
-        try:
-            # Check if the response is either 'accepted' or 'declined'
-            if response not in ['accepted', 'declined']:
-                return Response({'error_message': 'Invalid response. The response should be either "accepted" or "declined".'}, status=400)
-
-            # Get the request details
-            all_scrim_requests = database.child('scrim_requests').get().val()
-
-            if not all_scrim_requests:
-                return Response({'error_message': 'No scrim requests found'}, status=400)
-
-            for scrim_id, scrim_requests in all_scrim_requests.items():
-                if request_id in scrim_requests:
-                    # Update the request status
-                    database.child('scrim_requests').child(scrim_id).child(request_id).update({'status': response})
-
-                    # Also update the request status in the 'requests' node of the relevant team
-                    all_teams = database.child('teams').get().val()
-                    for game, teams in all_teams.items():
-                        for team_id, team_data in teams.items():
-                            if request_id in team_data.get('requests', {}):
-                                database.child('teams').child(game).child(team_id).child('requests').child(request_id).update({'status': response})
-
-                    return Response({'message': f'Scrim request {response} successfully.'})
-            
-            return Response({'error_message': 'Invalid request_id'}, status=400)
-
-        except Exception as e:
-            return Response({'error_message': str(e)}, status=400)
-
-    return Response({'error_message': 'Invalid request'}, status=400)
-
-
-
-@api_view(['POST'])
-@csrf_exempt
-def accept_scrim(request):
-    if request.method == 'POST':
-        request_id = request.data.get('request_id')
-        manager_id = request.data.get('manager_id')
-
-        try:
-            # Fetch the request from the database
-            request_data = database.child('teams').child(manager_id).child('requests').child(request_id).get().val()
-
-            print(f"Retrieved request data: {request_data}")
-
-            if not request_data:
-                return Response({request_data}, status=400)
-
-            # Update the status of the request to 'accepted'
-            database.child('teams').child(manager_id).child('requests').child(request_id).update({'status': 'accepted'})
-
-            # You might also want to update the scrim status or send notifications at this point
-
-            return Response({'message': 'Scrim request accepted successfully.'})
-        except Exception as e:
-            return Response({'error_message': str(e)}, status=500)  # I changed this to a 500 error, because if there's an exception here, it likely indicates a server error, not a client error
-
-    return Response({'error_message': 'Invalid request'}, status=400)
 
 
 
@@ -723,31 +653,28 @@ def get_all_scrims(request, game):
     return Response({'error_message': 'Invalid request'}, status=400)
 
 @api_view(['POST'])
-@csrf_exempt
 def accept_scrim_request(request):
     try:
-        game_name = request.data.get('game_name')
-        scrim_id = request.data.get('scrim_id')  # You need the scrim_id to access the correct scrim
-        request_id = request.data.get('request_id')
+        # Extract necessary data from the request
+        scrim_id = request.data.get('scrim_id')
+        game = request.data.get('game')
         
-        if not game_name or not scrim_id or not request_id:
-            return Response({'error_message': 'game_name, scrim_id, and request_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+        # Validate the incoming data
+        if not scrim_id or not game:
+            return Response({'error_message': 'Invalid data'}, status=400)
         
-        # Fetch the request from the database
-        request_data = database.child('scrims').child(game_name).child(scrim_id).child('scrim_requests').child(request_id).get().val()
+        # Get the scrim request details
+        scrim_request_data = database.child('scrims').child(game).child(scrim_id).child('scrim_requests').get().val()
+        if not scrim_request_data:
+            return Response({'error_message': 'Invalid scrim_id'}, status=400)
         
-        if not request_data:
-            return Response({'error_message': 'Request not found'}, status=status.HTTP_400_BAD_REQUEST)
+        # Update the status of the scrim request to 'accepted'
+        database.child('scrims').child(game).child(scrim_id).child('scrim_requests').update({'status': 'accepted'})
         
-        # Update the status of the request to 'accepted'
-        database.child('scrims').child(game_name).child(scrim_id).child('scrim_requests').child(request_id).update({'status': 'accepted'})
+        return Response({'message': 'Scrim request accepted successfully'}, status=200)
         
-        # Here, you might also want to perform additional actions, such as updating other related data or sending notifications
-        
-        return Response({'message': 'Scrim request accepted successfully.'}, status=status.HTTP_200_OK)
-    
     except Exception as e:
-        return Response({'error_message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'error_message': str(e)}, status=400)
 
 
 
