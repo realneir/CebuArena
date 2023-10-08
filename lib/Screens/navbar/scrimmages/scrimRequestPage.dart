@@ -72,69 +72,6 @@ class RequestDetailCard extends ConsumerWidget {
   const RequestDetailCard({Key? key, required this.request, required this.ref})
       : super(key: key);
 
-  Future<void> _acceptScrimRequest(BuildContext context) async {
-    var url = Uri.parse('http://10.0.2.2:8000/accept_scrim_request/');
-
-    print('Request object: $request');
-
-    var gameName = request['game']?.toString();
-    var scrimId = request['scrim_id']?.toString();
-    var requestId = request['request_id']?.toString();
-
-    if (gameName == null || scrimId == null || requestId == null) {
-      print('Error: game_name or scrim_id is null');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error: Invalid game name or scrim ID',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    print(
-        'Sending game_name: $gameName, scrim_id: $scrimId, request_id: $requestId');
-
-    try {
-      var response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'game': gameName,
-          'scrim_id': scrimId,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Scrim request accepted! Added to calendar.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        // You might also want to refresh the list of scrim requests or navigate to another page here
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error accepting scrim request: ${response.body}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
@@ -159,7 +96,7 @@ class RequestDetailCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Team: ${request['requesting_team_name']}',
+                        'Team: ${request['team_name']}',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -173,10 +110,6 @@ class RequestDetailCard extends ConsumerWidget {
                       Text(
                         'Manager: ${request['requesting_manager_username']}',
                         style: TextStyle(fontSize: 19),
-                      ),
-                      Text(
-                        'Status: ${request['status']}',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -196,11 +129,8 @@ class RequestDetailCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () => _acceptScrimRequest(
-                      context), // Updated to call the new method
-
+                  onPressed: () {},
                   child: const Text('Accept'),
-
                   style: ElevatedButton.styleFrom(
                     primary: Colors.green,
                   ),

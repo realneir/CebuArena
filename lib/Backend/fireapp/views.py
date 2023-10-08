@@ -494,13 +494,18 @@ def create_scrim(request):
     return Response({'error_message': 'Invalid request'}, status=400)
 
 
-@api_view(['POST']) #REQUEST ID ANG E FIX KAY MANGAYO PA DAPAT NAA NAMAN NA DAAN MATOG SAKO
+@api_view(['POST']) 
 @csrf_exempt
 def request_scrim(request):
     if request.method == 'POST':
         manager_id = request.data.get('manager_id')
         scrim_id = request.data.get('scrim_id')
         game = request.data.get('game')
+        time = request.data.get('time')  # Retrieve time from POST data
+        date = request.data.get('date')  # Retrieve date from POST data
+        requesting_team_name = request.data.get('requesting_team_name')  # Retrieve requesting team name
+        requesting_manager_username = request.data.get('requesting_manager_username')  # Retrieve requesting manager username
+
 
         try:
             # Get the requested scrim details
@@ -530,11 +535,13 @@ def request_scrim(request):
 
             data = {
                 'requesting_manager_id': manager_id,
-                'requesting_manager_username': username,
+                'requesting_manager_username': requesting_manager_username,
                 'game': game,
-                'requesting_team_name': team_name,
+                'requesting_team_name': requesting_team_name,
                 'scrim_id': scrim_id,
-                'status': 'pending',
+                'time': time,  # Add time to the data
+                'date': date,  # Add date to the data
+
             }
 
             # Send the request to the manager who created the scrim
@@ -652,29 +659,10 @@ def get_all_scrims(request, game):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
-@api_view(['POST'])
-def accept_scrim_request(request):
-    try:
-        # Extract necessary data from the request
-        scrim_id = request.data.get('scrim_id')
-        game = request.data.get('game')
-        
-        # Validate the incoming data
-        if not scrim_id or not game:
-            return Response({'error_message': 'Invalid data'}, status=400)
-        
-        # Get the scrim request details
-        scrim_request_data = database.child('scrims').child(game).child(scrim_id).child('scrim_requests').get().val()
-        if not scrim_request_data:
-            return Response({'error_message': 'Invalid scrim_id'}, status=400)
-        
-        # Update the status of the scrim request to 'accepted'
-        database.child('scrims').child(game).child(scrim_id).child('scrim_requests').update({'status': 'accepted'})
-        
-        return Response({'message': 'Scrim request accepted successfully'}, status=200)
-        
-    except Exception as e:
-        return Response({'error_message': str(e)}, status=400)
+#@api_view(['POST'])
+#def accept_scrim_request(request):
+# Inig accept sa scrim, ma adto siya sa accepted requests under scrim request
+
 
 
 

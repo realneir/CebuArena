@@ -174,14 +174,20 @@ class ScrimDetailCard extends ConsumerWidget {
     var url = Uri.parse('http://10.0.2.2:8000/request_scrim/');
 
     final managerId = ref.read(userDetailsProvider).localId;
+
     var response = await http.post(url, body: {
       'manager_id': managerId,
       'scrim_id': scrim['scrim_id'],
-      'game': scrim['game'],
+      'game': scrim['game'] ?? '',
+      'time': scrim['time'] ?? '',
+      'date': scrim['date'] ?? '',
+      'requesting_team_name': scrim['team_name'] ?? '',
+      'requesting_manager_username': scrim['manager_username'] ?? '',
     });
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+      print("VARRRR: $responseData");
       final requestId =
           responseData['request_id']; // Get the returned request_id
       // Store requestId appropriately for later use
