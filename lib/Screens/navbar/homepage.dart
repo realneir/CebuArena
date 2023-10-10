@@ -9,7 +9,7 @@ import 'package:captsone_ui/services/authenticationProvider/authProvider.dart';
 import 'package:captsone_ui/services/teamsProvider/fetchTeams.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:captsone_ui/widgets/Homepage/drawer.dart';
+import 'package:captsone_ui/widgets/Homepage/drawers.dart';
 import 'package:captsone_ui/widgets/Homepage/eventLeaderboards.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:captsone_ui/Screens/navbar/teamlist.dart';
@@ -63,9 +63,15 @@ class Homepage extends HookConsumerWidget {
               text: TextSpan(
                 style: GoogleFonts.orbitron(fontSize: 25, color: Colors.black),
                 children: [
-                  TextSpan(text: 'C', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                  TextSpan(
+                      text: 'C',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue)),
                   TextSpan(text: 'ebu'),
-                  TextSpan(text: 'A', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                  TextSpan(
+                      text: 'A',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.red)),
                   TextSpan(text: 'rena'),
                 ],
               ),

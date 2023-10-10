@@ -11,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../Screens/test.dart';
+import '../../Screens/sidebar/Organization/OrganizationBody.dart';
+import '../../Screens/sidebar/Organization/OrganizationMain.dart';
 
 class SidebarMenu extends ConsumerWidget {
   final String? username;
@@ -98,7 +99,7 @@ class SidebarMenu extends ConsumerWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => VerificationScreen()),
+                MaterialPageRoute(builder: (context) => organizationScreen()),
               );
             },
           ),

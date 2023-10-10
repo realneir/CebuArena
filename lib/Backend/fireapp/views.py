@@ -388,6 +388,41 @@ def get_all_teams(request):
 
 
 
+@api_view(['GET'])
+def get_teams_by_owner(request, owner_id):  # Change 'organization_id' to 'owner_id'
+    if request.method == 'GET':
+        try:
+            org_data = database.child('organizations').child(owner_id).get().val()
+            if not org_data:
+                return Response({'error_message': 'Organization not found'}, status=404)
+
+            teams_data = org_data.get('teams', {})
+            teams_list = []
+
+            for team_id, team_info in teams_data.items():
+                team_info = {
+                    'team_id': team_id,
+                    'team_name': team_info.get('team_name'),
+                    'manager': {
+                        'username': team_info.get('manager_username'),
+                        'firstname': team_info.get('manager_firstname'),
+                        'lastname': team_info.get('manager_lastname'),
+                        'id': team_info.get('manager_id'),
+                    },
+                    'members': team_info.get('members'),
+                    'game': team_info.get('game')
+                }
+                teams_list.append(team_info)
+
+            return Response({'teams': teams_list}, status=200)
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+
 
 @api_view(['GET'])
 @csrf_exempt

@@ -65,7 +65,7 @@ class GetOrganizationInfo {
 
   GetOrganizationInfo(this.userDetailsProvider);
 
-  Future<String> fetchOrganizationInfo() async {
+  Future<Map<String, dynamic>> fetchOrganizationInfo() async {
     try {
       final localId = userDetailsProvider.localId;
 
@@ -78,7 +78,8 @@ class GetOrganizationInfo {
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
-        return 'Organization info retrieval successful';
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        return responseData;
       } else {
         final responseData = json.decode(response.body);
         if (responseData.containsKey('error_message')) {
