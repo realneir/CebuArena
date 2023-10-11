@@ -388,38 +388,6 @@ def get_all_teams(request):
 
 
 
-@api_view(['GET'])
-def get_teams_by_owner(request, owner_id):  # Change 'organization_id' to 'owner_id'
-    if request.method == 'GET':
-        try:
-            org_data = database.child('organizations').child(owner_id).get().val()
-            if not org_data:
-                return Response({'error_message': 'Organization not found'}, status=404)
-
-            teams_data = org_data.get('teams', {})
-            teams_list = []
-
-            for team_id, team_info in teams_data.items():
-                team_info = {
-                    'team_id': team_id,
-                    'team_name': team_info.get('team_name'),
-                    'manager': {
-                        'username': team_info.get('manager_username'),
-                        'firstname': team_info.get('manager_firstname'),
-                        'lastname': team_info.get('manager_lastname'),
-                        'id': team_info.get('manager_id'),
-                    },
-                    'members': team_info.get('members'),
-                    'game': team_info.get('game')
-                }
-                teams_list.append(team_info)
-
-            return Response({'teams': teams_list}, status=200)
-        except Exception as e:
-            return Response({'error_message': str(e)}, status=400)
-
-    return Response({'error_message': 'Invalid request'}, status=400)
-
 
 
 
@@ -946,6 +914,7 @@ def approve_member(request):
     return Response({'error_message': 'Invalid request'}, status=400)
 
 
+
 @api_view(['POST'])
 @csrf_exempt
 def create_team_for_organization(request):
@@ -958,25 +927,25 @@ def create_team_for_organization(request):
         try:
             # Fetch all organizations to find the one owned by owner_localId
             all_orgs = database.child('organizations').get().val()
-            print(f"All organizations: {all_orgs}")  # Debugging line
 
             org_data = None
-            for org in all_orgs.values():
-                print(f"Checking org: {org}")  # Debugging line
+            org_id = None
+            for org_id, org in all_orgs.items():
                 if org['owner']['localId'] == owner_localId:
                     org_data = org
                     break
 
             if not org_data:
                 return Response({'error_message': 'Invalid organization owner ID'}, status=400)
-# Check if the organization already has a team for the given game
-            existing_teams = org_data.get('teams', {})
-            if game in existing_teams:
-                return Response({'error_message': 'A team for this game already exists'}, status=400)
+
+            # Check if the organization already has a team for the given game
+            existing_teams = org_data.get('Teams', {})
+            if game not in existing_teams:
+                existing_teams[game] = {}  # Create a game node if it doesn't exist
 
             # Check if the organization has reached the maximum number of teams (6)
-            if len(existing_teams) >= 6:
-                return Response({'error_message': 'Maximum number of teams reached'}, status=400)
+            if len(existing_teams[game]) >= 6:
+                return Response({'error_message': 'Maximum number of teams reached for this game'}, status=400)
 
             # Fetch the manager's data from the organization's members
             manager_data = org_data['members'].get(manager_localId)
@@ -985,36 +954,67 @@ def create_team_for_organization(request):
 
             # Create the team data
             team_data = {
-                'owner_id': owner_localId,
-                'org_name': org_data['org_name'],  # Include the organization name in the team data
-                'manager_id': manager_localId,
-                'manager_username': manager_data['username'],
+                'game': game,
+                'org_id': org_id,  # Use the org_id obtained above
                 'manager_firstname': manager_data['firstname'],
+                'manager_id': manager_localId,
                 'manager_lastname': manager_data['lastname'],
+                'manager_username': manager_data['username'],
                 'team_name': team_name,
-                'members': [],
-                'pending_requests': [],
-                'captain_id': None,
-                'game': game
             }
 
-            # Save the team data in the database
+            # Save the team data in the database under the game name
             team_ref = database.child('teams').child(game).push(team_data)
 
-            # Update the organization's data to include the new team
-            existing_teams[game] = team_ref.get('name')  # Retrieve the key using 'name' attribute
-            database.child('organizations').child(owner_localId).update({'teams': existing_teams})
+            # Get the automatically generated team ID from the team_ref
+            team_id = team_ref['name']
 
-            # Update the manager's data to set 'is_manager' to True
-            database.child('users').child(manager_localId).update({'is_manager': True})
+            existing_teams[team_id] = team_id
+
+            # Update the organization's data to include the new team without owner_localId
+            database.child('organizations').child('Teams').update({game: existing_teams})
+
+            # Set the manager's account to 'isManager' true
+            database.child('users').child(manager_localId).update({'isManager': True})
 
             return Response({'message': 'Team created successfully.'})
-        
 
         except Exception as e:
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+@api_view(['GET'])
+@csrf_exempt
+def get_teams_for_organization(request, org_id):
+    if request.method == 'GET':
+        try:
+            # Retrieve all the teams data from Firebase
+            teams_data = database.child('teams').get().val()
+
+            if teams_data:
+                org_teams = {}
+                for game, teams in teams_data.items():
+                    # Find teams that have the given org_id
+                    for team_id, team_info in teams.items():
+                        if 'org_id' in team_info and team_info['org_id'] == org_id:
+                            org_teams[team_id] = team_info
+
+                # If no teams are found for the given org_id
+                if not org_teams:
+                    return Response({'error_message': 'No teams found for the specified organization'}, status=400)
+
+                return Response({'teams': org_teams})
+            else:
+                return Response({'error_message': 'No teams found'}, status=400)
+
+        except Exception as e:
+            return Response({'error_message': str(e)}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
 
 
 
