@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:captsone_ui/Screens/sidebar/Organization/Main%20tab/tabs/orgDescription.dart';
+import 'package:captsone_ui/Screens/sidebar/Organization/Main%20tab/tabs/orgTeams.dart';
 import 'package:captsone_ui/services/teamsProvider/createTeam.dart';
 import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildAlbumSection.dart';
 import 'package:captsone_ui/widgets/Profilescreen/profile%20tabs/buildTeamsSection.dart';
@@ -58,7 +59,7 @@ class _ProfileTabState extends ConsumerState<orgTab>
             controller: _tabController,
             children: [
               orgDescription(),
-              TeamsSection(),
+              OrgTeamsSection(),
               AlbumSection(),
             ],
           ),

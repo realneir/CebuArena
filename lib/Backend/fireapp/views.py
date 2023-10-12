@@ -82,6 +82,7 @@ def login(request):
         username = None  # Initialize the username variable
         org_name = None  # Initialize the org_name variable
 
+
         for user in users.each():
             if user.val()['email'] == email_from_request:  # Use the new variable here
                 firstname = user.val().get('firstname', '')
@@ -122,6 +123,7 @@ def login(request):
                 'is_organizer': is_organizer,
                 'org_name': org_name,  # Include the org_name in the response
                 'isMember': isMember,
+                'org_id': org_id
             })
         except Exception as e:
             # Handle login errors and return an appropriate response

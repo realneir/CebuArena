@@ -61,6 +61,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool _isManager = false;
   String? _teamName;
   bool _isOrganizer = false;
+  String? _organizationId;
   String? _organizationName;
   bool _isMember = false;
   String? _contactNumber;
@@ -74,6 +75,7 @@ class UserDetailsProvider with ChangeNotifier {
   bool get isOrganizer => _isOrganizer;
   String? get teamName => _teamName;
   String? get organizationName => _organizationName;
+  String? get organizationId => _organizationId;
   bool get isMember => _isMember;
   String? get contactNumber => _contactNumber;
 
@@ -112,6 +114,7 @@ class UserDetailsProvider with ChangeNotifier {
         _teamName = data['team_name'];
         _isManager = data['is_manager'] ?? false;
         _isOrganizer = data['is_organizer'] ?? false;
+        _organizationId = data['org_id'];
         _isMember = data['isMember'] ?? false;
 
         // Extract the organization name from the nested data
@@ -204,6 +207,7 @@ class UserDetailsProvider with ChangeNotifier {
         _isManager = responseData['is_manager'] ?? false;
         _isOrganizer = responseData['is_organizer'] ?? false;
         _organizationName = responseData['org_name'];
+        _organizationId = responseData['org_id'];
         _isMember = responseData['isMember'] ?? false;
         _contactNumber = data['contact_number'];
 
@@ -214,6 +218,7 @@ class UserDetailsProvider with ChangeNotifier {
         print('Last Name: $_lastname');
         print('isManager: $_isManager');
         print('isOrganizer: $_isOrganizer');
+        print('OrganizationID: $_organizationId');
         print('Organization Name: $_organizationName');
         print('isMember: $_isMember');
 
