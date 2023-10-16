@@ -32,6 +32,7 @@ urlpatterns = [
     path('get_scrim_requests/<str:manager_id>/', views.get_scrim_requests, name='get_scrim_requests'),
     path('get_all_pending_approvals/', views.get_all_pending_approvals, name='get_all_pending_approvals'),
      path('organizations/<str:org_id>/teams/', views.get_teams_for_organization, name='get_teams_for_organization'),
+    path('join_event/', views.join_event, name='join_event'),
     # path('accept_scrim_request/', views.accept_scrim_request, name='accept_scrim_request'),
     path('get_user_organization_info/<str:user_id>/', views.get_user_organization_info, name='get_user_organization_info'),
 ]

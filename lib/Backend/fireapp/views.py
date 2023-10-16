@@ -1083,6 +1083,90 @@ def create_event(request):
 
     return Response({'error_message': 'Invalid request'}, status=400)
 
+# views.py
+
+@api_view(['POST'])
+@csrf_exempt
+def join_event(request):
+    if request.method == 'POST':
+        localId = request.data.get('localId')
+        event_id = request.data.get('event_id')
+
+        # Check if the user is a manager
+        user = database.child('users').child(localId).get().val()
+
+        try:
+            # Check if the user is a manager
+            if user.get('isManager', False):
+                return Response({'error_message': 'Managers cannot join events'}, status=400)
+
+            # Find the team associated with the manager
+            team_data = None
+            all_teams = database.child('teams').get().val()
+            if all_teams:
+                for game, teams in all_teams.items():
+                    for team_id, team_info in teams.items():
+                        if team_info.get('manager_id') == localId:
+                            team_data = team_info
+                            team_game = game  # Get the game associated with the team
+                            break
+
+            if team_data is None:
+                return Response({'error_message': 'Manager is not part of any team'}, status=400)
+
+            # Retrieve the event data
+            all_games = database.child('events').get().val()
+            
+            if all_games:
+                for game, game_data in all_games.items():
+                    if event_id in game_data:
+                        event_data = game_data[event_id]
+                        # Check if the maximum number of teams for the event has been reached
+                        teams_joined = event_data.get('teams_joined', [])
+                        max_teams = int(event_data.get('maximum_teams', 0))
+                        if len(teams_joined) >= max_teams:
+                            return Response({'error_message': 'Maximum teams limit reached for this event'}, status=400)
+
+                        # Add the team data to the event's teams_joined list
+                        teams_joined.append({
+                            'team_id': team_id,
+                            'team_name': team_data['team_name'],
+                            'event_name': event_data.get('event_name'),
+                            'event_date': event_data.get('event_date'),
+                            'event_time': event_data.get('event_time'),
+                        })
+
+                        # Update the event's teams_joined list
+                        event_ref = database.child('events').child(game).child(event_id)
+                        event_ref.update({'teams_joined': teams_joined})
+
+                        # Update the team's database with event information under 'events_joined'
+                        team_ref = database.child('teams').child(game).child(team_id)
+                        team_ref.update({
+                            'events_joined': {
+                                event_id: {
+                                    'event_name': event_data.get('event_name'),
+                                    'event_date': event_data.get('event_date'),
+                                    'event_time': event_data.get('event_time'),
+                                }
+                            }
+                        })
+
+                        # The response should include the team data
+                        return Response({'message': 'Joined event successfully', 'team_data': team_data})
+
+                return Response({'error_message': 'Event not found'}, status=400)
+
+            return Response({'error_message': 'No events found'}, status=400)
+        except Exception as e:
+            error_message = str(e)
+            return Response({'error_message': error_message}, status=400)
+
+    return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
