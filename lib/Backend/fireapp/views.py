@@ -667,6 +667,7 @@ def get_all_scrims(request, game):
 #@api_view(['POST'])
 #def accept_scrim_request(request):
 # Inig accept sa scrim, ma adto siya sa accepted requests under scrim request
+# dapat if ang accepted scrims kay i sulod sa under teams sa database
 
 
 
