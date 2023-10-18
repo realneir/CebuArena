@@ -61,6 +61,7 @@ class FullEventPage extends ConsumerWidget {
                         coverHeight: coverHeight,
                         profileHeight: profileHeight,
                         eventData: event.eventData,
+                        eventId: event.eventId,
                       );
                     }
                   },

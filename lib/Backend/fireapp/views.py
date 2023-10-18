@@ -68,7 +68,7 @@ def register(request):
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
-        email_from_request = request.data.get('email')  # Use a different variable name here
+        email_from_request = request.data.get('email')
 
         # Fetch the email, firstname, lastname, and username associated with this email from the database
         users = database.child('users').get()
@@ -79,18 +79,18 @@ def login(request):
         is_manager = False
         is_organizer = False
         isMember = False
-        username = None  # Initialize the username variable
-        org_name = None  # Initialize the org_name variable
-
+        username = None
+        org_name = None
+        org_id = None  # Initialize org_id as None
 
         for user in users.each():
-            if user.val()['email'] == email_from_request:  # Use the new variable here
+            if user.val()['email'] == email_from_request:
                 firstname = user.val().get('firstname', '')
                 lastname = user.val().get('lastname', '')
                 is_manager = user.val().get('is_manager', False)
                 is_organizer = user.val().get('is_organizer', False)
                 isMember = user.val().get('isMember', False)
-                username = user.val().get('username', '')  # Get the username from the database
+                username = user.val().get('username', '')
                 local_id = user.key()
 
                 # Check if the user is an organizer and has an associated organization
@@ -118,12 +118,12 @@ def login(request):
                 'localId': local_id,
                 'firstname': firstname,
                 'lastname': lastname,
-                'username': username,  # Include the username in the response
+                'username': username,
                 'is_manager': is_manager,
                 'is_organizer': is_organizer,
-                'org_name': org_name,  # Include the org_name in the response
+                'org_name': org_name,
                 'isMember': isMember,
-                'org_id': org_id
+                'org_id': org_id  # Include org_id in the response
             })
         except Exception as e:
             # Handle login errors and return an appropriate response
@@ -131,6 +131,7 @@ def login(request):
             return Response({'error_message': error_message}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error_message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -958,7 +959,7 @@ def create_team_for_organization(request):
             # Create the team data
             team_data = {
                 'game': game,
-                'org_id': org_id,  # Use the org_id obtained above
+                'org_id': org_id,
                 'manager_firstname': manager_data['firstname'],
                 'manager_id': manager_localId,
                 'manager_lastname': manager_data['lastname'],
@@ -967,18 +968,24 @@ def create_team_for_organization(request):
             }
 
             # Save the team data in the database under the game name
-            team_ref = database.child('teams').child(game).push(team_data)
+            team_ref = database.child('organizations').child(org_id).child('Teams').child(game).push(team_data)
 
             # Get the automatically generated team ID from the team_ref
             team_id = team_ref['name']
 
-            existing_teams[team_id] = team_id
+            existing_teams[game][team_id] = team_id
 
-            # Update the organization's data to include the new team without owner_localId
-            database.child('organizations').child('Teams').update({game: existing_teams})
+            # Update the organization's data to include the new team
+            database.child('organizations').child(org_id).update({'Teams': existing_teams})
 
             # Set the manager's account to 'isManager' true
-            database.child('users').child(manager_localId).update({'isManager': True})
+            database.child('users').child(manager_localId).update({'is_manager': True})
+
+            # Update the 'teams' database under the specified game (e.g., LOL)
+            # Create the 'events_joined' field under the team's ID
+            teams_db_ref = database.child('teams').child(game).child(team_id)
+            team_data['team_id'] = team_id
+            teams_db_ref.set(team_data)
 
             return Response({'message': 'Team created successfully.'})
 
@@ -986,6 +993,8 @@ def create_team_for_organization(request):
             return Response({'error_message': str(e)}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
 
 @api_view(['GET'])
 @csrf_exempt
@@ -1083,9 +1092,6 @@ def create_event(request):
             return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
-
-# views.py
-
 @api_view(['POST'])
 @csrf_exempt
 def join_event(request):
@@ -1164,6 +1170,10 @@ def join_event(request):
             return Response({'error_message': error_message}, status=400)
 
     return Response({'error_message': 'Invalid request'}, status=400)
+
+
+
+
 
 
 
